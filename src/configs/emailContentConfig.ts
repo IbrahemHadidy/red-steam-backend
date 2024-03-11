@@ -186,7 +186,7 @@ export const emailVerificationContent = `
                                                             "
                                                           >
                                                             <a
-                                                              href="{BASE_URL}/api/verify-email/{verificationToken}"
+                                                              href="{BASE_URL}/api/user/verify-email/{verificationToken}"
                                                               style="
                                                                 display: block;
                                                                 padding: 13px

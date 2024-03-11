@@ -9,9 +9,16 @@ export interface UserDocument extends Document {
   phoneNumber?: string;
   profilePicture?: string;
   tags: string[];
-  wishlist: string[];
+  library: string[];
+  cart: string[];
+  wishlist: {
+    item: string;
+    addedOn: Date;
+  }[];
   verificationToken?: string;
   isVerified: boolean;
+  phoneVerificationCode?: string;
+  isPhoneVerified?: boolean;
   createdAt: Date;
 }
 
@@ -46,17 +53,40 @@ const userSchema = new mongoose.Schema({
     default: [],
     required: true,
   },
-  wishlist: {
+  library: {
     type: Array,
     default: [],
     required: true,
   },
+  cart: {
+    type: Array,
+    default: [],
+    required: true,
+  },
+  wishlist: [
+    {
+      item: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+      },
+      addedOn: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
   verificationToken: {
     type: String,
   },
   isVerified: {
     type: Boolean,
     default: false,
+  },
+  phoneVerificationCode: {
+    type: String,
+  },
+  isPhoneVerified: {
+    type: Boolean,
   },
   createdAt: {
     type: Date,

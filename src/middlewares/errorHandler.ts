@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default (err: Error, req: Request, res: Response, next: NextFunction) => {
+export default (err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack); // Log the error stack trace for debugging
 
   // Set appropriate status code based on the error type
@@ -17,7 +17,7 @@ export default (err: Error, req: Request, res: Response, next: NextFunction) => 
   // Send an error response with a generic message and optional details
   res.status(statusCode).json({
     message: 'An error occurred',
-    errors: 'errors' in err ? err.errors : undefined, 
+    errors: 'errors' in err ? err.errors : undefined,
   });
 
   // Pass the error on for further handling (optional)

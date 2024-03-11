@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import User from '../models/User';
-import { generateResetToken, sendPasswordResetEmail } from '../utils/tokenUtils';
+import User from '../../models/User';
+import { generateResetToken, sendPasswordResetEmail } from '../../utils/tokenUtils';
 
-const passwordController = {
+class passwordController {
   async changePassword(req: Request, res: Response) {
     // Extract user input from request body
     const { userId, oldPassword, newPassword } = req.body;
@@ -25,6 +25,12 @@ const passwordController = {
         return res.status(401).json({ message: 'Invalid old password' });
       }
 
+      // Check if old password is the same as the new password
+      const isNewPasswordSameAsOld = await bcrypt.compare(newPassword, user.password);
+      if (isNewPasswordSameAsOld) {
+          return res.status(400).json({ message: 'New password must be different from old password' });
+      }
+
       // Hash the new password
       const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
@@ -38,7 +44,7 @@ const passwordController = {
       console.error('Error changing password:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
-  },
+  }
 
   async forgotPassword(req: Request, res: Response) {
     const { email } = req.body;
@@ -67,7 +73,7 @@ const passwordController = {
       console.error('Error sending password reset email:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
-  },
+  }
 };
 
-export default passwordController;
+export default new passwordController;

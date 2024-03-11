@@ -1,8 +1,8 @@
 import express from 'express';
-import userControllers from '../controllers/usersController';
+import UserAdminController from '../../controllers/admin/UserAdminController';
 
 const { getAllUsers, createUser, getUserProfile, getUserByIdentifier, updateUserByIdentifier, deleteUserByIdentifier } =
-  userControllers;
+  UserAdminController;
 
 const router = express.Router();
 

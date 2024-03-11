@@ -1,4 +1,4 @@
-import transporter from "../configs/emailTransporterConfig";
+import transporter from '../configs/emailTransporterConfig';
 import { getVerifyEmailOptions } from '../configs/mailOptionsConfig';
 
 export const sendVerificationEmail = async (email: string, verificationToken: string): Promise<void> => {

@@ -14,7 +14,7 @@
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": false,
+    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
     /* paths */
@@ -22,6 +22,6 @@
       "*": ["node_modules/*", "src/types/*"]
     }
   },
-  "include": ["src", "src/routes/.ts"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }

@@ -11,9 +11,7 @@ const key = JSON.parse(fs.readFileSync(keyFile).toString());
 // Authenticate with Google Drive API using service account credentials
 const authClient = new google.auth.GoogleAuth({
   credentials: key,
-  scopes: [
-    'https://www.googleapis.com/auth/drive',
-  ],
+  scopes: ['https://www.googleapis.com/auth/drive'],
 });
 
 // Create a Google Drive API client
@@ -21,16 +19,17 @@ export const drive = google.drive({ version: 'v3', auth: authClient });
 
 // Multer storage configuration
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req, _file, cb) => {
     cb(null, 'temp/');
   },
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     cb(null, file.originalname);
   },
 });
 
-// Multer instance with configuration
-export const upload = multer({
-  storage: storage,
-});
 
+// Multer instance with configuration
+export const uploadAvatar = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 5 },
+});

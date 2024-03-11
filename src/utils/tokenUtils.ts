@@ -23,6 +23,6 @@ export const sendPasswordResetEmail = async (email: string, username: string, re
 };
 
 export const generateVerificationToken = (): string => {
-  const token = uuidv4(); // Generate a 32-character ID
+  const token = jwt.sign({ data: uuidv4() }, secret, { expiresIn: '20m' });
   return token;
 };

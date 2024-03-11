@@ -1,32 +1,34 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import User, { UserDocument } from '../models/User';
+import User, { UserDocument } from '../../models/User';
 
-const handleSuccess = (res: Response, data: UserDocument[] | { message: string }, status = 200) => {
-  res.status(status).json(data);
-};
-
-const handleError = (error: unknown, res: Response) => {
-  if (error instanceof Error) {
-    console.error(error.message);
-    res.status(500).json({ message: 'Internal server error' });
-  } else {
-    console.error('Unexpected error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+class UserAdminController {
+  // Method to handle success responses
+  private handleSuccess(res: Response, data: UserDocument[] | { message: string }, status = 200) {
+    res.status(status).json(data);
   }
-};
 
-const userController = {
-  getAllUsers: async (_req: Request, res: Response) => {
+  // Method to handle error responses
+  private handleError(error: unknown, res: Response) {
+    if (error instanceof Error) {
+      console.error(error.message);
+      res.status(500).json({ message: 'Internal server error' });
+    } else {
+      console.error('Unexpected error:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async getAllUsers(_req: Request, res: Response) {
     try {
       const users: UserDocument[] = await User.find(); // Specify type for returned array
-      handleSuccess(res, users);
+      this.handleSuccess(res, users);
     } catch (error) {
-      handleError(error, res);
+      this.handleError(error, res);
     }
-  },
+  }
 
-  createUser: async (req: Request, res: Response) => {
+  async createUser(req: Request, res: Response) {
     const { username, email, password } = req.body;
 
     try {
@@ -34,13 +36,13 @@ const userController = {
 
       const newUser = new User({ username, email, password: hashedPassword });
       await newUser.save();
-      handleSuccess(res, { message: 'User created successfully' }, 201); // Use 201 for created
+      this.handleSuccess(res, { message: 'User created successfully' }, 201); // Use 201 for created
     } catch (error) {
-      handleError(error, res);
+      this.handleError(error, res);
     }
-  },
+  }
 
-  getUserByIdentifier: async (req: Request, res: Response) => {
+  async getUserByIdentifier(req: Request, res: Response) {
     const { identifier } = req.params;
 
     try {
@@ -56,10 +58,10 @@ const userController = {
       console.error(error);
       res.status(500).json({ message: 'Internal server error' });
     }
-  },
+  }
 
   // Avoid sensitive information from being sent to the client when viewing other's profiles
-  getUserProfile: async (req: Request, res: Response) => {
+  async getUserProfile(req: Request, res: Response) {
     const { username } = req.params;
 
     try {
@@ -78,9 +80,9 @@ const userController = {
       console.error(error);
       res.status(500).json({ message: 'Internal server error' });
     }
-  },
+  }
 
-  updateUserByIdentifier: async (req: Request, res: Response) => {
+  async updateUserByIdentifier(req: Request, res: Response) {
     const { identifier } = req.params; // The identifier could be email or username
     const updates = req.body;
 
@@ -102,9 +104,9 @@ const userController = {
       console.error(error);
       res.status(500).json({ message: 'Internal server error' });
     }
-  },
+  }
 
-  deleteUserByIdentifier: async (req: Request, res: Response) => {
+  async deleteUserByIdentifier(req: Request, res: Response) {
     const { identifier } = req.params; // The identifier could be email or username
 
     try {
@@ -124,7 +126,7 @@ const userController = {
       console.error(error);
       res.status(500).json({ message: 'Internal server error' });
     }
-  },
+  }
 };
 
-export default userController;
+export default new UserAdminController;
