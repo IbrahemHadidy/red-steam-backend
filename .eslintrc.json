@@ -1,22 +1,23 @@
 {
-  "root": true,
-  "extends": [
-    "eslint:recommended",
-    "prettier",
-    "plugin:@typescript-eslint/recommended"
-  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": "latest",
+    "project": "tsconfig.json",
+    "tsconfigRootDir": "./",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint/eslint-plugin"],
+  "extends": ["plugin:@typescript-eslint/recommended", "prettier"],
+  "root": true,
   "env": {
-    "es2021": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
+  "ignorePatterns": [".eslintrc.json"],
   "rules": {
-    "no-console": "off",
-    "@typescript-eslint/no-unused-vars": "warn"
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "linebreak-style": "off"
   }
 }
