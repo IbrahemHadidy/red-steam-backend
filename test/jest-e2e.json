@@ -1,0 +1,32 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "../",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "maxWorkers": 1,
+  "verbose": true,
+  "testTimeout": 90000,
+  "detectOpenHandles": true,
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@modules/(.*)$": "<rootDir>/src/modules/$1",
+    "^@apis/(.*)$": "<rootDir>/src/modules/apis/$1",
+    "^@database/(.*)$": "<rootDir>/src/modules/apis/database/$1",
+    "^@repositories/(.*)$": "<rootDir>/src/modules/repositories/$1",
+    "^@services/(.*)$": "<rootDir>/src/modules/services/$1",
+    "^@utils/(.*)$": "<rootDir>/src/common/utils/$1",
+    "^@interceptors/(.*)$": "<rootDir>/src/common/interceptors/$1",
+    "^@filters/(.*)$": "<rootDir>/src/common/filters/$1",
+    "^@decorators/(.*)$": "<rootDir>/src/common/decorators/$1",
+    "^@middlewares/(.*)$": "<rootDir>/src/common/middlewares/$1",
+    "^@guards/(.*)$": "<rootDir>/src/common/guards/$1",
+    "^@models/(.*)$": "<rootDir>/src/models/$1",
+    "^@exceptions/(.*)$": "<rootDir>/src/common/exceptions/$1",
+    "^@configs/(.*)$": "<rootDir>/src/common/configs/$1",
+    "^@db/(.*)$": "<rootDir>/src/services/db/$1",
+    "^@credentials/(.*)$": "<rootDir>/src/credentials/$1"
+  }
+}

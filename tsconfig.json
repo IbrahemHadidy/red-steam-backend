@@ -1,27 +1,43 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "commonjs",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
+    "strict": true,
+    "strictBindCallApply": false,
+    "noImplicitAny": false,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "jsx": "preserve",
+    "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-
-    /* paths */
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": false,
     "paths": {
-      "*": ["node_modules/*", "src/types/*"]
+      "@/*": ["src/*"],
+      "@modules/*": ["src/modules/*"],
+      "@apis/*": ["src/modules/apis/*"],
+      "@database/*": ["src/modules/apis/database/*"],
+      "@repositories/*": ["src/modules/repositories/*"],
+      "@services/*": ["src/modules/services/*"],
+      "@configs/*": ["src/common/configs/*"],
+      "@utils/*": ["src/common/utils/*"],
+      "@interceptors/*": ["src/common/interceptors/*"],
+      "@filters/*": ["src/common/filters/*"],
+      "@decorators/*": ["src/common/decorators/*"],
+      "@middlewares/*": ["src/common/middlewares/*"],
+      "@guards/*": ["src/common/guards/*"],
+      "@exceptions/*": ["src/common/exceptions/*"],
+      "@models/*": ["src/models/*"],
+      "@db/*": ["src/services/db/*"],
+      "@credentials/*": ["src/credentials/*"]
     }
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  }
 }
