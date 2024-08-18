@@ -40,7 +40,7 @@ import { RepositoriesModule } from '@repositories/repositories.module';
   ],
 })
 export class AppModule {
-  static async register(app: NestFastifyApplication) {
+  static async register(app: NestFastifyApplication): Promise<NestFastifyApplication> {
     // Register the multipart plugin
     await app.register(multipart);
 
@@ -64,7 +64,8 @@ export class AppModule {
       optionsSuccessStatus: 204,
       credentials: true,
       maxAge: 3600,
-      allowedHeaders: 'Origin, X-Requested-With, X-Refresh-Token, Content-Type, Accept, Authorization',
+      allowedHeaders: 'origin, x-requested-with, x-refresh-token, content-type, accept, authorization',
+      exposedHeaders: 'authorization, x-refresh-token',
     });
 
     return app;

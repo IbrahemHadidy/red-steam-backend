@@ -1,62 +1,59 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GamesService } from '@repositories/sql/games/games.service';
-import { GamesModule } from '@repositories/sql/games/games.module';
 import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
-import { Game } from '@repositories/sql/games/game.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
-import { Review } from '@repositories/sql/reviews/review.entity';
-import { User } from '@repositories/sql/users/user.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
-import { CompaniesModule } from '@repositories/sql/companies/companies.module';
-import { CompaniesService } from '@repositories/sql/companies/companies.service';
+import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
+
+// Modules
 import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
-import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
+import { CompaniesModule } from '@repositories/sql/companies/companies.module';
+import { GamesModule } from '@repositories/sql/games/games.module';
 import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
-import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
+import { GamesLanguagesModule } from '@repositories/sql/games-languages/games-languages.module';
+
+// Services
+import { GamesService } from '@repositories/sql/games/games.service';
+import { CompaniesService } from '@repositories/sql/companies/companies.service';
+import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
+import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
+import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
+
+// Entities
+import { Game } from '@repositories/sql/games/game.entity';
 
 describe('gamesService', () => {
   let game: Game;
   let game2: Game;
-  let tag: GameTag;
-  let tag2: GameTag;
   let gamesService: GamesService;
   let gamesTagsService: GamesTagsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: [
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-            'src/common/configs/environments/.env',
-          ],
-        }),
+        ConfigModule.forRoot(environmentConfig),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           name: 'sql',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'postgres',
-            url: configService.get<string>('POSTGRESQL_URI'),
-            entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User, Game],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getSqlTypeOrmConfig(configService),
         }),
         GamesPricingModule,
         GamesModule,
         CompaniesModule,
         GamesFeaturesModule,
+        GamesLanguagesModule,
         GamesTagsModule,
       ],
-      providers: [GamesPricingService, GamesService, CompaniesService, GamesFeaturesService, GamesTagsService, Logger],
+      providers: [
+        CompaniesService,
+        GamesFeaturesService,
+        GamesPricingService,
+        GamesTagsService,
+        GamesService,
+        GamesLanguagesService,
+        Logger,
+      ],
     }).compile();
 
     gamesService = module.get<GamesService>(GamesService);
@@ -84,14 +81,10 @@ describe('gamesService', () => {
       tags: [],
       pricing: {
         free: false,
-        discount: false,
-        basePrice: 10,
-        discountPrice: 5,
-        discountStartDate: new Date(),
-        discountEndDate: new Date('2024-10-30'),
-        offerType: 'SPECIAL PROMOTION',
+        price: 10,
       },
       gamesFeatures: [],
+      languages: [],
       platformEntries: {
         win: true,
         mac: false,
@@ -105,6 +98,7 @@ describe('gamesService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
+      featured: false
     });
 
     game2 = await gamesService.create({
@@ -129,14 +123,10 @@ describe('gamesService', () => {
       tags: [],
       pricing: {
         free: false,
-        discount: false,
-        basePrice: 10,
-        discountPrice: 5,
-        discountStartDate: new Date(),
-        discountEndDate: new Date('2024-11-30'),
-        offerType: 'WEEKEND DEAL',
+        price: 10,
       },
       gamesFeatures: [],
+      languages: [],
       platformEntries: {
         win: true,
         mac: false,
@@ -150,10 +140,8 @@ describe('gamesService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
+      featured: false
     });
-
-    tag = await gamesTagsService.create('Test Tag');
-    tag2 = await gamesTagsService.create('Test Tag2');
   });
 
   afterEach(async () => {
@@ -203,6 +191,8 @@ describe('gamesService', () => {
           matureDescription: game.matureDescription,
           systemRequirements: game.systemRequirements,
           legal: game.legal,
+          averageRating: game.averageRating,
+          reviewsCount: game.reviewsCount,
           reviews: [],
         }),
       );
@@ -248,6 +238,8 @@ describe('gamesService', () => {
           matureDescription: game.matureDescription,
           systemRequirements: game.systemRequirements,
           legal: game.legal,
+          averageRating: game.averageRating,
+          reviewsCount: game.reviewsCount,
           reviews: [],
         }),
       );
@@ -255,19 +247,6 @@ describe('gamesService', () => {
 
     it('should throw NotFoundException if game is not found', async () => {
       await expect(gamesService.getByName('Test Game3')).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('getByTags', () => {
-    it('should return games by tags', async () => {
-      // Add tags to games
-      await gamesService.update(game.id, { tags: [tag.id, tag2.id] });
-      await gamesService.update(game2.id, { tags: [tag.id, tag2.id] });
-
-      const result = await gamesService.getByTags([tag.id, tag2.id]);
-
-      // Assertions
-      expect(result).toHaveLength(2);
     });
   });
 
@@ -295,14 +274,10 @@ describe('gamesService', () => {
         tags: [],
         pricing: {
           free: false,
-          discount: false,
-          basePrice: 10,
-          discountPrice: 5,
-          discountStartDate: new Date(),
-          discountEndDate: new Date('2024-10-30'),
-          offerType: 'SPECIAL PROMOTION',
+          price: 100,
         },
         gamesFeatures: [],
+        languages: [],
         platformEntries: {
           win: true,
           mac: false,
@@ -316,13 +291,14 @@ describe('gamesService', () => {
           recommended: {},
         },
         legal: 'Test Legal',
+        featured: false,
       });
 
       // Assertions
       expect(newGame).toEqual(
         expect.objectContaining({
           name: 'Test Game3',
-          pricing: expect.objectContaining({ discountEndDate: new Date('2024-10-30') }),
+          pricing: expect.objectContaining({ basePrice: expect.any(Number) }),
         }),
       );
     });
@@ -351,14 +327,10 @@ describe('gamesService', () => {
           tags: [],
           pricing: {
             free: false,
-            discount: false,
-            basePrice: 10,
-            discountPrice: 5,
-            discountStartDate: new Date(),
-            discountEndDate: new Date('2024-10-30'),
-            offerType: 'SPECIAL PROMOTION',
+            price: 10,
           },
           gamesFeatures: [],
+          languages: [],
           platformEntries: {
             win: true,
             mac: false,
@@ -372,6 +344,7 @@ describe('gamesService', () => {
             recommended: {},
           },
           legal: 'Test Legal',
+          featured: false,
         }),
       ).rejects.toThrow(ConflictException);
     });
@@ -428,15 +401,17 @@ describe('gamesService', () => {
       expect(updatedGame).toEqual(
         expect.objectContaining({
           name: 'Test Game3',
-          pricing: expect.objectContaining({ discountEndDate: new Date('2024-10-30') }),
+          pricing: expect.objectContaining({ basePrice: expect.any(Number) }),
         }),
       );
     });
 
     it('should throw NotFoundException if game does not exist', async () => {
-      await expect(gamesService.update(99999, {
-        name: 'Test Game3',
-      })).rejects.toThrow(NotFoundException);
+      await expect(
+        gamesService.update(99999, {
+          name: 'Test Game3',
+        }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -448,7 +423,7 @@ describe('gamesService', () => {
       expect(removedGame).toEqual(
         expect.objectContaining({
           name: 'Test Game',
-          pricing: expect.objectContaining({ discountEndDate: new Date('2024-10-30') }),
+          pricing: expect.objectContaining({ basePrice: expect.any(Number) }),
         }),
       );
     });

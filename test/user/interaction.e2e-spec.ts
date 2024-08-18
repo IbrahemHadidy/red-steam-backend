@@ -3,8 +3,9 @@ import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import request from 'supertest';
-import { DatabaseService } from '@services/database/database.service';
 import { cleanAllEntities } from '../e2e-setup';
+
+import { DatabaseService } from '@services/database/database.service';
 import { AppModule } from '@modules/app.module';
 
 describe('InteractionController (e2e)', () => {

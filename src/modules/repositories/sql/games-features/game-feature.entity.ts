@@ -12,8 +12,8 @@ export class GameFeature extends BaseEntity {
   @Column()
   name: string;
 
-  @Column()
-  description: string;
+  @Column({ type: 'bytea'})
+  icon: Buffer;
 
   @ManyToMany(() => Game, (game: GameType) => game.gamesFeatures)
   games: GameType[];

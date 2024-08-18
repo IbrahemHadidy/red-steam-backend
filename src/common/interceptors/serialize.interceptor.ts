@@ -26,10 +26,10 @@ export class SerializeInterceptor implements NestInterceptor {
         // Check if Fastify's reply object is used and send the response
         if (response && typeof response.send === 'function') {
           if (data.accessToken) {
-            response.header('Authorization', data.accessToken);
+            response.header('authorization', data.accessToken);
           }
           if (data.refreshToken) {
-            response.header('X-Refresh-Token', data.refreshToken);
+            response.header('x-refresh-token', data.refreshToken);
           }
           response.send(transformedData);
         }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { FastifyRequest as Request } from 'fastify';
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
@@ -11,7 +11,6 @@ import { AuthService } from '@apis/user/auth/auth.service';
 // importing dtos
 import { SignupDto } from '@apis/user/auth/dtos/signup.dto';
 import { LoginDto } from '@apis/user/auth/dtos/login.dto';
-import { ResendRegisterTokenDto } from '@apis/user/auth/dtos/resend-register-token.dto';
 import { VerifyEmailDto } from '@apis/user/auth/dtos/verify-email.dto';
 
 // importing serializer dtos
@@ -31,7 +30,7 @@ import { updateTokensDescriptor } from '@apis/user/auth/api-descriptors/update-t
 import { waitingTimeDescriptor } from '@apis/user/auth/api-descriptors/waiting-time.descriptor';
 
 @ApiTags('User Authentication')
-@Controller('users/auth')
+@Controller('user/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -126,10 +125,13 @@ export class AuthController {
   }
 
   @ApiDescriptor(verificationStatusDescriptor)
-  @Get('verification-status/:identifier')
+  @UseGuards(JwtAccessAuthGuard)
+  @Get('verification-status')
   @HttpCode(200)
-  public async getVerificationStatus(@Param('identifier') identifier: string) {
-    const data = { identifier };
+  public async getVerificationStatus(@Req() request: Request) {
+    const data = {
+      email: request['email'],
+    };
 
     const result = await this.authService.getVerificationStatus(data);
 
@@ -138,9 +140,14 @@ export class AuthController {
   }
 
   @ApiDescriptor(resendVerificationTokenDescriptor)
+  @UseGuards(JwtAccessAuthGuard)
   @Post('resend-verification-token')
   @HttpCode(200)
-  public async resendVerificationToken(@Body() data: ResendRegisterTokenDto) {
+  public async resendVerificationToken(@Req() request: Request) {
+    const data = {
+      email: request['email'],
+    };
+
     const result = await this.authService.resendVerificationToken(data);
 
     // Send the response

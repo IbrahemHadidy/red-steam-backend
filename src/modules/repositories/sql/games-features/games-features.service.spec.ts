@@ -1,43 +1,32 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ConflictException, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
-import { Review } from '@repositories/sql/reviews/review.entity';
-import { User } from '@repositories/sql/users/user.entity';
-import { Game } from '@repositories/sql/games/game.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
+import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
+
+// Games Features Module and Service 
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
 import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
+
+// Entities
+import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
 
 describe('gamesTagsService', () => {
   let gameFeature: GameFeature;
   let gameFeature2: GameFeature;
+  let testIconBuffer: Buffer;
+  let testIconBuffer2: Buffer;
+  let testIconBuffer3: Buffer;
   let gamesFeaturesService: GamesFeaturesService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: [
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-            'src/common/configs/environments/.env',
-          ],
-        }),
+        ConfigModule.forRoot(environmentConfig),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           name: 'sql',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'postgres',
-            url: configService.get<string>('POSTGRESQL_URI'),
-            entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User, Game],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getSqlTypeOrmConfig(configService),
         }),
         GamesFeaturesModule,
       ],
@@ -46,8 +35,12 @@ describe('gamesTagsService', () => {
 
     gamesFeaturesService = module.get<GamesFeaturesService>(GamesFeaturesService);
 
-    gameFeature = await gamesFeaturesService.create({ name: 'Test1', description: 'Test1desc' });
-    gameFeature2 = await gamesFeaturesService.create({ name: 'Test2', description: 'Test2desc' });
+    testIconBuffer = Buffer.from('test-icon-data');
+    testIconBuffer2 = Buffer.from('test-icon-data2');
+    testIconBuffer3 = Buffer.from('test-icon-data3');
+
+    gameFeature = await gamesFeaturesService.create({ name: 'Test1', icon: testIconBuffer });
+    gameFeature2 = await gamesFeaturesService.create({ name: 'Test2', icon: testIconBuffer2 });
   });
 
   afterEach(async () => {
@@ -83,31 +76,36 @@ describe('gamesTagsService', () => {
     });
   });
 
-  describe('getByDescription', () => {
-    it('should return the game feature with the given description', async () => {
-      const foundGameFeature = await gamesFeaturesService.getByDescription('Test1desc');
-      expect(foundGameFeature).toEqual(expect.objectContaining({ description: 'Test1desc' }));
+  describe('getFeaturesPaginated', () => {
+    it('should return an array of game features sorted by name', async () => {
+      const gameFeatures = await gamesFeaturesService.getFeaturesPaginated(0, 10, 'name', 'ASC');
+      expect(gameFeatures.items.length).toEqual(2);
+      expect(gameFeatures.items[0].name).toEqual('Test1');
+      expect(gameFeatures.items[1].name).toEqual('Test2');
     });
 
-    it('should throw an error if the game feature does not exist', async () => {
-      await expect(gamesFeaturesService.getByDescription('Test3desc')).rejects.toThrow(NotFoundException);
+    it('should return an array of game features sorted by id', async () => {
+      const gameFeatures = await gamesFeaturesService.getFeaturesPaginated(0, 10, 'id', 'ASC');
+      expect(gameFeatures.items.length).toEqual(2);
+      expect(gameFeatures.items[0].id).toEqual(gameFeature.id);
+      expect(gameFeatures.items[1].id).toEqual(gameFeature2.id);
+    })
+
+    it('should return values with the given search', async () => {
+      const gameFeatures = await gamesFeaturesService.getFeaturesPaginated(0, 10, 'name', 'ASC', { name: 'Test2' });
+      expect(gameFeatures.items.length).toEqual(1);
+      expect(gameFeatures.items[0].name).toEqual('Test2');
     });
   });
 
   describe('create', () => {
     it('should create a new game feature', async () => {
-      const createdGameFeature = await gamesFeaturesService.create({ name: 'Test3', description: 'Test3desc' });
+      const createdGameFeature = await gamesFeaturesService.create({ name: 'Test3', icon: testIconBuffer2 });
       expect(createdGameFeature).toEqual(expect.objectContaining({ name: 'Test3' }));
     });
 
     it('should throw an error if the game feature name already exists', async () => {
-      await expect(gamesFeaturesService.create({ name: 'Test1', description: 'Test3desc' })).rejects.toThrow(
-        ConflictException,
-      );
-    });
-
-    it('should throw an error if the game feature description already exists', async () => {
-      await expect(gamesFeaturesService.create({ name: 'Test3', description: 'Test1desc' })).rejects.toThrow(
+      await expect(gamesFeaturesService.create({ name: 'Test1', icon: testIconBuffer })).rejects.toThrow(
         ConflictException,
       );
     });
@@ -117,13 +115,13 @@ describe('gamesTagsService', () => {
     it('should update the game feature with the given id', async () => {
       const updatedGameFeature = await gamesFeaturesService.update(gameFeature2.id, {
         name: 'Test3',
-        description: 'Test3desc',
+        icon: testIconBuffer3,
       });
       expect(updatedGameFeature).toEqual(expect.objectContaining({ name: 'Test3' }));
     });
 
     it('should throw an error if the game feature does not exist', async () => {
-      await expect(gamesFeaturesService.update(0, { name: 'Test3', description: 'Test3desc' })).rejects.toThrow(
+      await expect(gamesFeaturesService.update(0, { name: 'Test3', icon: testIconBuffer })).rejects.toThrow(
         NotFoundException,
       );
     });

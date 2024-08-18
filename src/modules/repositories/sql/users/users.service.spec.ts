@@ -1,19 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersService } from '@repositories/sql/users/users.service';
 import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
-import { User } from '@repositories/sql/users/user.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
-import { Review } from '@repositories/sql/reviews/review.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
-import { Game } from '@repositories/sql/games/game.entity';
 import { v4 as UUIDv4 } from 'uuid';
-import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
+import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
+
+// Modules
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
 import { UsersModule } from '@repositories/sql/users/users.module';
+
+// Services
+import { UsersService } from '@repositories/sql/users/users.service';
+import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
+
+// Entities
+import { User } from '@repositories/sql/users/user.entity';
 
 describe('usersService', () => {
   let user: User;
@@ -24,24 +25,11 @@ describe('usersService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: [
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-            'src/common/configs/environments/.env',
-          ],
-        }),
+        ConfigModule.forRoot(environmentConfig),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           name: 'sql',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'postgres',
-            url: configService.get<string>('POSTGRESQL_URI'),
-            entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User, Game],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getSqlTypeOrmConfig(configService),
         }),
         GamesTagsModule,
         UsersModule,
@@ -347,6 +335,7 @@ describe('usersService', () => {
 
   describe('removeItemsFromLibrary', () => {
     it('should remove items from the library of the user with the given id', async () => {
+      await usersService.addItemsToLibrary(user.id, [1, 2, 3]);
       const updatedUser = await usersService.removeItemsFromLibrary(user.id, [1, 2, 3]);
 
       // Assertions
@@ -378,6 +367,7 @@ describe('usersService', () => {
 
   describe('removeItemsFromWishlist', () => {
     it('should remove items from the wishlist of the user with the given id', async () => {
+      await usersService.addItemsToWishlist(user.id, [1, 2, 3]);
       const updatedUser = await usersService.removeItemsFromWishlist(user.id, [1, 2, 3]);
 
       // Assertions
@@ -393,6 +383,7 @@ describe('usersService', () => {
 
   describe('clearWishlist', () => {
     it('should clear the wishlist of the user with the given id', async () => {
+      await usersService.addItemsToWishlist(user.id, [1, 2, 3]);
       const updatedUser = await usersService.clearWishlist(user.id);
 
       // Assertions
@@ -424,6 +415,7 @@ describe('usersService', () => {
 
   describe('removeItemsFromCart', () => {
     it('should remove items from the cart of the user with the given id', async () => {
+      await usersService.addItemsToCart(user.id, [1, 2, 3]);
       const updatedUser = await usersService.removeItemsFromCart(user.id, [1, 2, 3]);
 
       // Assertions
@@ -437,6 +429,7 @@ describe('usersService', () => {
 
   describe('clearCart', () => {
     it('should clear the cart of the user with the given id', async () => {
+      await usersService.addItemsToCart(user.id, [1, 2, 3]);
       const updatedUser = await usersService.clearCart(user.id);
 
       // Assertions

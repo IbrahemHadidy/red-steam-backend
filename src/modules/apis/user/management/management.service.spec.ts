@@ -9,21 +9,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ManagementService } from '@apis/user/management/management.service';
 import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
 import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
-import { DriveService } from '@services/google-drive/google-drive.service';
+import { DropboxService } from '@services/dropbox/dropbox.service';
 import { AuthService } from '@apis/user/auth/auth.service';
 import { User } from '@repositories/sql/users/user.entity';
-import { BlacklistedToken } from '@repositories/mongo/token-blacklist/blacklisted-token.entity';
 import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
-import { Game } from '@repositories/sql/games/game.entity';
-import { Review } from '@repositories/sql/reviews/review.entity';
 import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
 import { UsersModule } from '@repositories/sql/users/users.module';
 import { NodeMailerModule } from '@services/node-mailer/node-mailer.module';
+import { environmentConfig, getSqlTypeOrmConfig, getMongoTypeOrmConfig } from '@test/integration-setup';
 import type { File } from '@nest-lab/fastify-multer';
 
 describe('ManagementService', () => {
@@ -36,35 +30,15 @@ describe('ManagementService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: [
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-            'src/common/configs/environments/.env',
-          ],
-        }),
+        ConfigModule.forRoot(environmentConfig),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           name: 'sql',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'postgres',
-            url: configService.get<string>('POSTGRESQL_URI'),
-            entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User, Game],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getSqlTypeOrmConfig(configService),
         }),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
-          name: 'mongo',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'mongodb',
-            url: configService.get<string>('MONGODB_URI'),
-            entities: [BlacklistedToken],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getMongoTypeOrmConfig(configService),
         }),
         UsersModule,
         GamesTagsModule,
@@ -80,7 +54,7 @@ describe('ManagementService', () => {
         NodeMailerService,
         ConfigService,
         TokenBlacklistService,
-        DriveService,
+        DropboxService,
         Logger,
       ],
     }).compile();
@@ -288,6 +262,9 @@ describe('ManagementService', () => {
 
       // Assert
       expect(result).toEqual({ message: 'Avatar uploaded successfully' });
+
+      // Delete the test file
+      fs.unlinkSync(filePath);
     });
   });
 

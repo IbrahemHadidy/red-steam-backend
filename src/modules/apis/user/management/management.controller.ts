@@ -29,7 +29,7 @@ import { forgotPasswordDescriptor } from '@apis/user/management/api-descriptors/
 import { passwordResetDescriptor } from '@apis/user/management/api-descriptors/password-reset.descriptor';
 import { deleteAccountDescriptor } from '@apis/user/management/api-descriptors/delete-account.descriptor';
 
-@Controller('users/management')
+@Controller('user/management')
 @ApiTags('User Management')
 export class ManagementController {
   constructor(private readonly managementService: ManagementService) {}

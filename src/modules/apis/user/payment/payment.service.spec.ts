@@ -3,31 +3,33 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TestingModule, Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BlacklistedToken } from '@repositories/mongo/token-blacklist/blacklisted-token.entity';
+import { environmentConfig, getSqlTypeOrmConfig, getMongoTypeOrmConfig } from '@test/integration-setup';
+
+// Modules
 import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
-import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
-import { Game } from '@repositories/sql/games/game.entity';
-import { Review } from '@repositories/sql/reviews/review.entity';
 import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
-import { User } from '@repositories/sql/users/user.entity';
 import { UsersModule } from '@repositories/sql/users/users.module';
-import { UsersService } from '@repositories/sql/users/users.service';
-import { GamesService } from '@repositories/sql/games/games.service';
-import { DriveService } from '@services/google-drive/google-drive.service';
 import { NodeMailerModule } from '@services/node-mailer/node-mailer.module';
-import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
+
+// Services
 import { AuthService } from '@apis/user/auth/auth.service';
 import { PaymentService } from '@apis/user/payment/payment.service';
+import { DropboxService } from '@services/dropbox/dropbox.service';
+import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
 import { PaypalService } from '@services/paypal/paypal.service';
+import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
+import { UsersService } from '@repositories/sql/users/users.service';
+import { GamesService } from '@repositories/sql/games/games.service';
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
 import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
+import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
+
+// Entities
+import { Game } from '@repositories/sql/games/game.entity';
+import { User } from '@repositories/sql/users/user.entity';
 
 describe('PaymentService', () => {
   let data: { userData: User; refreshToken: string; accessToken: string; message?: string };
@@ -42,35 +44,15 @@ describe('PaymentService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: [
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-            'src/common/configs/environments/.env',
-          ],
-        }),
+        ConfigModule.forRoot(environmentConfig),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           name: 'sql',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'postgres',
-            url: configService.get<string>('POSTGRESQL_URI'),
-            entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User, Game],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getSqlTypeOrmConfig(configService),
         }),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
-          name: 'mongo',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'mongodb',
-            url: configService.get<string>('MONGODB_URI'),
-            entities: [BlacklistedToken],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getMongoTypeOrmConfig(configService),
         }),
         UsersModule,
         GamesTagsModule,
@@ -83,6 +65,7 @@ describe('PaymentService', () => {
         PaypalService,
         CompaniesService,
         GamesFeaturesService,
+        GamesLanguagesService,
         GamesPricingService,
         GamesTagsService,
         PaymentService,
@@ -92,7 +75,7 @@ describe('PaymentService', () => {
         NodeMailerService,
         ConfigService,
         TokenBlacklistService,
-        DriveService,
+        DropboxService,
         Logger,
       ],
     }).compile();
@@ -152,6 +135,7 @@ describe('PaymentService', () => {
         offerType: 'SPECIAL PROMOTION',
       },
       gamesFeatures: [],
+      languages: [],
       platformEntries: {
         win: true,
         mac: false,
@@ -197,6 +181,7 @@ describe('PaymentService', () => {
         offerType: 'WEEKEND DEAL',
       },
       gamesFeatures: [],
+      languages: [],
       platformEntries: {
         win: true,
         mac: false,

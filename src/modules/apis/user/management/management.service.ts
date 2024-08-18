@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Injectable, Logger, Unauthorize
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { File } from '@nest-lab/fastify-multer';
-import { DriveService } from '@services/google-drive/google-drive.service';
+import { AvatarStorageService } from '@services/dropbox/avatar-storage.service';
 import { UsersService } from '@repositories/sql/users/users.service';
 import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
 import { UserService } from '@apis/user/user.service';
@@ -19,9 +19,9 @@ export class ManagementService extends UserService {
     protected readonly logger: Logger,
     private readonly config: ConfigService,
     private readonly tokenBlacklist: TokenBlacklistService,
-    private readonly drive: DriveService,
+    private readonly avatarStorage: AvatarStorageService,
   ) {
-    super(user);
+    super();
     this.resetTokenSecret = this.config.get('JWT_RESET_TOKEN_SECRET');
   }
 
@@ -79,7 +79,7 @@ export class ManagementService extends UserService {
    * @param email The email to check
    * @returns The result of the check
    */
-  public async checkEmailExists(data: {email: string}) {
+  public async checkEmailExists(data: { email: string }) {
     const { email } = data;
 
     this.logger.log(`Checking if email exists: ${email}`);
@@ -99,7 +99,7 @@ export class ManagementService extends UserService {
    * @param username The username to check
    * @returns The result of the check
    */
-  public async checkUsernameExists(data: {username: string}) {
+  public async checkUsernameExists(data: { username: string }) {
     const { username } = data;
 
     this.logger.log(`Checking if username exists: ${username}`);
@@ -137,7 +137,7 @@ export class ManagementService extends UserService {
     }
 
     // Check if new username is available
-    const checkUsername = await this.checkUsernameExists({username: newUsername});
+    const checkUsername = await this.checkUsernameExists({ username: newUsername });
     if (checkUsername.exists) {
       this.logger.warn(`Username already exists: ${newUsername}`);
       throw new ConflictException('Username already exists');
@@ -180,7 +180,7 @@ export class ManagementService extends UserService {
     }
 
     // Check if new email is available
-    const checkEmail = await this.checkEmailExists({email: newEmail});
+    const checkEmail = await this.checkEmailExists({ email: newEmail });
     if (checkEmail.exists) {
       this.logger.warn(`Email already exists: ${newEmail}`);
       throw new ConflictException('Email already exists');
@@ -227,7 +227,7 @@ export class ManagementService extends UserService {
    * @param userId The user id to upload the avatar
    * @returns The result of the upload
    */
-  public async uploadAvatar(data: {avatar: File, userId: string}) {
+  public async uploadAvatar(data: { avatar: File; userId: string }) {
     const { avatar, userId } = data;
 
     this.logger.log(`Uploading avatar for user with id: ${userId}`);
@@ -236,14 +236,17 @@ export class ManagementService extends UserService {
     const user = await this.findUser(userId, 'id');
 
     // Delete old avatar
-    if (user.profilePicture) await this.drive.deleteAvatar(user.profilePicture);
+    if (user.profilePicture) {
+      const oldAvatar = user.profilePicture.split('/avatar-')[1].split('?')[0];
+      await this.avatarStorage.deleteAvatar(`/avatars/avatar-${oldAvatar}`);
+      this.user.removeAvatar(userId);
+    }
 
     // Upload avatar
-    const uploadResponse = await this.drive.uploadAvatar(avatar);
-    const avatarId = uploadResponse.data.id;
+    const uploadResponse = await this.avatarStorage.uploadAvatar(avatar);
 
     // Update the user's profile picture in the database
-    await this.user.updateAvatar(userId, avatarId);
+    await this.user.updateAvatar(userId, uploadResponse.sharedLink);
 
     // Return success message
     this.logger.log(`Avatar uploaded successfully for userId: ${userId}`);
@@ -255,16 +258,17 @@ export class ManagementService extends UserService {
    * @param userId The user id to delete the avatar
    * @returns The result of the delete
    */
-  public async deleteAvatar(data: {userId: string}) {
+  public async deleteAvatar(data: { userId: string }) {
     const { userId } = data;
-    
+
     this.logger.log(`Deleting avatar for user with id: ${userId}`);
 
     // Check and get user
     const user = await this.findUser(userId, 'id');
 
     // Delete old avatar
-    await this.drive.deleteAvatar(user.profilePicture);
+    const oldAvatar = user.profilePicture.split('/avatar-')[1].split('?')[0];
+    if (user.profilePicture) await this.avatarStorage.deleteAvatar(`/avatars/avatar-${oldAvatar}`);
 
     // Update the user's profile picture in the database to null
     await this.user.removeAvatar(userId);

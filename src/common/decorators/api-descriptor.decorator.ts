@@ -28,7 +28,7 @@ export interface ApiDescriptorOptions {
   responses?: ApiResponseOptions[];
   tags?: string[];
   security?: string[] | SecurityRequirementObject[];
-  query?: ApiQueryOptions;
+  queries?: ApiQueryOptions[];
   headers?: ApiHeaderOptions[];
   authBearer?: string | null;
   oauth2?: any;
@@ -50,7 +50,7 @@ export function ApiDescriptor(options: ApiDescriptorOptions) {
     responses,
     tags,
     security,
-    query,
+    queries,
     headers,
     authBearer,
     oauth2,
@@ -64,8 +64,8 @@ export function ApiDescriptor(options: ApiDescriptorOptions) {
     ...((body && [ApiBody(body)]) || []),
     ...(responses?.map((response: ApiResponseOptions) => ApiResponse(response)) || []),
     ...((tags && [ApiTags(...tags)]) || []),
-    ...((security?.map((security: string | SecurityRequirementObject) => ApiSecurity(security))) || []),
-    ...((query && [ApiQuery({ ...query })]) || []),
+    ...(security?.map((security: string | SecurityRequirementObject) => ApiSecurity(security)) || []),
+    ...((queries?.map((query: ApiQueryOptions) => ApiQuery(query))) || []),
     ...((headers && [ApiHeaders(headers)]) || []),
     ...((authBearer && [ApiBearerAuth(authBearer)]) || []),
     ...((oauth2 && [ApiOAuth2(oauth2)]) || []),

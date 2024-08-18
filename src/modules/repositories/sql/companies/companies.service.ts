@@ -7,23 +7,25 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { FindOptionsRelations, FindOptionsWhere, In, Like, Repository } from 'typeorm';
 import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
 
 @Injectable()
 export class CompaniesService {
-  private readonly relations: string[];
+  private readonly relations: FindOptionsRelations<Publisher | Developer>;
 
   constructor(
     private readonly logger: Logger,
-    
+
     @InjectRepository(Publisher, 'sql')
     private readonly publisherRepository: Repository<Publisher>,
 
     @InjectRepository(Developer, 'sql')
     private readonly developerRepository: Repository<Developer>,
   ) {
-    this.relations = ['games'];
+    this.relations = {
+      games: true,
+    };
   }
 
   /**
@@ -76,7 +78,11 @@ export class CompaniesService {
    * @param type - The type of the companies (publishers or developers).
    * @returns A list of companies.
    */
-  public async getAll(sortBy: 'id' | 'name' | 'website', sortOrder: 'asc' | 'desc', type: 'publishers' | 'developers'): Promise<Publisher[] | Developer[]> {
+  public async getAll(
+    sortBy: 'id' | 'name' | 'website',
+    sortOrder: 'asc' | 'desc',
+    type: 'publishers' | 'developers',
+  ): Promise<Publisher[] | Developer[]> {
     // Log the retrieval of all publishers/developers from the database
     this.logger.log(`Retrieving all ${type.charAt(0).toUpperCase() + type.slice(1)} from the database`);
     const repository = type === 'publishers' ? this.publisherRepository : this.developerRepository;
@@ -140,6 +146,50 @@ export class CompaniesService {
   }
 
   /**
+   * Gets paginated companies.
+   * @param {number} page - The current page number.
+   * @param {number} limit - The number of items per page.
+   * @param {string} orderBy - The field to order by.
+   * @param {('ASC' | 'DESC')} order - The order direction.
+   * @param {('publisher' | 'developer')} type - The type of companies to retrieve
+   * @param {{name?: string; website?: string}} searchQuery - The search query.
+   * @returns {Promise<{ items: Company[], total: number }>} A promise that resolves to the paginated companies.
+   */
+  public async getCompaniesPaginated(
+    page: number,
+    limit: number,
+    orderBy: 'id' | 'name',
+    order: 'ASC' | 'DESC',
+    type: 'publisher' | 'developer',
+    searchQuery?: { name?: string; website?: string },
+  ): Promise<{ items: (Publisher | Developer)[]; total: number; totalPages: number }> {
+    this.logger.log(`Getting companies paginated: page ${page}, limit ${limit}, order by ${orderBy} ${order}`);
+
+    const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
+
+    const where: FindOptionsWhere<Publisher | Developer> = {}
+
+    if (searchQuery.name) {
+      where.name = Like(`%${searchQuery.name}%`);
+    }
+    if (searchQuery.website) {
+      where.website = Like(`%${searchQuery.website}%`);
+    }
+      
+    const [items, total] = await repository.findAndCount({
+      where,
+      relations: this.relations,
+      order: { [orderBy]: order },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return { items, total, totalPages };
+  }
+
+  /**
    * Creates a new company.
    * @param name - The name of the company.
    * @param website - The website of the company.
@@ -186,15 +236,17 @@ export class CompaniesService {
     // Log the update of a publisher/developer in the database
     this.logger.log(`Updating ${type.charAt(0).toUpperCase() + type.slice(1)} in the database`);
 
+    const company = await this.getById(id, type);
+
     await this.checkCompanyExists('id', id, type);
-    await this.checkValueIsUnique(updateType, value, type);
+    if (updateType === 'name' && value !== company.name) await this.checkValueIsUnique(updateType, value, type);
+    if (updateType === 'website' && value !== company.website) await this.checkValueIsUnique(updateType, value, type);
 
     if (updateType === 'website') {
       await this.checkValidWebsite(value);
     }
 
     const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
-    const company = await this.getById(id, type);
     company[updateType] = value;
 
     const updatedCompany = await repository.save(company);
@@ -233,7 +285,7 @@ export class CompaniesService {
   public async removeAll(type: 'publishers' | 'developers'): Promise<void> {
     // Log the removal of all publishers/developers from the database
     this.logger.log(`Removing all ${type.charAt(0).toUpperCase() + type.slice(1)} from the database`);
-    
+
     const repository = type === 'publishers' ? this.publisherRepository : this.developerRepository;
 
     // Attempt to delete all records

@@ -1,10 +1,10 @@
 import { Catch, ExceptionFilter, ArgumentsHost, HttpStatus } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
-import { InvalidFileTypeException } from '@exceptions/invalid-file-type.exception';
+import { InvalidFileException } from '@exceptions/invalid-file.exception';
 
-@Catch(InvalidFileTypeException)
+@Catch(InvalidFileException)
 export class InvalidFileTypeFilter implements ExceptionFilter {
-  catch(exception: InvalidFileTypeException, host: ArgumentsHost) {
+  catch(exception: InvalidFileException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<FastifyReply>();
 

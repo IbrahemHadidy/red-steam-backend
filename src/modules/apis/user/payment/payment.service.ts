@@ -15,7 +15,7 @@ export class PaymentService extends UserService {
     private readonly game: GamesService,
     private readonly payment: PaypalService,
   ) {
-    super(user);
+    super();
   }
 
   /**

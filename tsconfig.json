@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "CommonJS",
-    "moduleResolution": "Node",
+    "moduleResolution": "Node10",
     "esModuleInterop": true,
     "strict": true,
     "strictBindCallApply": false,
@@ -22,6 +22,7 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@/*": ["src/*"],
+      "@test/*": ["test/*"],
       "@modules/*": ["src/modules/*"],
       "@apis/*": ["src/modules/apis/*"],
       "@database/*": ["src/modules/apis/database/*"],
@@ -36,7 +37,6 @@
       "@guards/*": ["src/common/guards/*"],
       "@exceptions/*": ["src/common/exceptions/*"],
       "@models/*": ["src/models/*"],
-      "@db/*": ["src/services/db/*"],
       "@credentials/*": ["src/credentials/*"]
     }
   }

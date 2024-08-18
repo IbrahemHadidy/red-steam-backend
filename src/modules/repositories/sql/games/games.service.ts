@@ -1,8 +1,9 @@
 import { ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { FindOptionsRelations, In, Repository } from 'typeorm';
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
+import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
 import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
 import {
@@ -17,18 +18,27 @@ import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity
 
 @Injectable()
 export class GamesService {
-  private readonly relations: string[];
+  private readonly relations: FindOptionsRelations<Game> = {};
 
   constructor(
     private readonly logger: Logger,
     @InjectRepository(Game, 'sql')
     private readonly gameRepository: Repository<Game>,
     private readonly companiesService: CompaniesService,
-    private readonly gamesFeaturesService: GamesFeaturesService,
+    private readonly featuresService: GamesFeaturesService,
+    private readonly languagesService: GamesLanguagesService,
     private readonly gamesPricingService: GamesPricingService,
     private readonly gamesTagsService: GamesTagsService,
   ) {
-    this.relations = ['developers', 'publishers', 'tags', 'pricing', 'reviews'];
+    this.relations = {
+      developers: true,
+      publishers: true,
+      tags: true,
+      pricing: true,
+      reviews: true,
+      gamesFeatures: true,
+      languages: true,
+    };
   }
 
   /**
@@ -87,21 +97,6 @@ export class GamesService {
   }
 
   /**
-   * Retrieves games by tags.
-   * @param {number[]} tags - The IDs of the tags to retrieve.
-   * @return {Promise<Game[]>} A Promise that resolves to an array of game entities.
-   * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
-   */
-  public async getByTags(tags: number[]): Promise<Game[]> {
-    // Log the retrieval of a game
-    this.logger.log(`Retrieving games with tags ids ${tags} from the database`);
-
-    const games = await this.gameRepository.find({ where: { tags: { id: In(tags) } }, relations: this.relations });
-    if (!games) throw new NotFoundException(`Game with tags ${tags} not found`);
-    return games;
-  }
-
-  /**
    * Creates a new game.
    * @param {Game} game - The game entity to be created.
    * @return {Promise<Game>} A Promise that resolves to the created game entity.
@@ -113,6 +108,7 @@ export class GamesService {
     category: string;
     description: string;
     releaseDate: Date;
+    featured: boolean;
     publishers: number[];
     developers: number[];
     thumbnailEntries: ThumbnailsEntry;
@@ -121,14 +117,15 @@ export class GamesService {
     tags: number[];
     pricing: {
       free: boolean;
-      discount: boolean;
-      basePrice: number;
-      discountPrice: number;
-      discountStartDate: Date;
-      discountEndDate: Date;
-      offerType: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
+      price?: number;
     };
     gamesFeatures: number[];
+    languages: {
+      name: string;
+      interface: boolean;
+      fullAudio: boolean;
+      subtitles: boolean;
+    }[];
     platformEntries: PlatformEntry;
     link: string;
     about: string;
@@ -149,7 +146,10 @@ export class GamesService {
     const developers = await this.companiesService.getByIds(game.developers, 'developer');
 
     // Get game features
-    const gamesFeatures = await this.gamesFeaturesService.getByIds(game.gamesFeatures);
+    const gamesFeatures = await this.featuresService.getByIds(game.gamesFeatures);
+
+    // Get game languages
+    const gameLanguages = await this.languagesService.getByNameList(game.languages.map((language) => language.name));
 
     // Create new game tags
     const tags = await this.gamesTagsService.getByIds(game.tags);
@@ -160,14 +160,16 @@ export class GamesService {
     newGame.category = game.category;
     newGame.description = game.description;
     newGame.releaseDate = game.releaseDate;
+    newGame.featured = game.featured;
     newGame.publishers = publishers;
     newGame.developers = developers;
     newGame.thumbnailEntries = game.thumbnailEntries;
     newGame.imageEntries = game.imageEntries;
     newGame.videoEntries = game.videoEntries;
     newGame.tags = tags;
-    newGame.tags.map((tag) => (tag.games = [...tag.games, newGame]));
     newGame.gamesFeatures = gamesFeatures;
+    newGame.languages = gameLanguages;
+    newGame.languageSupport = game.languages;
     newGame.platformEntries = game.platformEntries;
     newGame.link = game.link;
     newGame.about = game.about;
@@ -179,13 +181,7 @@ export class GamesService {
     // Create new game pricing and link it to the saved game
     const pricing = new GamePricing();
     pricing.free = game.pricing.free;
-    pricing.basePrice = game.pricing.basePrice;
-    pricing.discount = game.pricing.discount;
-    pricing.discountPrice = game.pricing.discountPrice;
-    pricing.discountPercentage = (game.pricing.discountPrice / game.pricing.basePrice) * 100;
-    pricing.discountStartDate = game.pricing.discountStartDate;
-    pricing.discountEndDate = game.pricing.discountEndDate;
-    pricing.offerType = game.pricing.offerType;
+    pricing.basePrice = game.pricing.price;
 
     // Link the pricing to the game
     newGame.pricing = pricing;
@@ -228,6 +224,7 @@ export class GamesService {
         offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
       };
       gamesFeatures?: number[];
+      featured?: boolean;
       platformEntries?: PlatformEntry;
       link?: string;
       about?: string;
@@ -271,9 +268,10 @@ export class GamesService {
       existingGame.tags = tags;
     }
     if (game.gamesFeatures) {
-      const gamesFeatures = await this.gamesFeaturesService.getByIds(game.gamesFeatures);
+      const gamesFeatures = await this.featuresService.getByIds(game.gamesFeatures);
       existingGame.gamesFeatures = gamesFeatures;
     }
+    if (game.featured) existingGame.featured = game.featured;
     if (game.thumbnailEntries) existingGame.thumbnailEntries = game.thumbnailEntries;
     if (game.imageEntries) existingGame.imageEntries = game.imageEntries;
     if (game.videoEntries) existingGame.videoEntries = game.videoEntries;
@@ -335,8 +333,8 @@ export class GamesService {
     // Log the removal of all games
     this.logger.log('Removing all games from the database');
 
-    const gamesRemoved = await this.gameRepository.delete({});
-    if (!gamesRemoved) throw new InternalServerErrorException('Failed to remove games from the database');
+    const result = await this.gameRepository.delete({});
+    if (!result) throw new InternalServerErrorException('Failed to remove games from the database');
     await this.gamesPricingService.removeAll();
   }
 }

@@ -21,7 +21,7 @@ export class AuthService extends UserService {
     private readonly tokenBlacklist: TokenBlacklistService,
     private readonly config: ConfigService,
   ) {
-    super(user);
+    super();
     this.accessTokenSecret = this.config.get('JWT_ACCESS_TOKEN_SECRET');
     this.refreshTokenSecret = this.config.get('JWT_REFRESH_TOKEN_SECRET');
   }
@@ -234,19 +234,19 @@ export class AuthService extends UserService {
 
   /**
    * Gets verification status
-   * @param data An object containing the identifier
+   * @param data An object containing the email
    * @returns Verification status
    */
-  public async getVerificationStatus(data: { identifier: string }) {
-    const { identifier } = data;
+  public async getVerificationStatus(data: { email: string }) {
+    const { email } = data;
 
-    this.logger.log(`Getting verification status for user with identifier: ${identifier}`);
+    this.logger.log(`Getting verification status for user with email: ${email}`);
 
     // Check and get user
-    const user = await this.findUser(identifier, 'identifier');
+    const user = await this.findUser(email, 'email');
 
     // return verification status
-    this.logger.log(`Got verification status for user with identifier: ${identifier}`);
+    this.logger.log(`Got verification status for user with email: ${email}`);
     return { verified: user.isVerified };
   }
 
@@ -297,17 +297,17 @@ export class AuthService extends UserService {
    * @returns success message if verification is successful
    * @throws BadRequestException if verification token is invalid
    */
-  public async verifyEmail(data: { email: string; token: string }) {
-    const { email, token } = data;
+  public async verifyEmail(data: { username: string; token: string }) {
+    const { username, token } = data;
 
-    this.logger.log(`Verifying email for user with email: ${email}`);
+    this.logger.log(`Verifying email for user with username: ${username}`);
 
     // Check and get user
-    const user = await this.findUser(email, 'email');
+    const user = await this.findUser(username, 'username');
 
     // Verify token and throw an exception if invalid
     if (user.verificationToken !== token) {
-      this.logger.log(`Invalid verification token for user with email: ${email}`);
+      this.logger.log(`Invalid verification token for user with username: ${username}`);
       throw new BadRequestException('Invalid verification token');
     }
 
@@ -315,7 +315,7 @@ export class AuthService extends UserService {
     await this.user.verify(user.id);
 
     // Return success message
-    this.logger.log(`Verified email for user with email: ${email}`);
+    this.logger.log(`Verified email for user with username: ${username}`);
     return { message: 'Email verified successfully' };
   }
 

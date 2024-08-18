@@ -44,7 +44,7 @@ export class JwtRefreshAuthGuard implements CanActivate {
   }
 
   private extractTokenFromHeader(headers: Record<string, string>): string | null {
-    const refreshTokenHeader = headers['x-refresh-token'] || headers['X-Refresh-Token'];
+    const refreshTokenHeader = headers['x-refresh-token'];
 
     if (!refreshTokenHeader || !refreshTokenHeader.startsWith('Bearer ')) return null;
 

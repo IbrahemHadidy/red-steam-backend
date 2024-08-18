@@ -7,13 +7,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsRelations, Repository } from 'typeorm';
 import { CartItem, LibraryItem, User, WishlistItem } from '@repositories/sql/users/user.entity';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
 
 @Injectable()
 export class UsersService {
-  private readonly relations: string[];
+  private readonly relations: FindOptionsRelations<User>;
 
   constructor(
     private readonly logger: Logger,
@@ -21,7 +21,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     private readonly gameTag: GamesTagsService,
   ) {
-    this.relations = ['tags', 'reviews'];
+    this.relations = { tags: true, reviews: true };
   }
 
   /**
@@ -804,6 +804,6 @@ export class UsersService {
 
     // Remove all users
     const result = await this.userRepository.delete({});
-    if (result.affected === undefined) throw new InternalServerErrorException('Failed to remove users');
+    if (!result) throw new InternalServerErrorException('Failed to remove users');
   }
 }

@@ -1,24 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
+
+// Modules
 import { GamesModule } from '@repositories/sql/games/games.module';
 import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
-import { GamesService } from '@repositories/sql/games/games.service';
-import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
-import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
-import { Review } from '@repositories/sql/reviews/review.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
-import { User } from '@repositories/sql/users/user.entity';
-import { Game } from '@repositories/sql/games/game.entity';
 import { CompaniesModule } from '@repositories/sql/companies/companies.module';
 import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
+import { GamesLanguagesModule } from '@repositories/sql/games-languages/games-languages.module';
+
+// Services
+import { GamesService } from '@repositories/sql/games/games.service';
+import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
+import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
+
+// Entities
+import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
+import { Game } from '@repositories/sql/games/game.entity';
 
 describe('gamePricingService', () => {
   let game: Game;
@@ -31,32 +35,28 @@ describe('gamePricingService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: [
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-            'src/common/configs/environments/.env',
-          ],
-        }),
+        ConfigModule.forRoot(environmentConfig),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           name: 'sql',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'postgres',
-            url: configService.get<string>('POSTGRESQL_URI'),
-            entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User, Game],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getSqlTypeOrmConfig(configService),
         }),
         GamesPricingModule,
         GamesModule,
         CompaniesModule,
+        GamesLanguagesModule,
         GamesFeaturesModule,
         GamesTagsModule,
       ],
-      providers: [GamesPricingService, GamesService, CompaniesService, GamesFeaturesService, GamesTagsService, Logger],
+      providers: [
+        GamesPricingService,
+        GamesService,
+        CompaniesService,
+        GamesLanguagesService,
+        GamesFeaturesService,
+        GamesTagsService,
+        Logger,
+      ],
     }).compile();
 
     gamesService = module.get<GamesService>(GamesService);
@@ -92,6 +92,7 @@ describe('gamePricingService', () => {
         offerType: 'SPECIAL PROMOTION',
       },
       gamesFeatures: [],
+      languages: [],
       platformEntries: {
         win: true,
         mac: false,
@@ -137,6 +138,7 @@ describe('gamePricingService', () => {
         offerType: 'WEEKEND DEAL',
       },
       gamesFeatures: [],
+      languages: [],
       platformEntries: {
         win: true,
         mac: false,
@@ -233,6 +235,7 @@ describe('gamePricingService', () => {
       const pricing = await gamesPricingService.create({
         free: false,
         basePrice: 10,
+        discount: true,
         discountPrice: 5,
         discountStartDate: new Date(),
         discountEndDate: new Date('2024-12-31'),
@@ -268,10 +271,7 @@ describe('gamePricingService', () => {
       expect(updatedPricing).toEqual(
         expect.objectContaining({
           free: true,
-          basePrice: 10,
-          discountPrice: 5,
-          discountEndDate: new Date('2024-12-31'),
-          offerType: 'SPECIAL PROMOTION',
+          basePrice: 0,
         }),
       );
     });

@@ -1,36 +1,25 @@
 import { ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { FindOptionsRelations, FindOptionsWhere, In, Like, Repository } from 'typeorm';
 import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
 
 @Injectable()
 export class GamesFeaturesService {
-  private readonly relations: string[];
+  private readonly relations: FindOptionsRelations<GameFeature>;
 
   constructor(
     private readonly logger: Logger,
     @InjectRepository(GameFeature, 'sql')
     private readonly gameFeatureRepository: Repository<GameFeature>,
   ) {
-    this.relations = ['games'];
-  }
-
-  /**
-   * Checks if a feature with the given property exists.
-   * @param value - The value to check.
-   * @param type - The type of the feature (name or description).
-   * @throws {ConflictException} If the feature already exists.
-   */
-  private async checkFeatureExists(value: number | string, type: 'name' | 'description'): Promise<void> {
-    const feature = await this.gameFeatureRepository.findOne({ where: { [type]: value } });
-    if (feature) throw new ConflictException(`Feature with ${type} ${value} already exists`);
+    this.relations = { games: true };
   }
 
   /**
    * Gets all features.
    * @returns {Promise<GameFeature[]>} A promise that resolves to an array of features.
    */
-  public async getAll(orderBy: 'id' | 'name' | 'description', order: 'ASC' | 'DESC'): Promise<GameFeature[]> {
+  public async getAll(orderBy: 'id' | 'name', order: 'ASC' | 'DESC'): Promise<GameFeature[]> {
     // Log the initiation of getting all features
     this.logger.log('Getting all features');
 
@@ -82,38 +71,64 @@ export class GamesFeaturesService {
   }
 
   /**
-   * Gets a feature by its description.
-   * @param {string} description - The description of the feature to retrieve.
-   * @returns {Promise<GameFeature>} A promise that resolves to the retrieved feature.
-   * @throws {NotFoundException} If the feature is not found.
+   * Gets paginated features.
+   * @param {number} page - The current page number.
+   * @param {number} limit - The number of items per page.
+   * @param {string} orderBy - The field to order by.
+   * @param {('ASC' | 'DESC')} order - The order direction.
+   * @param {({name?: string})} searchQuery - The search query.
+   * @returns {Promise<{ items: GameFeature[], total: number }>} A promise that resolves to the paginated features.
    */
-  public async getByDescription(description: string): Promise<GameFeature> {
-    // Log the initiation of getting a feature by its description
-    this.logger.log(`Getting feature with description ${description}`);
+  public async getFeaturesPaginated(
+    page: number,
+    limit: number,
+    orderBy: 'id' | 'name',
+    order: 'ASC' | 'DESC',
+    searchQuery?: { name?: string },
+  ): Promise<{ items: GameFeature[]; total: number; totalPages: number }> {
+    this.logger.log(`Getting features paginated: page ${page}, limit ${limit}, order by ${orderBy} ${order}`);
 
-    const feature = await this.gameFeatureRepository.findOne({ where: { description } });
-    if (!feature) throw new NotFoundException(`Feature with description ${description} not found`);
-    return feature;
+    const where: FindOptionsWhere<GameFeature> = {};
+
+    if (searchQuery?.name) {
+      where.name = Like(`%${searchQuery.name}%`);
+    }
+
+    const [items, total] = await this.gameFeatureRepository.findAndCount({
+      where,
+      relations: this.relations,
+      order: { [orderBy]: order },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return { items, total, totalPages };
   }
 
   /**
    * Creates a new feature.
-   * @param {GameFeature} feature - The feature to create.
+   * @param {GameFeature} feature - An object containing the name and icon of the feature.
    * @returns {Promise<GameFeature>} A promise that resolves to the created feature.
    * @throws {InternalServerErrorException} If the feature could not be created.
    */
-  public async create(feature: { name: string; description: string }): Promise<GameFeature> {
+  public async create(feature: { name: string; icon: Buffer }): Promise<GameFeature> {
     // Log the initiation of creating a new feature
-    this.logger.log(`Creating feature with name ${feature.name} and description ${feature.description}`);
+    this.logger.log(`Creating feature with name ${feature.name}`);
 
     // Check if the feature already exists with the same name
-    await this.checkFeatureExists(feature.name, 'name');
+    const existingFeature = await this.gameFeatureRepository.findOne({ where: { name: feature.name } });
+    if (existingFeature) throw new ConflictException(`Feature with name ${feature.name} already exists`);
 
-    // Check if the feature already exists with the same description
-    await this.checkFeatureExists(feature.description, 'description');
+    // Create the new feature
+    const newFeature = this.gameFeatureRepository.create({
+      name: feature.name,
+      icon: feature.icon,
+    });
 
     // Save the new feature
-    const createdFeature = await this.gameFeatureRepository.save(feature);
+    const createdFeature = await this.gameFeatureRepository.save(newFeature);
     if (!createdFeature) throw new InternalServerErrorException('Failed to create feature');
     return createdFeature;
   }
@@ -126,7 +141,7 @@ export class GamesFeaturesService {
    * @throws {NotFoundException} If the feature is not found.
    * @throws {InternalServerErrorException} If no data is provided to update.
    */
-  public async update(id: number, feature: { name?: string; description?: string }): Promise<GameFeature> {
+  public async update(id: number, feature: { name?: string; icon?: Buffer }): Promise<GameFeature> {
     // Log the initiation of updating an existing feature
     this.logger.log(`Updating feature with ID ${id}`);
 
@@ -137,12 +152,12 @@ export class GamesFeaturesService {
     if (!existingFeature) throw new NotFoundException(`Feature with ID ${id} not found`);
 
     // Throw an InternalServerErrorException if no data to update
-    if (feature.name === undefined && feature.name === undefined)
+    if (feature.name === undefined && feature.icon === undefined)
       throw new InternalServerErrorException('No valid data provided for updating');
 
     // Update the existing feature with the new values
     if (feature.name !== undefined) existingFeature.name = feature.name;
-    if (feature.description !== undefined) existingFeature.description = feature.description;
+    if (feature.icon !== undefined) existingFeature.icon = feature.icon;
 
     // Save the updated feature entity
     const updatedFeature = await this.gameFeatureRepository.save(existingFeature);
@@ -174,7 +189,7 @@ export class GamesFeaturesService {
   public async removeAll(): Promise<void> {
     // Log the initiation of removing all features
     this.logger.log('Removing all features');
-    
+
     const result = await this.gameFeatureRepository.delete({});
     if (result === undefined) throw new InternalServerErrorException('Failed to remove features');
   }

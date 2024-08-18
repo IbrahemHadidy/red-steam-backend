@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { AdminUserEntity } from 'nestjs-admin';
 import { BlacklistedToken } from '@repositories/mongo/token-blacklist/blacklisted-token.entity';
 import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
 import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
@@ -25,7 +24,7 @@ export default {
     name: 'sql',
     type: 'postgres',
     url: process.env.POSTGRESQL_URI,
-    entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User, AdminUserEntity],
+    entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User],
     migrations: ['dist/migrations/sql/**/*.js'],
     cli: {
       migrationsDir: 'src/migrations/sql',

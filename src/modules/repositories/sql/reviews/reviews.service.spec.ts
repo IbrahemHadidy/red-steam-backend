@@ -1,29 +1,35 @@
+import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { v4 as uuidv4 } from 'uuid';
+import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
+
+
+// Modules
 import { GamesModule } from '@repositories/sql/games/games.module';
 import { UsersModule } from '@repositories/sql/users/users.module';
 import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
+import { CompaniesModule } from '@repositories/sql/companies/companies.module';
+import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
+import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
+import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
+import { GamesLanguagesModule } from '@repositories/sql/games-languages/games-languages.module';
+
+// Services
 import { GamesService } from '@repositories/sql/games/games.service';
 import { UsersService } from '@repositories/sql/users/users.service';
 import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
+import { CompaniesService } from '@repositories/sql/companies/companies.service';
+import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
+import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
+import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
+import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
+
+// Entities
 import { Game } from '@repositories/sql/games/game.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
 import { Review } from '@repositories/sql/reviews/review.entity';
 import { User } from '@repositories/sql/users/user.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
-import { CompaniesModule } from '@repositories/sql/companies/companies.module';
-import { CompaniesService } from '@repositories/sql/companies/companies.service';
-import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
-import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
-import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
-import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
-import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
-import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
-import { v4 as uuidv4 } from 'uuid';
 
 describe('gamesService', () => {
   let game: Game;
@@ -43,29 +49,17 @@ describe('gamesService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: [
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-            'src/common/configs/environments/.env',
-          ],
-        }),
+        ConfigModule.forRoot(environmentConfig),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           name: 'sql',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'postgres',
-            url: configService.get<string>('POSTGRESQL_URI'),
-            entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User, Game],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getSqlTypeOrmConfig(configService),
         }),
         GamesPricingModule,
         GamesModule,
         CompaniesModule,
         GamesFeaturesModule,
+        GamesLanguagesModule,
         GamesTagsModule,
         UsersModule,
         ReviewsModule,
@@ -75,6 +69,7 @@ describe('gamesService', () => {
         GamesService,
         CompaniesService,
         GamesFeaturesService,
+        GamesLanguagesService,
         GamesTagsService,
         UsersService,
         ReviewsService,
@@ -116,6 +111,7 @@ describe('gamesService', () => {
         offerType: 'SPECIAL PROMOTION',
       },
       gamesFeatures: [],
+      languages: [],
       platformEntries: {
         win: true,
         mac: false,
@@ -161,6 +157,7 @@ describe('gamesService', () => {
         offerType: 'WEEKEND DEAL',
       },
       gamesFeatures: [],
+      languages: [],
       platformEntries: {
         win: true,
         mac: false,
@@ -206,6 +203,7 @@ describe('gamesService', () => {
         offerType: 'SPECIAL PROMOTION',
       },
       gamesFeatures: [],
+      languages: [],
       platformEntries: {
         win: true,
         mac: false,
@@ -313,9 +311,7 @@ describe('gamesService', () => {
     });
 
     it('should throw NotFoundException if review does not exist', async () => {
-      await expect(reviewsService.getById(999)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(reviewsService.getById(999)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -403,10 +399,12 @@ describe('gamesService', () => {
     });
 
     it('should throw NotFoundException if review does not exist', async () => {
-      await expect(reviewsService.update(999, {
-        positive: true,
-        content: 'Test Content Updated',
-      })).rejects.toThrow(NotFoundException);
+      await expect(
+        reviewsService.update(999, {
+          positive: true,
+          content: 'Test Content Updated',
+        }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 

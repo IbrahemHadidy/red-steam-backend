@@ -1,13 +1,13 @@
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsOrder, FindOptionsWhere } from 'typeorm';
+import { Repository, FindOptionsOrder, FindOptionsWhere, FindOptionsRelations } from 'typeorm';
 import { Review } from '@repositories/sql/reviews/review.entity';
 import { GamesService } from '@repositories/sql/games/games.service';
 import { UsersService } from '@repositories/sql/users/users.service';
 
 @Injectable()
 export class ReviewsService {
-  private readonly relations: string[];
+  private readonly relations: FindOptionsRelations<Review>;
 
   constructor(
     private readonly logger: Logger,
@@ -16,7 +16,7 @@ export class ReviewsService {
     private readonly gamesService: GamesService,
     private readonly usersService: UsersService
   ) {
-    this.relations = ['user', 'game'];
+    this.relations = { user: true, game: true };
   }
 
   /**

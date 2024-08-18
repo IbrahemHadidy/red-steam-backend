@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, Logger } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BlacklistedToken } from '@repositories/mongo/token-blacklist/blacklisted-token.entity';
+import { v4 as UUIDv4 } from 'uuid';
+import { environmentConfig, getMongoTypeOrmConfig } from '@test/integration-setup';
+
 import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
 import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
-import { v4 as UUIDv4 } from 'uuid';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('TokenBlacklistService', () => {
   let token: string;
@@ -14,24 +15,11 @@ describe('TokenBlacklistService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: [
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-            'src/common/configs/environments/.env',
-          ],
-        }),
+        ConfigModule.forRoot(environmentConfig),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           name: 'mongo',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'mongodb',
-            url: configService.get<string>('MONGODB_URI'),
-            entities: [BlacklistedToken],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getMongoTypeOrmConfig(configService),
         }),
         TokenBlacklistModule,
       ],

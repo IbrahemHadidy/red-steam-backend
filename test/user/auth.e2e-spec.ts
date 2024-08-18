@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DataSource } from 'typeorm';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { DataSource } from 'typeorm';
 import request from 'supertest';
-import { AppModule } from '@modules/app.module';
 import { cleanAllEntities } from '../e2e-setup';
+
+import { AppModule } from '@modules/app.module';
 import { User } from '@repositories/sql/users/user.entity';
 import { DatabaseService } from '@services/database/database.service';
 
@@ -44,7 +45,7 @@ describe('AuthController (e2e)', () => {
     await cleanAllEntities(databaseService);
   });
 
-  describe('POST /api/users/auth/signup', () => {
+  describe('POST /api/user/auth/signup', () => {
     const data = {
       username: 'testuser',
       email: 'testuser@me.com',
@@ -53,14 +54,14 @@ describe('AuthController (e2e)', () => {
     };
 
     it('should create a new user', async () => {
-      const response = await request(app.getHttpServer()).post('/api/users/auth/signup').send(data).expect(201);
+      const response = await request(app.getHttpServer()).post('/api/user/auth/signup').send(data).expect(201);
 
       // Verify response structure
       expect(response.body).toHaveProperty('message', 'Signup successful');
     });
 
     it('should throw an error if user already exists', async () => {
-      const response = await request(app.getHttpServer()).post('/api/users/auth/signup').send(data).expect(409);
+      const response = await request(app.getHttpServer()).post('/api/user/auth/signup').send(data).expect(409);
 
       // Verify response structure
       expect(response.body).toHaveProperty('message', 'User already exists');
@@ -68,7 +69,7 @@ describe('AuthController (e2e)', () => {
 
     it('should throw an error if email is invalid', async () => {
       const response = await request(app.getHttpServer())
-        .post('/api/users/auth/signup')
+        .post('/api/user/auth/signup')
         .send({ ...data, email: 'invalid-email' })
         .expect(400);
 
@@ -78,7 +79,7 @@ describe('AuthController (e2e)', () => {
 
     it('should throw an error if password is weak', async () => {
       const response = await request(app.getHttpServer())
-        .post('/api/users/auth/signup')
+        .post('/api/user/auth/signup')
         .send({ ...data, password: 'weakpassword' })
         .expect(400);
 
@@ -87,7 +88,7 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('POST /api/users/auth/login', () => {
+  describe('POST /api/user/auth/login', () => {
     it('should login a user', async () => {
       const data = {
         identifier: 'testuser',
@@ -95,7 +96,7 @@ describe('AuthController (e2e)', () => {
         rememberMe: true,
       };
 
-      const response = await request(app.getHttpServer()).post('/api/users/auth/login').send(data).expect(200);
+      const response = await request(app.getHttpServer()).post('/api/user/auth/login').send(data).expect(200);
 
       // Verify body structure
       expect(response.body).toEqual(
@@ -138,17 +139,17 @@ describe('AuthController (e2e)', () => {
         rememberMe: true,
       };
 
-      const response = await request(app.getHttpServer()).post('/api/users/auth/login').send(data).expect(404);
+      const response = await request(app.getHttpServer()).post('/api/user/auth/login').send(data).expect(404);
 
       // Verify response structure
       expect(response.body).toHaveProperty('message', 'User not found');
     });
   });
 
-  describe('POST /api/users/auth/auto-login', () => {
+  describe('POST /api/user/auth/auto-login', () => {
     it('should auto login a user', async () => {
       const response = await request(app.getHttpServer())
-        .post('/api/users/auth/auto-login')
+        .post('/api/user/auth/auto-login')
         .set('x-refresh-token', refreshToken)
         .expect(200);
 
@@ -186,7 +187,7 @@ describe('AuthController (e2e)', () => {
 
     it('should throw an error if refresh token is invalid', async () => {
       const response = await request(app.getHttpServer())
-        .post('/api/users/auth/auto-login')
+        .post('/api/user/auth/auto-login')
         .set('x-refresh-token', 'invalid-refresh-token')
         .expect(401);
 
@@ -195,10 +196,10 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('POST /api/users/auth/refresh-token', () => {
+  describe('POST /api/user/auth/refresh-token', () => {
     it('should refresh access token', async () => {
       const response = await request(app.getHttpServer())
-        .post('/api/users/auth/refresh-token')
+        .post('/api/user/auth/refresh-token')
         .set('x-refresh-token', refreshToken)
         .expect(200);
 
@@ -213,10 +214,10 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('GET /api/users/auth/user-data', () => {
+  describe('GET /api/user/auth/user-data', () => {
     it('should get user data', async () => {
       const response = await request(app.getHttpServer())
-        .get('/api/users/auth/user-data')
+        .get('/api/user/auth/user-data')
         .set('authorization', accessToken)
         .expect(200);
 
@@ -246,10 +247,10 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('GET /api/users/auth/verification-status', () => {
+  describe('GET /api/user/auth/verification-status', () => {
     it('should get verification status', async () => {
       const response = await request(app.getHttpServer())
-        .get('/api/users/auth/verification-status/testuser')
+        .get('/api/user/auth/verification-status/testuser')
         .expect(200);
 
       // Verify body structure
@@ -257,10 +258,10 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('POST /api/users/auth/resend-verification-token', () => {
+  describe('POST /api/user/auth/resend-verification-token', () => {
     it('should resend verification token', async () => {
       const response = await request(app.getHttpServer())
-        .post('/api/users/auth/resend-verification-token')
+        .post('/api/user/auth/resend-verification-token')
         .send({ email: 'testuser@me.com' })
         .expect(200);
 
@@ -269,7 +270,7 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('POST /api/users/auth/verify-email', () => {
+  describe('POST /api/user/auth/verify-email', () => {
     it('should verify email', async () => {
       // Get the token from database
       const token = (await postgresDataSource.getRepository(User).findOne({ where: { email: 'testuser@me.com' } }))
@@ -277,7 +278,7 @@ describe('AuthController (e2e)', () => {
       await postgresDataSource.destroy();
 
       const response = await request(app.getHttpServer())
-        .post('/api/users/auth/verify-email')
+        .post('/api/user/auth/verify-email')
         .send({ email: 'testuser@me.com', token })
         .expect(200);
 
@@ -286,10 +287,10 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('POST /api/users/auth/update-tokens', () => {
+  describe('POST /api/user/auth/update-tokens', () => {
     it('should update tokens', async () => {
       const response = await request(app.getHttpServer())
-        .post('/api/users/auth/update-tokens')
+        .post('/api/user/auth/update-tokens')
         .set('authorization', accessToken)
         .set('x-refresh-token', refreshToken)
         .expect(200);
@@ -304,10 +305,10 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('POST /api/users/auth/logout', () => {
+  describe('POST /api/user/auth/logout', () => {
     it('should logout a user', async () => {
       const response = await request(app.getHttpServer())
-        .post('/api/users/auth/logout')
+        .post('/api/user/auth/logout')
         .set('authorization', accessToken)
         .set('x-refresh-token', refreshToken)
         .expect(200);
@@ -317,9 +318,9 @@ describe('AuthController (e2e)', () => {
     });
   });
 
-  describe('GET /api/users/auth/waiting-time', () => {
+  describe('GET /api/user/auth/waiting-time', () => {
     it('should get waiting time', async () => {
-      const response = await request(app.getHttpServer()).get('/api/users/auth/waiting-time').expect(200);
+      const response = await request(app.getHttpServer()).get('/api/user/auth/waiting-time').expect(200);
 
       // Verify body structure
       expect(response.body).toEqual({ waitingTime: expect.any(Number) });

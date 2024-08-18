@@ -1,19 +1,41 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, FindOptionsWhere, LessThanOrEqual, Repository } from 'typeorm';
+import { Between, FindOptionsRelations, FindOptionsWhere, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
 import { Game } from '@repositories/sql/games/game.entity';
 
 @Injectable()
 export class GamesPricingService {
-  private readonly relations: string[];
+  private readonly relations: FindOptionsRelations<GamePricing>;
 
   constructor(
     private readonly logger: Logger,
     @InjectRepository(GamePricing, 'sql')
     private readonly gamesPricingRepository: Repository<GamePricing>,
   ) {
-    this.relations = ['game'];
+    this.relations = { game: true };
+  }
+
+  /**
+   * Update discount status based on current date
+   * @param pricing GamePricing entity
+   */
+  private updateDiscountStatus(pricing: GamePricing): void {
+    const currentDate = new Date();
+    if (pricing.discount && pricing.discountEndDate && currentDate > pricing.discountEndDate) {
+      pricing.discount = false;
+      pricing.discountPrice = null;
+      pricing.discountPercentage = null;
+      pricing.discountStartDate = null;
+      pricing.discountEndDate = null;
+      pricing.offerType = null;
+    }
   }
 
   /**
@@ -49,9 +71,6 @@ export class GamesPricingService {
 
       if (pricing.discountStartDate > pricing.discountEndDate)
         throw new BadRequestException('Discount start date cannot be greater than discount end date');
-
-      if (pricing.discountStartDate < new Date())
-        throw new BadRequestException('Discount start date cannot be less than current date');
 
       if (pricing.discountEndDate < new Date())
         throw new BadRequestException('Discount end date cannot be less than current date');
@@ -96,6 +115,10 @@ export class GamesPricingService {
       relations: this.relations,
       order: { [sortBy]: sortOrder },
     });
+
+    // Update discount status for each pricing
+    pricings.forEach(this.updateDiscountStatus);
+
     return pricings;
   }
 
@@ -111,6 +134,10 @@ export class GamesPricingService {
 
     const pricing = await this.gamesPricingRepository.findOne({ where: { id }, relations: this.relations });
     if (!pricing) throw new NotFoundException(`Pricing with ID ${id} not found`);
+
+    // Update discount status for pricing
+    this.updateDiscountStatus(pricing);
+
     return pricing;
   }
 
@@ -126,6 +153,10 @@ export class GamesPricingService {
 
     const pricing = await this.gamesPricingRepository.findOne({ where: { game: { id } }, relations: this.relations });
     if (!pricing) throw new NotFoundException(`Pricing for game with ID ${id} not found`);
+
+    // Update discount status for pricing
+    this.updateDiscountStatus(pricing);
+
     return pricing;
   }
 
@@ -168,11 +199,23 @@ export class GamesPricingService {
     // Add price range
     if (options.minPrice || options.maxPrice) {
       if (options.minPrice && options.maxPrice) {
-        whereConditions.push({ discountPrice: Between(options.minPrice, options.maxPrice) });
+        whereConditions.push(
+          options.discount
+            ? { discountPrice: Between(options.minPrice, options.maxPrice) }
+            : { basePrice: Between(options.minPrice, options.maxPrice) },
+        );
       } else if (options.minPrice) {
-        whereConditions.push({ discountPrice: LessThanOrEqual(options.minPrice) });
+        whereConditions.push(
+          options.discount
+            ? { discountPrice: MoreThanOrEqual(options.minPrice) }
+            : { basePrice: MoreThanOrEqual(options.minPrice) },
+        );
       } else if (options.maxPrice) {
-        whereConditions.push({ discountPrice: LessThanOrEqual(options.maxPrice) });
+        whereConditions.push(
+          options.discount
+            ? { discountPrice: LessThanOrEqual(options.maxPrice) }
+            : { basePrice: LessThanOrEqual(options.maxPrice) },
+        );
       }
     }
 
@@ -199,7 +242,7 @@ export class GamesPricingService {
   /**
    * Create pricing
    * @param pricing Pricing
-   * @returns {Promise<GamePricing>} Promise that resolves when the creation is successful  
+   * @returns {Promise<GamePricing>} Promise that resolves when the creation is successful
    */
   public async create(pricing: {
     free: boolean;
@@ -242,6 +285,9 @@ export class GamesPricingService {
       discountPercentage,
       game: pricing.game,
     });
+
+    // Update discount status
+    this.updateDiscountStatus(createdPricing);
 
     // Save the pricing entity
     const result = await this.gamesPricingRepository.save(createdPricing);
@@ -300,6 +346,9 @@ export class GamesPricingService {
     if (pricing.offerType) existingPricing.offerType = pricing.offerType;
     if (pricing.free) existingPricing.free = pricing.free;
 
+    // Update discount status
+    this.updateDiscountStatus(existingPricing);
+
     // Save changes
     const result = this.gamesPricingRepository.save(existingPricing);
     if (!result) throw new InternalServerErrorException(`Failed to update pricing with ID ${id}`);
@@ -333,7 +382,7 @@ export class GamesPricingService {
   public async removeAll(): Promise<void> {
     // Log the initiation of the pricing deletion process
     this.logger.log('Deleting all pricings');
-    
+
     const result = await this.gamesPricingRepository.delete({});
     if (result === undefined) throw new InternalServerErrorException('Failed to delete pricings');
   }

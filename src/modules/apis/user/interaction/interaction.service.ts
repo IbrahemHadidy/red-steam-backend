@@ -12,7 +12,7 @@ export class InteractionService extends UserService {
     protected readonly review: ReviewsService,
     protected readonly logger: Logger,
   ) {
-    super(user);
+    super();
   }
 
   /**

@@ -1,15 +1,20 @@
 import { Logger, Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+
+// Modules
 import { DatabaseModule } from '@services/database/database.module';
-import { DatabaseService } from '@services/database/database.service';
 import { CompaniesModule } from '@repositories/sql/companies/companies.module';
 import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
+import { GamesLanguagesModule } from '@repositories/sql/games-languages/games-languages.module';
 import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
 import { GamesModule } from '@repositories/sql/games/games.module';
 import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
 import { UsersModule } from '@repositories/sql/users/users.module';
-import { ConfigService } from '@nestjs/config';
+
+// DB Config
+import { DatabaseService } from '@services/database/database.service';
 
 @Module({
   imports: [
@@ -24,6 +29,7 @@ import { ConfigService } from '@nestjs/config';
     }),
     CompaniesModule,
     GamesFeaturesModule,
+    GamesLanguagesModule,
     GamesPricingModule,
     GamesTagsModule,
     ReviewsModule,

@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, BaseEntity, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, BaseEntity, JoinColumn, AfterRemove, AfterInsert } from 'typeorm';
 import { User } from '@repositories/sql/users/user.entity';
 import { Game } from '@repositories/sql/games/game.entity';
 
@@ -27,4 +27,12 @@ export class Review extends BaseEntity {
 
   @Column()
   content: string;
+
+  @AfterInsert()
+  @AfterRemove()
+  async updateGameReviewsData() {
+    if (this.game) {
+      await this.game.updateReviewsData();
+    }
+  }
 }

@@ -1,7 +1,7 @@
-import { Column, Entity, ObjectId, ObjectIdColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, ObjectId, ObjectIdColumn } from 'typeorm';
 
 @Entity('blacklisted_tokens')
-export class BlacklistedToken {
+export class BlacklistedToken extends BaseEntity {
   @ObjectIdColumn()
   id: ObjectId;
 

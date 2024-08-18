@@ -12,6 +12,7 @@
   "detectOpenHandles": true,
   "moduleNameMapper": {
     "^@/(.*)$": "<rootDir>/src/$1",
+    "^@test/(.*)$": "<rootDir>/test/$1",
     "^@modules/(.*)$": "<rootDir>/src/modules/$1",
     "^@apis/(.*)$": "<rootDir>/src/modules/apis/$1",
     "^@database/(.*)$": "<rootDir>/src/modules/apis/database/$1",
@@ -26,7 +27,6 @@
     "^@models/(.*)$": "<rootDir>/src/models/$1",
     "^@exceptions/(.*)$": "<rootDir>/src/common/exceptions/$1",
     "^@configs/(.*)$": "<rootDir>/src/common/configs/$1",
-    "^@db/(.*)$": "<rootDir>/src/services/db/$1",
     "^@credentials/(.*)$": "<rootDir>/src/credentials/$1"
   }
 }

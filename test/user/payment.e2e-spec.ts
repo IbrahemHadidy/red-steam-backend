@@ -4,9 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';;
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import request from 'supertest';
+import { cleanAllEntities } from '../e2e-setup';
+
 import { User } from '@repositories/sql/users/user.entity';
 import { AppModule } from '@modules/app.module';
-import { cleanAllEntities } from '../e2e-setup';
 import { DatabaseService } from '@services/database/database.service';
 
 describe('PaymentController (e2e)', () => {

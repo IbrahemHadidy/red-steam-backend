@@ -1,16 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConflictException, Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
+
+// Game tags Module and Service
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
-import { ConflictException, Logger } from '@nestjs/common';
+
+// Entities
 import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
-import { Review } from '@repositories/sql/reviews/review.entity';
-import { User } from '@repositories/sql/users/user.entity';
-import { Game } from '@repositories/sql/games/game.entity';
 
 describe('gamesTagsService', () => {
   let testTag: GameTag;
@@ -20,24 +19,11 @@ describe('gamesTagsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: [
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-            'src/common/configs/environments/.env',
-          ],
-        }),
+        ConfigModule.forRoot(environmentConfig),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           name: 'sql',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'postgres',
-            url: configService.get<string>('POSTGRESQL_URI'),
-            entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User, Game],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getSqlTypeOrmConfig(configService),
         }),
         GamesTagsModule,
       ],
@@ -52,24 +38,6 @@ describe('gamesTagsService', () => {
 
   afterEach(async () => {
     await gamesTagsService.removeAll();
-  });
-
-  describe('create', () => {
-    it('should create a new game tag', async () => {
-      const name = 'Test1';
-      const createdTag = await gamesTagsService.create(name);
-
-      // Assert
-      expect(createdTag.name).toEqual(name);
-
-      // Cleanup
-      await gamesTagsService.removeByName(name);
-    });
-
-    it('should throw a ConflictException if the game tag already exists', async () => {
-      // Assert
-      await expect(gamesTagsService.create('Test')).rejects.toThrow(ConflictException);
-    });
   });
 
   describe('getAll', () => {
@@ -115,6 +83,48 @@ describe('gamesTagsService', () => {
       expect(tags[1].name).toEqual(testTag2.name);
     });
   });
+
+  describe('getTagsPaginated', () => {
+    it('should return an array of game tags sorted by name', async () => {
+      const gameTags = await gamesTagsService.getTagsPaginated(0, 10, 'name', 'ASC');
+      expect(gameTags.items.length).toEqual(2);
+      expect(gameTags.items[0].name).toEqual('Test1');
+      expect(gameTags.items[1].name).toEqual('Test2');
+    });
+
+    it('should return an array of game tags sorted by id', async () => {
+      const gameTags = await gamesTagsService.getTagsPaginated(0, 10, 'id', 'ASC');
+      expect(gameTags.items.length).toEqual(2);
+      expect(gameTags.items[0].id).toEqual(testTag.id);
+      expect(gameTags.items[1].id).toEqual(testTag2.id);
+    });
+
+    it('should return values with the given search', async () => {
+      const gameTags = await gamesTagsService.getTagsPaginated(0, 10, 'name', 'ASC', { name: 'Test2' });
+      expect(gameTags.items.length).toEqual(1);
+      expect(gameTags.items[0].name).toEqual('Test2');
+    });
+  });
+
+  describe('create', () => {
+    it('should create a new game tag', async () => {
+      const name = 'Test1';
+      const createdTag = await gamesTagsService.create(name);
+
+      // Assert
+      expect(createdTag.name).toEqual(name);
+
+      // Cleanup
+      await gamesTagsService.removeByName(name);
+    });
+
+    it('should throw a ConflictException if the game tag already exists', async () => {
+      // Assert
+      await expect(gamesTagsService.create('Test')).rejects.toThrow(ConflictException);
+    });
+  });
+
+
 
   describe('removeById', () => {
     it('should remove the game tag with the given id', async () => {

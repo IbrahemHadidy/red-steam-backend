@@ -8,7 +8,7 @@ import { User } from '@repositories/sql/users/user.entity';
 @Injectable()
 export class UserService {
   constructor(
-    protected readonly user: UsersService,
+    protected readonly user?: UsersService,
     protected readonly logger?: Logger,
     protected readonly jwt?: JwtService,
     protected readonly mailer?: NodeMailerService,

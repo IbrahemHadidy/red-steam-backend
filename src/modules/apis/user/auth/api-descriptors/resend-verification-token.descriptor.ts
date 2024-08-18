@@ -1,5 +1,4 @@
 import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
-import { ResendRegisterTokenDto } from '@apis/user/auth/dtos/resend-register-token.dto';
 
 export const resendVerificationTokenDescriptor: ApiDescriptorOptions = {
   summary: 'Resend Verification Token',
@@ -22,7 +21,5 @@ export const resendVerificationTokenDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  body: {
-    type: ResendRegisterTokenDto,
-  },
+  security: ['access-token'],
 };

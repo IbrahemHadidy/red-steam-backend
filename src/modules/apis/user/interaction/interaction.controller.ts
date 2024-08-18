@@ -31,7 +31,7 @@ import { reviewGameDescriptor } from '@apis/user/interaction/api-descriptors/rev
 import { getReviewsDescriptor } from '@apis/user/interaction/api-descriptors/get-reviews.descriptor';
 
 @ApiTags('User Interaction')
-@Controller('users/interaction')
+@Controller('user/interaction')
 export class InteractionController {
   constructor(private readonly interactionService: InteractionService) {}
 
@@ -86,7 +86,7 @@ export class InteractionController {
   public async removeFromLibrary(@Req() request: Request, @Body() bodyData?: RemoveFromLibraryDto) {
     const userId = request['userId'];
 
-    let result;
+    let result: { success: boolean; message: string; };
     if (bodyData && bodyData.itemsIds) {
       const data = { userId, itemsIds: bodyData.itemsIds };
       result = await this.interactionService.removeFromLibrary(data);
@@ -122,7 +122,7 @@ export class InteractionController {
   public async removeFromWishlist(@Req() request: Request, @Body() bodyData?: RemoveFromWishlistDto) {
     const userId = request['userId'];
 
-    let result;
+    let result: { success: boolean; message: string; };
     if (bodyData && bodyData.itemsIds) {
       const data = { userId, itemsIds: bodyData.itemsIds };
       result = await this.interactionService.removeFromWishlist(data);
@@ -158,7 +158,7 @@ export class InteractionController {
   public async removeFromCart(@Req() request: Request, @Body() bodyData?: RemoveFromCartDto) {
     const userId = request['userId'];
 
-    let result;
+    let result: { success: boolean; message: string; };
     if (bodyData && bodyData.itemsIds) {
       const data = { userId, itemsIds: bodyData.itemsIds };
       result = await this.interactionService.removeFromCart(data);

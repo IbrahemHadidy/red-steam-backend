@@ -1,16 +1,31 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany, BaseEntity, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
+  OneToMany,
+  BaseEntity,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
 import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
 import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
 import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
 import { Review } from '@repositories/sql/reviews/review.entity';
+import { GameLanguage } from '../games-languages/game-language.entity';
 
 // Importing types to fix circular dependency
-import type { Publisher as PublisherType, Developer as DeveloperType } from '@repositories/sql/companies/company.entity';
+import type {
+  Publisher as PublisherType,
+  Developer as DeveloperType,
+} from '@repositories/sql/companies/company.entity';
 import type { GameTag as GameTagType } from '@repositories/sql/games-tags/game-tag.entity';
 import type { GamePricing as GamePricingType } from '@repositories/sql/games-pricing/game-pricing.entity';
 import type { GameFeature as GameFeatureType } from '@repositories/sql/games-features/game-feature.entity';
 import type { Review as ReviewType } from '@repositories/sql/reviews/review.entity';
+import type { GameLanguage as GameLanguageType } from '../games-languages/game-language.entity';
 
 @Entity({ name: 'games' })
 export class Game extends BaseEntity {
@@ -26,8 +41,11 @@ export class Game extends BaseEntity {
   @Column({ type: 'text' })
   description: string;
 
-  @Column()
+  @Column({ default: new Date() })
   releaseDate: Date;
+
+  @Column({ default: false })
+  featured: boolean;
 
   @ManyToMany(() => Publisher, (company: PublisherType) => company.games)
   @JoinTable({ name: 'games_publishers' })
@@ -60,6 +78,13 @@ export class Game extends BaseEntity {
   @JoinTable({ name: 'games_features' })
   gamesFeatures: GameFeatureType[];
 
+  @ManyToMany(() => GameLanguage, (language: GameLanguageType) => language.games)
+  @JoinTable({ name: 'games_languages' })
+  languages: GameLanguageType[];
+
+  @Column({ type: 'jsonb', nullable: true })
+  languageSupport: LanguageSupportEntry[];
+
   @Column({ type: 'jsonb' })
   platformEntries: PlatformEntry;
 
@@ -69,7 +94,7 @@ export class Game extends BaseEntity {
   @Column({ type: 'text' })
   about: string;
 
-  @Column()
+  @Column({ default: false })
   mature: boolean;
 
   @Column({ type: 'text' })
@@ -83,6 +108,29 @@ export class Game extends BaseEntity {
 
   @OneToMany(() => Review, (review: ReviewType) => review.game)
   reviews: ReviewType[];
+
+  @Column({ type: 'int', default: 0 })
+  totalSales: number;
+
+  @Column({ type: 'float', default: 0 })
+  averageRating: number;
+
+  @Column({ type: 'int', default: 0 })
+  reviewsCount: number;
+
+  // Function to update reviews count and average rating
+  async updateReviewsData() {
+    const reviews = this.reviews;
+    const positiveReviewsCount = reviews.filter((review) => review.positive).length;
+    this.reviewsCount = reviews.length;
+    if (reviews.length > 0) {
+      this.averageRating = (positiveReviewsCount / reviews.length) * 100;
+    } else {
+      this.averageRating = 0;
+      this.reviewsCount = 0;
+    }
+    await this.save();
+  }
 }
 
 export interface ThumbnailsEntry {
@@ -106,6 +154,13 @@ export interface VideoEntry {
   link: string;
   posterLink: string;
   order: number;
+}
+
+export interface LanguageSupportEntry {
+  name: string;
+  interface: boolean;
+  fullAudio: boolean;
+  subtitles: boolean;
 }
 
 export interface PlatformEntry {

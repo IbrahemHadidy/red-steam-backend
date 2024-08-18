@@ -1,31 +1,28 @@
-import 'dotenv/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { BadRequestException, Logger } from '@nestjs/common';
+import { environmentConfig, getMongoTypeOrmConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
+
+// Modules
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
 import { UsersModule } from '@repositories/sql/users/users.module';
 import { NodeMailerModule } from '@services/node-mailer/node-mailer.module';
 import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
 import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
-import { User } from '@repositories/sql/users/user.entity';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
-import { Game } from '@repositories/sql/games/game.entity';
-import { Review } from '@repositories/sql/reviews/review.entity';
-import { BlacklistedToken } from '@repositories/mongo/token-blacklist/blacklisted-token.entity';
+
+// Services
 import { AuthService } from '@apis/user/auth/auth.service';
+import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
 import { UsersService } from '@repositories/sql/users/users.service';
 import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
 import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
-import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
 import { GamesService } from '@repositories/sql/games/games.service';
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
 import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
+import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
 
 describe('AuthController', () => {
   let data: { message: string; accessToken: string; refreshToken: string; userData: any };
@@ -36,25 +33,15 @@ describe('AuthController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
+        ConfigModule.forRoot(environmentConfig),
         TypeOrmModule.forRootAsync({
+          inject: [ConfigService],
           name: 'sql',
-          useFactory: async () => ({
-            type: 'postgres',
-            url: process.env.POSTGRESQL_URI,
-            entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User, Game],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getSqlTypeOrmConfig(configService),
         }),
         TypeOrmModule.forRootAsync({
-          name: 'mongo',
-          useFactory: async () => ({
-            type: 'mongodb',
-            url: process.env.MONGODB_URI,
-            entities: [BlacklistedToken],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          inject: [ConfigService],
+          useFactory: async (configService: ConfigService) => getMongoTypeOrmConfig(configService),
         }),
         UsersModule,
         GamesTagsModule,
@@ -70,6 +57,7 @@ describe('AuthController', () => {
         ConfigService,
         GamesService,
         GamesFeaturesService,
+        GamesLanguagesService,
         GamesPricingService,
         CompaniesService,
         TokenBlacklistService,
@@ -238,6 +226,7 @@ describe('AuthController', () => {
     it('should verify email successfully', async () => {
       // construct verify data
       const verifyData = {
+        username: data.userData.username,
         email: data.userData.email,
         token: data.userData.verificationToken,
       };
@@ -252,6 +241,7 @@ describe('AuthController', () => {
     it('should throw BadRequestException if verification token is invalid', async () => {
       // construct verify data with fake verification token
       const verifyData = {
+        username: data.userData.username,
         email: data.userData.email,
         token: 'invalid-token',
       };

@@ -1,16 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CompaniesModule } from '@repositories/sql/companies/companies.module';
-import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { BadRequestException, ConflictException, Logger } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
+
+import { CompaniesModule } from '@repositories/sql/companies/companies.module';
+import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
-import { Review } from '@repositories/sql/reviews/review.entity';
-import { User } from '@repositories/sql/users/user.entity';
-import { Game } from '@repositories/sql/games/game.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
 
 describe('gamesTagsService', () => {
   let publisher1: Publisher;
@@ -22,24 +18,11 @@ describe('gamesTagsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          envFilePath: [
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-            'src/common/configs/environments/.env',
-          ],
-        }),
+        ConfigModule.forRoot(environmentConfig),
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           name: 'sql',
-          useFactory: async (configService: ConfigService) => ({
-            type: 'postgres',
-            url: configService.get<string>('POSTGRESQL_URI'),
-            entities: [Publisher, Developer, GameFeature, GamePricing, GameTag, Review, User, Game],
-            synchronize: true,
-            autoLoadEntities: true,
-          }),
+          useFactory: async (configService: ConfigService) => getSqlTypeOrmConfig(configService),
         }),
         CompaniesModule,
       ],
@@ -106,6 +89,30 @@ describe('gamesTagsService', () => {
       const foundDeveloper = await companiesService.getByName(developer1.name, 'developer');
       expect(foundDeveloper).toEqual(expect.objectContaining({ name: developer1.name, website: developer1.website }));
     });
+  });
+
+  describe('getCompaniesPaginated', () => {
+    it('should return an array of game companies sorted by name', async () => {
+      const publishers = await companiesService.getCompaniesPaginated(0, 10, 'name', 'ASC', 'publisher');
+      expect(publishers.items.length).toEqual(2);
+      expect(publishers.items[0].name).toEqual('publisher 1');
+      expect(publishers.items[1].name).toEqual('publisher 2');
+    });
+
+    it('should return an array of game companies sorted by id', async () => {
+      const developers = await companiesService.getCompaniesPaginated(0, 10, 'id', 'ASC', 'developer');
+      expect(developers.items.length).toEqual(2);
+      expect(developers.items[0].id).toEqual(developer1.id);
+      expect(developers.items[1].id).toEqual(developer2.id);
+    });
+
+    it('should return values with the given search', async () => {
+      const publishers = await companiesService.getCompaniesPaginated(0, 10, 'name', 'ASC', 'publisher', {
+        name: 'publisher 1',
+      });
+      expect(publishers.items.length).toEqual(1);
+      expect(publishers.items[0].name).toEqual('publisher 1');
+    })
   });
 
   describe('create', () => {
