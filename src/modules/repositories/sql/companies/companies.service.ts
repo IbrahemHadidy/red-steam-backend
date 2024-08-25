@@ -153,7 +153,7 @@ export class CompaniesService {
    * @param {('ASC' | 'DESC')} order - The order direction.
    * @param {('publisher' | 'developer')} type - The type of companies to retrieve
    * @param {{name?: string; website?: string}} searchQuery - The search query.
-   * @returns {Promise<{ items: Company[], total: number }>} A promise that resolves to the paginated companies.
+   * @returns {Promise<{ items: Company[], total: number, totalPages: number }>} A promise that resolves to the paginated companies.
    */
   public async getCompaniesPaginated(
     page: number,
@@ -180,7 +180,7 @@ export class CompaniesService {
       where,
       relations: this.relations,
       order: { [orderBy]: order },
-      skip: (page - 1) * limit,
+      skip: Math.max((page - 1) * limit, 0),
       take: limit,
     });
 

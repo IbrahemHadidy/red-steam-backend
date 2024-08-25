@@ -28,6 +28,9 @@ export class GameStorageService extends DropboxService {
    * @throws {InternalServerErrorException} - If there was an error uploading the media file
    */
   public async uploadFile(file: File, gameName: string, fileName: string): Promise<Partial<UploadResponse>> {
+    // Ensure valid access token
+    await this.ensureValidAccessToken();
+
     // Validate file type (adapt based on your requirements)
     const allowedMimeTypes = ['image/*', 'video/*'];
     if (!allowedMimeTypes.includes(file.mimetype)) {
@@ -76,6 +79,9 @@ export class GameStorageService extends DropboxService {
    * @returns {Promise<void>} A promise that resolves when the media file is deleted
    */
   public async deleteFile(filePath: string): Promise<void> {
+    // Ensure valid access token
+    await this.ensureValidAccessToken();
+
     this.logger.error(`Deleting media file: ${filePath}`);
     await this.dropbox.filesDeleteV2({ path: filePath });
 

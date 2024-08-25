@@ -28,6 +28,9 @@ export class AvatarStorageService extends DropboxService {
    * @throws {InternalServerErrorException} - If there was an error uploading the avatar
    */
   public async uploadAvatar(avatar: File): Promise<Partial<UploadResponse>> {
+    // Ensure valid access token
+    await this.ensureValidAccessToken();
+
     // Validate file type (adapt based on your requirements)
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedMimeTypes.includes(avatar.mimetype)) {
@@ -76,6 +79,9 @@ export class AvatarStorageService extends DropboxService {
    * @returns {Promise<void>} A promise that resolves when the avatar is deleted
    */
   public async deleteAvatar(filePath: string): Promise<void> {
+    // Ensure valid access token
+    await this.ensureValidAccessToken();
+    
     this.logger.error(`Deleting avatar file: ${filePath}`);
     await this.dropbox.filesDeleteV2({ path: filePath });
 

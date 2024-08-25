@@ -60,7 +60,7 @@ export class DropboxService {
     this.logger.log('Tokens updated.');
   }
 
-  private async ensureValidAccessToken(): Promise<void> {
+  protected async ensureValidAccessToken(): Promise<void> {
     this.logger.log('Ensuring access token is valid...');
     const token = await this.tokenService.getToken();
     if (token) {

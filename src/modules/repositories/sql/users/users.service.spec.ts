@@ -18,6 +18,7 @@ import { User } from '@repositories/sql/users/user.entity';
 
 describe('usersService', () => {
   let user: User;
+  let user2: User;
   let usersService: UsersService;
   let gamesTagsService: GamesTagsService;
   let unexistingUserId: string;
@@ -44,7 +45,14 @@ describe('usersService', () => {
       username: 'test',
       email: 'test@test.com',
       password: 'password',
-      country: 'test',
+      country: 'US',
+    });
+
+    user2 = await usersService.create({
+      username: 'test2',
+      email: 'test2@test.com',
+      password: 'password',
+      country: 'EG',
     });
 
     unexistingUserId = UUIDv4();
@@ -61,7 +69,7 @@ describe('usersService', () => {
         username: 'test2',
         email: 'test2@test.com',
         password: 'password',
-        country: 'test',
+        country: 'US',
       });
       const users = await usersService.getAll('username', 'ASC');
 
@@ -179,13 +187,42 @@ describe('usersService', () => {
     });
   });
 
+  describe('getUsersPaginated', () => {
+    it('should return an array of game users sorted by username', async () => {
+      const users = await usersService.getUsersPaginated(0, 10, 'username', 'ASC');
+      expect(users.items.length).toEqual(2);
+      expect(users.items[0].username).toEqual('test');
+      expect(users.items[1].username).toEqual('test2');
+    });
+
+    it('should return an array of game users sorted by email', async () => {
+      const users = await usersService.getUsersPaginated(0, 10, 'email', 'ASC');
+      expect(users.items.length).toEqual(4);
+      expect(users.items[0].email).toEqual('test@test.com');
+      expect(users.items[1].email).toEqual('test2@test.com');
+    });
+
+    it('should return an array of game users sorted by country', async () => {
+      const users = await usersService.getUsersPaginated(0, 10, 'country', 'ASC');
+      expect(users.items.length).toEqual(2);
+      expect(users.items[0].country).toEqual('EG');
+      expect(users.items[1].country).toEqual('US');
+    });
+
+    it('should return values with the given search', async () => {
+      const users = await usersService.getUsersPaginated(0, 10, 'email', 'ASC', { email: user2.email });
+      expect(users.items.length).toEqual(1);
+      expect(users.items[0].email).toEqual(user2.email);
+    });
+  });
+
   describe('create', () => {
     it('should create a new user', async () => {
       const createdUser = await usersService.create({
         username: 'test3',
         email: 'test3@test.com',
         password: 'password',
-        country: 'test',
+        country: 'US',
       });
 
       // Assertions
@@ -506,7 +543,7 @@ describe('usersService', () => {
         username: 'test2',
         email: 'test2@test.com',
         password: 'password',
-        country: 'test',
+        country: 'US',
       });
       await usersService.removeAll();
       const users = await usersService.getAll('username', 'ASC');

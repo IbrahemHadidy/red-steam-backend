@@ -6,7 +6,7 @@ import type { GameFeature } from '@repositories/sql/games-features/game-feature.
 export class FeatureService {
   constructor(
     private readonly logger: Logger,
-    private readonly featureService: GamesFeaturesService,
+    private readonly feature: GamesFeaturesService,
   ) {}
 
   /**
@@ -17,7 +17,7 @@ export class FeatureService {
     const { name, icon } = data;
     const iconAsBuffer = Buffer.from(icon, 'base64');
     this.logger.log(`Creating feature with name ${name}`);
-    await this.featureService.create({ name, icon: iconAsBuffer });
+    await this.feature.create({ name, icon: iconAsBuffer });
     return { message: 'Feature created successfully' };
   }
 
@@ -28,7 +28,7 @@ export class FeatureService {
    */
   public async getFeature(id: number) {
     this.logger.log(`Retrieving feature with ID ${id}`);
-    return this.featureService.getById(id);
+    return this.feature.getById(id);
   }
 
   /**
@@ -38,7 +38,7 @@ export class FeatureService {
    */
   public async getFeatures(ids: number[]) {
     this.logger.log(`Retrieving features with IDs ${ids}`);
-    return this.featureService.getByIds(ids);
+    return this.feature.getByIds(ids);
   }
 
   /**
@@ -47,7 +47,7 @@ export class FeatureService {
    */
   public async getAllFeatures() {
     this.logger.log(`Retrieving all features`);
-    return this.featureService.getAll('id', 'ASC');
+    return this.feature.getAll('id', 'ASC');
   }
 
   /**
@@ -70,7 +70,7 @@ export class FeatureService {
     this.logger.log(
       `Retrieving features, page: ${page}, limit: ${limit}, order by: ${orderBy}, order: ${order}, search query: ${JSON.stringify(searchQuery)}`,
     );
-    return await this.featureService.getFeaturesPaginated(page, limit, orderBy, order, searchQuery);
+    return await this.feature.getFeaturesPaginated(page, limit, orderBy, order, searchQuery);
   }
 
   /**
@@ -83,7 +83,7 @@ export class FeatureService {
     const { name, icon } = data;
     this.logger.log(`Updating feature with ID ${id}`);
     const iconAsBuffer = Buffer.from(icon, 'base64');
-    await this.featureService.update(id, { name, icon: iconAsBuffer });
+    await this.feature.update(id, { name, icon: iconAsBuffer });
     return { message: 'Feature updated successfully' };
   }
 
@@ -94,7 +94,7 @@ export class FeatureService {
    */
   public async deleteFeature(id: number): Promise<{ message: string }> {
     this.logger.log(`Deleting feature with ID ${id}`);
-    await this.featureService.remove(id);
+    await this.feature.remove(id);
 
     return { message: 'Feature deleted successfully' };
   }

@@ -1,16 +1,16 @@
 import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
-export const getFeaturesPaginatedDescriptor: ApiDescriptorOptions = {
-  summary: 'Get Features Paginated',
-  description: 'Get features paginated with optional filtering',
+export const getReviewsPaginatedDescriptor: ApiDescriptorOptions = {
+  summary: 'Get Reviews Paginated',
+  description: 'Get reviews paginated with optional filtering',
   responses: [
     {
       status: 200,
-      description: 'Features returned successfully',
+      description: 'Reviews returned successfully',
     },
     {
       status: 404,
-      description: 'No features found',
+      description: 'No reviews found',
     },
     {
       status: 500,

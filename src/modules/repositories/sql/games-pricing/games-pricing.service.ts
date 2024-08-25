@@ -305,7 +305,7 @@ export class GamesPricingService {
   public async update(
     id: number,
     pricing: {
-      free: boolean;
+      free?: boolean;
       basePrice?: number;
       discount?: boolean;
       discountPrice?: number;

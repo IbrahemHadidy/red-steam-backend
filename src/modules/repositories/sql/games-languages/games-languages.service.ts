@@ -105,7 +105,7 @@ export class GamesLanguagesService {
    * @param {string} orderBy - The field to order by.
    * @param {('ASC' | 'DESC')} order - The order direction.
    * @param {({ name?: string })} searchQuery - The search query.
-   * @returns {Promise<{ items: GameLanguage[], total: number }>} A promise that resolves to the paginated languages.
+   * @returns {Promise<{ items: GameLanguage[], total: number, totalPages: number }>} A promise that resolves to the paginated languages.
    */
   public async getLanguagesPaginated(
     page: number,
@@ -126,7 +126,7 @@ export class GamesLanguagesService {
       where,
       relations: this.relations,
       order: { [orderBy]: order },
-      skip: (page - 1) * limit,
+      skip: Math.max((page - 1) * limit, 0),
       take: limit,
     });
 

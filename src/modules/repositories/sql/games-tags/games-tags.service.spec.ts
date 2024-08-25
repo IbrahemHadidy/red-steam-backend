@@ -124,8 +124,6 @@ describe('gamesTagsService', () => {
     });
   });
 
-
-
   describe('removeById', () => {
     it('should remove the game tag with the given id', async () => {
       const createdTag = await gamesTagsService.create('Test3');

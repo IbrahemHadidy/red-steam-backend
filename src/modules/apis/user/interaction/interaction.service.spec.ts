@@ -116,12 +116,7 @@ describe('InteractionService', () => {
       tags: [],
       pricing: {
         free: false,
-        discount: false,
-        basePrice: 10,
-        discountPrice: 5,
-        discountStartDate: new Date(),
-        discountEndDate: new Date('2024-10-30'),
-        offerType: 'SPECIAL PROMOTION',
+        price: 10,
       },
       gamesFeatures: [],
       languages: [],
@@ -138,6 +133,7 @@ describe('InteractionService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
+      featured: false,
     });
 
     game2 = await gamesService.create({
@@ -162,12 +158,7 @@ describe('InteractionService', () => {
       tags: [],
       pricing: {
         free: false,
-        discount: false,
-        basePrice: 10,
-        discountPrice: 5,
-        discountStartDate: new Date(),
-        discountEndDate: new Date('2024-11-30'),
-        offerType: 'WEEKEND DEAL',
+        price: 10,
       },
       gamesFeatures: [],
       languages: [],
@@ -184,6 +175,7 @@ describe('InteractionService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
+      featured: false
     });
 
     game3 = await gamesService.create({
@@ -208,12 +200,7 @@ describe('InteractionService', () => {
       tags: [],
       pricing: {
         free: false,
-        discount: false,
-        basePrice: 10,
-        discountPrice: 5,
-        discountStartDate: new Date(),
-        discountEndDate: new Date('2024-11-20'),
-        offerType: 'WEEKEND DEAL',
+        price: 10,
       },
       gamesFeatures: [],
       languages: [],
@@ -230,6 +217,7 @@ describe('InteractionService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
+      featured: false
     });
 
     tag1 = await gamesTagsService.create('test1');

@@ -7,7 +7,7 @@ import type { Developer, Publisher } from '@repositories/sql/companies/company.e
 export class CompanyService {
   constructor(
     private readonly logger: Logger,
-    private readonly companyService: CompaniesService,
+    private readonly company: CompaniesService,
   ) {}
 
   /**
@@ -17,7 +17,7 @@ export class CompanyService {
   public async createPublisher(data: { name: string; website: string }): Promise<{ message: string }> {
     const { name, website } = data;
     this.logger.log(`Creating publisher with name ${name} and website ${website}`);
-    await this.companyService.create({ name, website }, 'publisher');
+    await this.company.create({ name, website }, 'publisher');
     return { message: 'Publisher created successfully' };
   }
 
@@ -28,7 +28,7 @@ export class CompanyService {
   public async createDeveloper(data: { name: string; website: string }): Promise<{ message: string }> {
     const { name, website } = data;
     this.logger.log(`Creating developer with name ${name} and website ${website}`);
-    await this.companyService.create({ name, website }, 'developer');
+    await this.company.create({ name, website }, 'developer');
     return { message: 'Developer created successfully' };
   }
 
@@ -39,7 +39,7 @@ export class CompanyService {
    */
   public async getPublisher(id: number): Promise<Publisher> {
     this.logger.log(`Retrieving publisher with ID ${id}`);
-    return await this.companyService.getById(id, 'publisher');
+    return await this.company.getById(id, 'publisher');
   }
 
   /**
@@ -49,7 +49,7 @@ export class CompanyService {
    */
   public async getDeveloper(id: number): Promise<Developer> {
     this.logger.log(`Retrieving developer with ID ${id}`);
-    return await this.companyService.getById(id, 'developer');
+    return await this.company.getById(id, 'developer');
   }
 
   /**
@@ -59,7 +59,7 @@ export class CompanyService {
    */
   public async getPublishers(ids: number[]): Promise<Publisher[]> {
     this.logger.log(`Retrieving publishers with IDs ${ids}`);
-    return await this.companyService.getByIds(ids, 'publisher');
+    return await this.company.getByIds(ids, 'publisher');
   }
 
   /**
@@ -69,7 +69,7 @@ export class CompanyService {
    */
   public async getDevelopers(ids: number[]): Promise<Developer[]> {
     this.logger.log(`Retrieving developers with IDs ${ids}`);
-    return await this.companyService.getByIds(ids, 'developer');
+    return await this.company.getByIds(ids, 'developer');
   }
 
   /**
@@ -78,7 +78,7 @@ export class CompanyService {
    */
   public async getAllPublishers(): Promise<Publisher[]> {
     this.logger.log(`Retrieving all publishers`);
-    return await this.companyService.getAll('id', 'asc', 'publishers');
+    return await this.company.getAll('id', 'asc', 'publishers');
   }
 
   /**
@@ -87,7 +87,7 @@ export class CompanyService {
    */
   public async getAllDevelopers(): Promise<Developer[]> {
     this.logger.log(`Retrieving all developers`);
-    return await this.companyService.getAll('id', 'asc', 'developers');
+    return await this.company.getAll('id', 'asc', 'developers');
   }
 
   /**
@@ -112,7 +112,7 @@ export class CompanyService {
         searchQuery,
       )}`,
     );
-    return await this.companyService.getCompaniesPaginated(page, limit, orderBy, order, 'publisher', searchQuery);
+    return await this.company.getCompaniesPaginated(page, limit, orderBy, order, 'publisher', searchQuery);
   }
 
   /**
@@ -137,7 +137,7 @@ export class CompanyService {
         searchQuery,
       )}}`,
     );
-    return await this.companyService.getCompaniesPaginated(page, limit, orderBy, order, 'developer', searchQuery);
+    return await this.company.getCompaniesPaginated(page, limit, orderBy, order, 'developer', searchQuery);
   }
 
   /**
@@ -149,8 +149,8 @@ export class CompanyService {
   public async updatePublisher(id: number, data: { name?: string; website?: string }): Promise<{ message: string }> {
     this.logger.log(`Updating publisher with ID ${id}`);
     Promise.all([
-      data.name && this.companyService.update(id, 'name', data.name, 'publisher'),
-      data.website && this.companyService.update(id, 'website', data.website, 'publisher'),
+      data.name && this.company.update(id, 'name', data.name, 'publisher'),
+      data.website && this.company.update(id, 'website', data.website, 'publisher'),
     ]);
 
     return { message: 'Publisher updated successfully' };
@@ -165,8 +165,8 @@ export class CompanyService {
   public async updateDeveloper(id: number, data: { name?: string; website?: string }): Promise<{ message: string }> {
     this.logger.log(`Updating developer with ID ${id}`);
     Promise.all([
-      data.name && this.companyService.update(id, 'name', data.name, 'developer'),
-      data.website && this.companyService.update(id, 'website', data.website, 'developer'),
+      data.name && this.company.update(id, 'name', data.name, 'developer'),
+      data.website && this.company.update(id, 'website', data.website, 'developer'),
     ]);
 
     return { message: 'Developer updated successfully' };
@@ -179,7 +179,7 @@ export class CompanyService {
    */
   public async deletePublisher(id: number): Promise<{ message: string }> {
     this.logger.log(`Deleting publisher with ID ${id}`);
-    await this.companyService.remove(id, 'publisher');
+    await this.company.remove(id, 'publisher');
 
     return { message: 'Publisher deleted successfully' };
   }
@@ -191,7 +191,7 @@ export class CompanyService {
    */
   public async deleteDeveloper(id: number): Promise<{ message: string }> {
     this.logger.log(`Deleting developer with ID ${id}`);
-    await this.companyService.remove(id, 'developer');
+    await this.company.remove(id, 'developer');
 
     return { message: 'Developer deleted successfully' };
   }

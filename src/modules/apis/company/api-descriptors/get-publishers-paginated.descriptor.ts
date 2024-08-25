@@ -1,8 +1,8 @@
 import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const getPublishersPaginatedDescriptor: ApiDescriptorOptions = {
-  summary: 'Get Publishers Paginated', 
-  description: 'Get publishers paginated with optional filtering', 
+  summary: 'Get Publishers Paginated',
+  description: 'Get publishers paginated with optional filtering',
   responses: [
     {
       status: 200,
@@ -17,7 +17,7 @@ export const getPublishersPaginatedDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  parameters: [
+  queries: [
     {
       name: 'page',
       type: Number,

@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, Repository } from 'typeorm';
+import { FindOptionsOrder, FindOptionsRelations, FindOptionsWhere, Like, Repository } from 'typeorm';
 import { CartItem, LibraryItem, User, WishlistItem } from '@repositories/sql/users/user.entity';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
 
@@ -122,6 +122,62 @@ export class UsersService {
     const user = await this.userRepository.findOne({ where: { phoneNumber }, relations: this.relations });
     if (!user) throw new NotFoundException(`User with phone number ${phoneNumber} not found`);
     return user;
+  }
+
+  /**
+   * Gets paginated user.
+   * @param {number} page - The current page number.
+   * @param {number} limit - The number of items per page.
+   * @param {string} orderBy - The field to order by.
+   * @param {('ASC' | 'DESC')} order - The order direction.
+   * @param {({ name?: string })} searchQuery - The search query.
+   * @returns {Promise<{ items: User[], total: number, totalPages: number }>} A promise that resolves to the paginated users.
+   */
+  public async getUsersPaginated(
+    page: number,
+    limit: number,
+    orderBy: 'username' | 'email' | 'country' | 'isVerified' | 'isAdmin' | 'createdAt',
+    order: 'ASC' | 'DESC',
+    searchQuery?: { username?: string; email?: string },
+  ): Promise<{ items: User[]; total: number; totalPages: number }> {
+    this.logger.log(`Getting users paginated: page ${page}, limit ${limit}, order by ${orderBy} ${order}`);
+
+    const where: FindOptionsWhere<User> = {};
+
+    if (searchQuery?.username) {
+      where.username = Like(`%${searchQuery.username}%`);
+    }
+    if (searchQuery?.email) {
+      where.email = Like(`%${searchQuery.email}%`);
+    }
+
+    const orderOptions: FindOptionsOrder<User> = {};
+
+    if (orderBy === 'username') {
+      orderOptions.username = order;
+    } else if (orderBy === 'email') {
+      orderOptions.email = order;
+    } else if ( orderBy === 'country') {
+      orderOptions.country = order;0
+    } else if (orderBy === 'isVerified') {
+      orderOptions.isVerified = order;
+    } else if (orderBy === 'isAdmin') {
+      orderOptions.isAdmin = order;
+    } else if (orderBy === 'createdAt') {
+      orderOptions.createdAt = order;
+    }
+
+    const [items, total] = await this.userRepository.findAndCount({
+      where,
+      relations: this.relations,
+      order: orderOptions,
+      skip: Math.max((page - 1) * limit, 0),
+      take: limit,
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return { items, total, totalPages };
   }
 
   /**

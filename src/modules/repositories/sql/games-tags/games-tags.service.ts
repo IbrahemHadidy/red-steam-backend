@@ -90,7 +90,7 @@ export class GamesTagsService {
    * @param {string} orderBy - The field to order by.
    * @param {('ASC' | 'DESC')} order - The order direction.
    * @param {({ name?: string })} searchQuery - The search query.
-   * @returns {Promise<{ items: GameTag[], total: number }>} A promise that resolves to the paginated tags.
+   * @returns {Promise<{ items: GameTag[], total: number, totalPages: number }>} A promise that resolves to the paginated tags.
    */
   public async getTagsPaginated(
     page: number,
@@ -111,7 +111,7 @@ export class GamesTagsService {
       where,
       relations: this.relations,
       order: { [orderBy]: order },
-      skip: (page - 1) * limit,
+      skip: Math.max((page - 1) * limit, 0),
       take: limit,
     });
 

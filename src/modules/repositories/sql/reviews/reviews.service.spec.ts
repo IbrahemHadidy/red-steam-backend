@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
 
-
 // Modules
 import { GamesModule } from '@repositories/sql/games/games.module';
 import { UsersModule } from '@repositories/sql/users/users.module';
@@ -103,12 +102,7 @@ describe('gamesService', () => {
       tags: [],
       pricing: {
         free: false,
-        discount: false,
-        basePrice: 10,
-        discountPrice: 5,
-        discountStartDate: new Date(),
-        discountEndDate: new Date('2024-10-30'),
-        offerType: 'SPECIAL PROMOTION',
+        price: 10,
       },
       gamesFeatures: [],
       languages: [],
@@ -125,6 +119,7 @@ describe('gamesService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
+      featured: false,
     });
 
     game2 = await gamesService.create({
@@ -149,12 +144,7 @@ describe('gamesService', () => {
       tags: [],
       pricing: {
         free: false,
-        discount: false,
-        basePrice: 10,
-        discountPrice: 5,
-        discountStartDate: new Date(),
-        discountEndDate: new Date('2024-11-30'),
-        offerType: 'WEEKEND DEAL',
+        price: 10,
       },
       gamesFeatures: [],
       languages: [],
@@ -171,6 +161,7 @@ describe('gamesService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
+      featured: false,
     });
 
     game3 = await gamesService.create({
@@ -195,12 +186,7 @@ describe('gamesService', () => {
       tags: [],
       pricing: {
         free: false,
-        discount: false,
-        basePrice: 10,
-        discountPrice: 5,
-        discountStartDate: new Date(),
-        discountEndDate: new Date('2024-12-30'),
-        offerType: 'SPECIAL PROMOTION',
+        price: 10,
       },
       gamesFeatures: [],
       languages: [],
@@ -217,6 +203,7 @@ describe('gamesService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
+      featured: false,
     });
 
     user = await usersService.create({
@@ -358,6 +345,50 @@ describe('gamesService', () => {
 
       // Assertions
       expect(result.length).toBe(1);
+    });
+  });
+
+  describe('getReviewsPaginated', () => {
+    it('should return an array of game reviews sorted by id', async () => {
+      const reviews = await reviewsService.getReviewsPaginated(0, 10, 'id', 'ASC');
+      expect(reviews.items.length).toEqual(4);
+      expect(reviews.items[0].id).toEqual(review.id);
+      expect(reviews.items[1].id).toEqual(review2.id);
+      expect(reviews.items[2].id).toEqual(review3.id);
+      expect(reviews.items[3].id).toEqual(review4.id);
+    });
+
+    it('should return an array of game reviews sorted by username', async () => {
+      const reviews = await reviewsService.getReviewsPaginated(0, 10, 'username', 'ASC');
+      expect(reviews.items.length).toEqual(4);
+      expect(reviews.items[0].user.username).toEqual('test');
+      expect(reviews.items[1].user.username).toEqual('test');
+      expect(reviews.items[2].user.username).toEqual('test2');
+      expect(reviews.items[3].user.username).toEqual('test2');
+    });
+
+    it('should return an array of game reviews sorted by gameName', async () => {
+      const reviews = await reviewsService.getReviewsPaginated(0, 10, 'gameName', 'ASC');
+      expect(reviews.items.length).toEqual(4);
+      expect(reviews.items[0].game.name).toEqual('Test Game');
+      expect(reviews.items[1].game.name).toEqual('Test Game');
+      expect(reviews.items[2].game.name).toEqual('Test Game2');
+      expect(reviews.items[3].game.name).toEqual('Test Game2');
+    });
+
+    it('should return an array of game reviews sorted by positive', async () => {
+      const reviews = await reviewsService.getReviewsPaginated(0, 10, 'rating', 'ASC');
+      expect(reviews.items.length).toEqual(4);
+      expect(reviews.items[2].positive).toEqual(true);
+      expect(reviews.items[3].positive).toEqual(true);
+      expect(reviews.items[0].positive).toEqual(false);
+      expect(reviews.items[1].positive).toEqual(false);
+    });
+
+    it('should return values with the given search', async () => {
+      const reviews = await reviewsService.getReviewsPaginated(0, 10, 'content', 'ASC', { content: 'Test Content 3' });
+      expect(reviews.items.length).toEqual(1);
+      expect(reviews.items[0].content).toEqual('Test Content 3');
     });
   });
 

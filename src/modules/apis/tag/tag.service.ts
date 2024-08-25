@@ -6,7 +6,7 @@ import type { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
 export class TagService {
   constructor(
     private readonly logger: Logger,
-    private readonly tagService: GamesTagsService,
+    private readonly tag: GamesTagsService,
   ) {}
 
   /**
@@ -16,7 +16,7 @@ export class TagService {
   public async createTag(data: { name: string }): Promise<{ message: string }> {
     const { name } = data;
     this.logger.log(`Creating tag with name ${name}`);
-    await this.tagService.create(name);
+    await this.tag.create(name);
     return { message: 'Tag created successfully' };
   }
 
@@ -27,7 +27,7 @@ export class TagService {
    */
   public async getTag(id: number) {
     this.logger.log(`Retrieving tag with ID ${id}`);
-    return this.tagService.getById(id);
+    return this.tag.getById(id);
   }
 
   /**
@@ -37,7 +37,7 @@ export class TagService {
    */
   public async getTags(ids: number[]) {
     this.logger.log(`Retrieving tags with IDs ${ids}`);
-    return this.tagService.getByIds(ids);
+    return this.tag.getByIds(ids);
   }
 
   /**
@@ -46,7 +46,7 @@ export class TagService {
    */
   public async getAllTags() {
     this.logger.log(`Retrieving all tags`);
-    return this.tagService.getAll('id', 'ASC');
+    return this.tag.getAll('id', 'ASC');
   }
 
   /**
@@ -69,7 +69,7 @@ export class TagService {
     this.logger.log(
       `Retrieving tags, page: ${page}, limit: ${limit}, order by: ${orderBy}, order: ${order}, search query: ${JSON.stringify(searchQuery)}`,
     );
-    return await this.tagService.getTagsPaginated(page, limit, orderBy, order, searchQuery);
+    return await this.tag.getTagsPaginated(page, limit, orderBy, order, searchQuery);
   }
 
   /**
@@ -81,7 +81,7 @@ export class TagService {
   public async updateTag(id: number, data: { name?: string; icon?: string }): Promise<{ message: string }> {
     const { name } = data;
     this.logger.log(`Updating tag with ID ${id}`);
-    await this.tagService.update(id, name);
+    await this.tag.update(id, name);
     return { message: 'tag updated successfully' };
   }
 
@@ -92,7 +92,7 @@ export class TagService {
    */
   public async deleteTag(id: number): Promise<{ message: string }> {
     this.logger.log(`Deleting tag with ID ${id}`);
-    await this.tagService.removeById(id);
+    await this.tag.removeById(id);
 
     return { message: 'Tag deleted successfully' };
   }

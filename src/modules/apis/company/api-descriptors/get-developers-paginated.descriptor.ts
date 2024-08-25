@@ -17,7 +17,7 @@ export const getDevelopersPaginatedDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  parameters: [
+  queries: [
     {
       name: 'page',
       type: Number,

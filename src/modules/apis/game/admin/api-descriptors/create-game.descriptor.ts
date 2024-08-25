@@ -1,5 +1,5 @@
 import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
-import { CreateGameDto } from '@apis/game/dtos/create-game.dto';
+import { CreateGameDto } from '@apis/game/admin/dtos/create-game.dto';
 export const createGameDescriptor: ApiDescriptorOptions = {
   summary: 'Create Game',
   description: 'Creates a new game',

@@ -77,7 +77,7 @@ export class GamesFeaturesService {
    * @param {string} orderBy - The field to order by.
    * @param {('ASC' | 'DESC')} order - The order direction.
    * @param {({name?: string})} searchQuery - The search query.
-   * @returns {Promise<{ items: GameFeature[], total: number }>} A promise that resolves to the paginated features.
+   * @returns {Promise<{ items: GameFeature[], total: number, totalPages: number }>} A promise that resolves to the paginated features.
    */
   public async getFeaturesPaginated(
     page: number,
@@ -98,7 +98,7 @@ export class GamesFeaturesService {
       where,
       relations: this.relations,
       order: { [orderBy]: order },
-      skip: (page - 1) * limit,
+      skip: Math.max((page - 1) * limit, 0),
       take: limit,
     });
 

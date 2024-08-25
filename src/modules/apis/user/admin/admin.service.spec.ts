@@ -127,7 +127,12 @@ describe('PaymentService', () => {
       tags: [],
       pricing: {
         free: false,
-        price: 5,
+        discount: false,
+        basePrice: 5,
+        discountPrice: 5,
+        discountStartDate: new Date(),
+        discountEndDate: new Date('2024-10-30'),
+        offerType: 'SPECIAL PROMOTION',
       },
       gamesFeatures: [],
       languages: [],
@@ -144,7 +149,6 @@ describe('PaymentService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
-      featured: false
     });
 
     game2 = await gamesService.create({
@@ -169,7 +173,12 @@ describe('PaymentService', () => {
       tags: [],
       pricing: {
         free: false,
-        price: 5,
+        discount: true,
+        basePrice: 10,
+        discountPrice: 5,
+        discountStartDate: new Date(),
+        discountEndDate: new Date('2024-11-30'),
+        offerType: 'WEEKEND DEAL',
       },
       gamesFeatures: [],
       languages: [],
@@ -186,7 +195,6 @@ describe('PaymentService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
-      featured: false
     });
   });
 

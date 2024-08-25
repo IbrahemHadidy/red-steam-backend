@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsOrder, FindOptionsWhere, FindOptionsRelations } from 'typeorm';
+import { Repository, FindOptionsOrder, FindOptionsWhere, FindOptionsRelations, Like } from 'typeorm';
 import { Review } from '@repositories/sql/reviews/review.entity';
 import { GamesService } from '@repositories/sql/games/games.service';
 import { UsersService } from '@repositories/sql/users/users.service';
@@ -14,7 +14,7 @@ export class ReviewsService {
     @InjectRepository(Review, 'sql')
     private readonly reviewRepository: Repository<Review>,
     private readonly gamesService: GamesService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
   ) {
     this.relations = { user: true, game: true };
   }
@@ -181,7 +181,7 @@ export class ReviewsService {
     this.logger.log(`Getting reviews for user with ID ${id}`);
 
     const orderOptions = this.createOrderOptions(orderBy, order);
-    
+
     // Create the where condition based on the filter
     const whereCondition: FindOptionsWhere<Review> = { user: { id } };
 
@@ -198,6 +198,63 @@ export class ReviewsService {
     });
 
     return reviews;
+  }
+
+  /**
+   * Gets paginated reviews.
+   * @param {number} page - The current page number.
+   * @param {number} limit - The number of items per page.
+   * @param {string} orderBy - The field to order by.
+   * @param {('ASC' | 'DESC')} order - The order direction.
+   * @param {({ name?: string })} searchQuery - The search query.
+   * @returns {Promise<{ items: Review[], total: number, totalPages: number }>} A promise that resolves to the paginated reviews.
+   */
+  public async getReviewsPaginated(
+    page: number,
+    limit: number,
+    orderBy: 'id' | 'username' | 'gameName' | 'content' | 'rating',
+    order: 'ASC' | 'DESC',
+    searchQuery?: { username?: string; gameName?: string; content?: string; },
+  ): Promise<{ items: Review[]; total: number; totalPages: number }> {
+    this.logger.log(`Getting reviews paginated: page ${page}, limit ${limit}, order by ${orderBy} ${order}`);
+
+    const where: FindOptionsWhere<Review> = {};
+
+    if (searchQuery?.username) {
+      where.user = { username: Like(`%${searchQuery.username}%`) };
+    }
+    if (searchQuery?.gameName) {
+      where.game = { name: Like(`%${searchQuery.gameName}%`) };
+    }
+    if (searchQuery?.content) {
+      where.content = Like(`%${searchQuery.content}%`);
+    }
+
+    const orderOptions: FindOptionsOrder<Review> = {};
+
+    if (orderBy === 'id') {
+      orderOptions.id = order;
+    } else if (orderBy === 'username') {
+      orderOptions.user = { username: order };
+    } else if (orderBy === 'gameName') {
+      orderOptions.game = { name: order };
+    } else if (orderBy === 'content') {
+      orderOptions.content = order;
+    } else if (orderBy === 'rating') {
+      orderOptions.positive = order;
+    }
+
+    const [items, total] = await this.reviewRepository.findAndCount({
+      where,
+      relations: this.relations,
+      order: orderOptions,
+      skip: Math.max((page - 1) * limit, 0),
+      take: limit,
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return { items, total, totalPages };
   }
 
   /**
@@ -323,7 +380,7 @@ export class ReviewsService {
   public async removeAll(): Promise<void> {
     // Log the initiation of deleting all reviews
     this.logger.log('Deleting all reviews');
-    
+
     const result = await this.reviewRepository.delete({});
     if (result.affected === undefined) throw new InternalServerErrorException('Failed to delete reviews');
   }
