@@ -33,7 +33,7 @@ export class AvatarStorageService extends DropboxService {
 
     // Validate file type (adapt based on your requirements)
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowedMimeTypes.includes(avatar.mimetype)) {
+    if (!this.isValidMimeType(avatar.mimetype, allowedMimeTypes)) {
       throw new InvalidFileException('Invalid file type. Only JPEG and PNG images allowed.');
     }
 
@@ -82,7 +82,7 @@ export class AvatarStorageService extends DropboxService {
     // Ensure valid access token
     await this.ensureValidAccessToken();
     
-    this.logger.error(`Deleting avatar file: ${filePath}`);
+    this.logger.log(`Deleting avatar file: ${filePath}`);
     await this.dropbox.filesDeleteV2({ path: filePath });
 
     // Log the success message

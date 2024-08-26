@@ -49,7 +49,7 @@ export class DataService {
       featured?: boolean;
       excludeMature?: boolean;
     },
-    pagination: { offset: string; limit: string },
+    pagination: { offset: number; limit: number },
   ): Promise<Game[]> {
     this.logger.log(`Finding games by criteria`);
 
@@ -71,8 +71,8 @@ export class DataService {
     };
 
     const games = await this.search.getByParameters(data, {
-      offset: Number(pagination.offset),
-      limit: Number(pagination.limit),
+      offset: pagination.offset,
+      limit: pagination.limit,
     });
 
     this.logger.log(`Found ${games.length} games`);
@@ -102,7 +102,10 @@ export class DataService {
   public async getByUserTags(tags: string[], limit: string): Promise<Game[]> {
     this.logger.log(`Finding games by tags`);
 
-    const games = await this.search.getByUserTags(tags.map((tag) => Number(tag)), Number(limit));
+    const games = await this.search.getByUserTags(
+      tags.map((tag) => Number(tag)),
+      Number(limit),
+    );
 
     this.logger.log(`Found ${games.length} games`);
     return games;
@@ -125,10 +128,7 @@ export class DataService {
    */
   public async getByOffers(): Promise<Game[]> {
     this.logger.log(`Finding games with offers`);
-    const games = await this.search.getByParameters(
-      { offers: true, sort: 'relevance' },
-      { limit: 24, offset: 0 },
-    );
+    const games = await this.search.getByParameters({ offers: true, sort: 'relevance' }, { limit: 24, offset: 0 });
     return games;
   }
 
@@ -158,10 +158,7 @@ export class DataService {
    */
   public async getBySpecials(): Promise<Game[]> {
     this.logger.log(`Finding games with specials`);
-    const games = await this.search.getByParameters(
-      { featured: true, sort: 'relevance' },
-      { limit: 10, offset: 0 },
-    );
+    const games = await this.search.getByParameters({ featured: true, sort: 'relevance' }, { limit: 10, offset: 0 });
     return games;
   }
 }

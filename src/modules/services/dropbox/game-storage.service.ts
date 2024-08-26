@@ -33,8 +33,8 @@ export class GameStorageService extends DropboxService {
 
     // Validate file type (adapt based on your requirements)
     const allowedMimeTypes = ['image/*', 'video/*'];
-    if (!allowedMimeTypes.includes(file.mimetype)) {
-      throw new InvalidFileException('Invalid file type. Only JPEG and PNG images allowed.');
+    if (!this.isValidMimeType(file.mimetype, allowedMimeTypes)) {
+      throw new InvalidFileException('Invalid file type.');
     }
 
     // Validate file isn't empty
@@ -74,18 +74,19 @@ export class GameStorageService extends DropboxService {
   }
 
   /**
-   * Deletes a media file from Dropbox
-   * @param {string} filePath - The path of the media file to delete
-   * @returns {Promise<void>} A promise that resolves when the media file is deleted
+   * Deletes a directory from Dropbox
+   * @param {string} gameName - The name of the game to delete
+   * @returns {Promise<void>} A promise that resolves when the directory is deleted
    */
-  public async deleteFile(filePath: string): Promise<void> {
+  public async deleteDirectory(gameName: string): Promise<void> {
     // Ensure valid access token
     await this.ensureValidAccessToken();
 
-    this.logger.error(`Deleting media file: ${filePath}`);
-    await this.dropbox.filesDeleteV2({ path: filePath });
+    const directoryPath = `${this.gameFolderPath}/${gameName}`;
+    this.logger.log(`Deleting directory: ${directoryPath}`);
+    await this.dropbox.filesDeleteV2({ path: directoryPath });
 
     // Log the success message
-    this.logger.log(`Media file ${filePath} deleted successfully`);
+    this.logger.log(`Directory ${directoryPath} deleted successfully`);
   }
 }

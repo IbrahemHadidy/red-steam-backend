@@ -55,7 +55,15 @@ export class GameDataDto {
 
   @Expose()
   @Type(() => PlatformEntryDto)
-  platforms: PlatformEntryDto[];
+  platformEntries: PlatformEntryDto[];
+
+  @Expose()
+  @Type(() => LanguagesDto)
+  languages: LanguagesDto[];
+
+  @Expose()
+  @Type(() => languageSupportDto)
+  languageSupport: languageSupportDto[];
 
   @Expose()
   link: string;
@@ -144,6 +152,28 @@ class PlatformEntryDto {
 
   @Expose()
   mac: boolean;
+}
+
+class LanguagesDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  name: string;
+}
+
+class languageSupportDto {
+  @Expose()
+  name: string;
+
+  @Expose()
+  interface: boolean;
+
+  @Expose()
+  fullAudio: boolean;
+
+  @Expose()
+  subtitles: boolean;
 }
 
 class SystemRequirementEntryDto {
@@ -250,7 +280,7 @@ class GameFeatureDto {
   name: string;
 
   @Expose()
-  description: string;
+  icon: { type: string; data: number[] };
 }
 
 class reviewDto {

@@ -1,9 +1,12 @@
+import path from 'path';
 import { Injectable, Logger } from '@nestjs/common';
 
 import { GamesService } from '@repositories/sql/games/games.service';
 import { GameStorageService } from '@services/dropbox/game-storage.service';
 
 import type { File } from '@nest-lab/fastify-multer';
+import type { ImageEntry, ThumbnailsEntry, VideoEntry } from '@repositories/sql/games/game.entity';
+
 interface CreateData {
   name: string;
   category: string;
@@ -37,14 +40,14 @@ interface CreateData {
     basePrice?: number;
   };
   tags: number[];
-  features: number[];
+  gamesFeatures: number[];
   languages: {
     name: string;
     interface: boolean;
     fullAudio: boolean;
     subtitles: boolean;
   }[];
-  platforms: {
+  platformEntries: {
     win: boolean;
     mac: boolean;
   };
@@ -75,7 +78,7 @@ interface CreateData {
       vrSupport?: string;
     };
   };
-  link: string;
+  link?: string;
   about: string;
   mature: boolean;
   matureDescription?: string;
@@ -98,62 +101,95 @@ export class AdminService {
   public async createGame(data: CreateData): Promise<{ message: string }> {
     this.logger.log(`Creating game`);
 
-    const thumbnailEntries = {
+    const thumbnailEntries: ThumbnailsEntry = {
       mainImage: (
-        await this.storage.uploadFile(data.thumbnailEntries.mainImage, data.name, `thumbnails/mainImage`)
+        await this.storage.uploadFile(
+          data.thumbnailEntries.mainImage,
+          data.name,
+          `thumbnails/mainImage${path.extname(data.thumbnailEntries.mainImage.originalname)}`,
+        )
       ).sharedLink,
       backgroundImage: (
         await this.storage.uploadFile(
           data.thumbnailEntries.backgroundImage,
           data.name,
-          `thumbnails/backgroundImage`,
+          `thumbnails/backgroundImage${path.extname(data.thumbnailEntries.backgroundImage.originalname)}`,
         )
       ).sharedLink,
-      menuImg: (await this.storage.uploadFile(data.thumbnailEntries.menuImg, data.name, `thumbnails/menuImg`))
-        .sharedLink,
+      menuImg: (
+        await this.storage.uploadFile(
+          data.thumbnailEntries.menuImg,
+          data.name,
+          `thumbnails/menuImg${path.extname(data.thumbnailEntries.menuImg.originalname)}`,
+        )
+      ).sharedLink,
       horizontalHeaderImage: (
         await this.storage.uploadFile(
           data.thumbnailEntries.horizontalHeaderImage,
           data.name,
-          `thumbnails/horizontalHeaderImage`,
+          `thumbnails/horizontalHeaderImage${path.extname(data.thumbnailEntries.horizontalHeaderImage.originalname)}`,
         )
       ).sharedLink,
       verticalHeaderImage: (
         await this.storage.uploadFile(
           data.thumbnailEntries.verticalHeaderImage,
           data.name,
-          `thumbnails/verticalHeaderImage`,
+          `thumbnails/verticalHeaderImage${path.extname(data.thumbnailEntries.verticalHeaderImage.originalname)}`,
         )
       ).sharedLink,
       smallHeaderImage: (
         await this.storage.uploadFile(
           data.thumbnailEntries.smallHeaderImage,
           data.name,
-          `thumbnails/smallHeaderImage`,
+          `thumbnails/smallHeaderImage${path.extname(data.thumbnailEntries.smallHeaderImage.originalname)}`,
         )
       ).sharedLink,
       searchImage: (
-        await this.storage.uploadFile(data.thumbnailEntries.searchImage, data.name, `thumbnails/searchImage`)
+        await this.storage.uploadFile(
+          data.thumbnailEntries.searchImage,
+          data.name,
+          `thumbnails/searchImage${path.extname(data.thumbnailEntries.searchImage.originalname)}`,
+        )
       ).sharedLink,
-      tabImage: (await this.storage.uploadFile(data.thumbnailEntries.tabImage, data.name, `thumbnails/tabImage`))
-        .sharedLink,
+      tabImage: (
+        await this.storage.uploadFile(
+          data.thumbnailEntries.tabImage,
+          data.name,
+          `thumbnails/tabImage${path.extname(data.thumbnailEntries.tabImage.originalname)}`,
+        )
+      ).sharedLink,
     };
 
-    const imageEntries = await Promise.all(
+    const imageEntries: ImageEntry[] = await Promise.all(
       data.imageEntries.map(async (imageEntry) => ({
-        ...imageEntry,
-        link: (await this.storage.uploadFile(imageEntry.image, data.name, `images/${imageEntry.order}`))
-          .sharedLink,
+        featured: imageEntry.featured,
+        order: imageEntry.order,
+        link: (
+          await this.storage.uploadFile(
+            imageEntry.image,
+            data.name,
+            `images/${imageEntry.order}${path.extname(imageEntry.image.originalname)}`,
+          )
+        ).sharedLink,
       })),
     );
 
-    const videoEntries = await Promise.all(
+    const videoEntries: VideoEntry[] = await Promise.all(
       data.videoEntries.map(async (videoEntry) => ({
-        ...videoEntry,
-        link: (await this.storage.uploadFile(videoEntry.video, data.name, `videos/${videoEntry.order}`))
-          .sharedLink,
+        order: videoEntry.order,
+        link: (
+          await this.storage.uploadFile(
+            videoEntry.video,
+            data.name,
+            `videos/${videoEntry.order}${path.extname(videoEntry.video.originalname)}`,
+          )
+        ).sharedLink,
         posterLink: (
-          await this.storage.uploadFile(videoEntry.poster, data.name, `videos/${videoEntry.order}-poster`)
+          await this.storage.uploadFile(
+            videoEntry.poster,
+            data.name,
+            `videos/${videoEntry.order}-poster${path.extname(videoEntry.poster.originalname)}`,
+          )
         ).sharedLink,
       })),
     );
@@ -171,9 +207,9 @@ export class AdminService {
       videoEntries,
       pricing: data.pricing,
       tags: data.tags,
-      gamesFeatures: data.features,
+      gamesFeatures: data.gamesFeatures,
       languages: data.languages,
-      platformEntries: data.platforms,
+      platformEntries: data.platformEntries,
       link: data.link,
       about: data.about,
       mature: data.mature,
@@ -194,6 +230,10 @@ export class AdminService {
    */
   public async delete(id: string): Promise<{ message: string }> {
     this.logger.log(`Deleting game with ID: ${id}`);
+    
+    const game = await this.game.getById(Number(id));
+
+    await this.storage.deleteDirectory(game.name);
     await this.game.remove(Number(id));
 
     return { message: 'Game deleted successfully' };

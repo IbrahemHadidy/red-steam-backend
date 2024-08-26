@@ -48,27 +48,45 @@ export class DataController {
   @Get('search')
   @HttpCode(200)
   async getByParameters(
-    @Query()
-    searchData: {
-      sort?: 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews';
-      partialName?: string;
-      maxPrice?: string;
-      tags?: string[];
-      excludeTags?: string[];
-      paid?: boolean;
-      offers?: boolean;
-      platforms?: ('win' | 'mac')[];
-      publishers?: string[];
-      developers?: string[];
-      features?: string[];
-      languages?: string[];
-      featured?: boolean;
-      excludeMature?: boolean;
-    },
-    @Query()
-    pagination: { offset: string; limit: string },
+    @Query('sort') sort?: string,
+    @Query('partialName') partialName?: string,
+    @Query('maxPrice') maxPrice?: string,
+    @Query('tags') tags?: string,
+    @Query('excludeTags') excludeTags?: string,
+    @Query('paid') paid?: string,
+    @Query('offers') offers?: string,
+    @Query('platforms') platforms?: string,
+    @Query('publishers') publishers?: string,
+    @Query('developers') developers?: string,
+    @Query('features') features?: string,
+    @Query('languages') languages?: string,
+    @Query('featured') featured?: string,
+    @Query('excludeMature') excludeMature?: string,
+    @Query('offset') offset?: string,
+    @Query('limit') limit?: string,
   ) {
-    const result = await this.dataService.getByParameters(searchData, pagination);
+    const result = await this.dataService.getByParameters(
+      {
+        sort: sort as 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews',
+        partialName,
+        maxPrice,
+        tags: tags ? tags.split(',') : [],
+        excludeTags: excludeTags ? excludeTags.split(',') : [],
+        paid: paid === 'true',
+        offers: offers === 'true',
+        platforms: platforms ? (platforms.split(',') as ('win' | 'mac')[]) : [],
+        publishers: publishers ? publishers.split(',') : [],
+        developers: developers ? developers.split(',') : [],
+        features: features ? features.split(',') : [],
+        languages: languages ? languages.split(',') : [],
+        featured: featured === 'true',
+        excludeMature: excludeMature === 'true',
+      },
+      {
+        offset: parseInt(offset, 10) || 0,
+        limit: parseInt(limit, 10) || 10,
+      },
+    );
 
     // Send the response
     return result;

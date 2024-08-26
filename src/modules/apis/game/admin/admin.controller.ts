@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,6 +10,8 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
+import { validate } from 'class-validator';
 import { ApiTags } from '@nestjs/swagger';
 import { AnyFilesInterceptor } from '@nest-lab/fastify-multer';
 
@@ -26,8 +29,8 @@ import { AdminService } from '@apis/game/admin/admin.service';
 import { CreateGameDto } from '@apis/game/admin/dtos/create-game.dto';
 
 // importing swagger descriptors
-import { deleteGameDescriptor } from '@apis/game/admin/api-descriptors/delete-game.descriptor'
-import { createGameDescriptor } from '@apis/game/admin/api-descriptors/create-game.descriptor'
+import { deleteGameDescriptor } from '@apis/game/admin/api-descriptors/delete-game.descriptor';
+import { createGameDescriptor } from '@apis/game/admin/api-descriptors/create-game.descriptor';
 
 import type { File } from '@nest-lab/fastify-multer';
 
@@ -41,14 +44,28 @@ export class AdminController {
   @UseInterceptors(AnyFilesInterceptor())
   @Post()
   @HttpCode(201)
-  async create(@UploadedFiles() media: File[], @Body() bodyData: CreateGameDto) {
-    const filesMap = media.reduce((acc, file) => {
+  async create(@UploadedFiles() media: File[], @Body() bodyData: { body: string }) {
+    // Parse the JSON body
+    const parsedBodyData = JSON.parse(bodyData.body);
+
+    // Convert parsed body data to CreateGameDto instance
+    const body = plainToClass(CreateGameDto, parsedBodyData, { enableImplicitConversion: true });
+
+    // Validate the parsed body data
+    const errors = await validate(body);
+    if (errors.length > 0) {
+      throw new BadRequestException('Invalid body data: ' + errors.map((error) => error.toString()).join(', '));
+    }
+
+    // Process files and map them to the appropriate fields
+    const filesMap: { [fieldname: string]: File } = media.reduce((acc, file) => {
       acc[file.fieldname] = file;
       return acc;
     }, {});
 
+    // Map the files to the DTO structure
     const data = {
-      ...bodyData,
+      ...body,
       thumbnailEntries: {
         mainImage: filesMap['mainImage'],
         backgroundImage: filesMap['backgroundImage'],
@@ -59,20 +76,21 @@ export class AdminController {
         searchImage: filesMap['searchImage'],
         tabImage: filesMap['tabImage'],
       },
-      imageEntries: bodyData.imageEntries.map((imageEntry) => ({
+      imageEntries: body.imageEntries.map((imageEntry) => ({
         ...imageEntry,
         image: filesMap[imageEntry.order.toString()],
       })),
-      videoEntries: bodyData.videoEntries.map((videoEntry) => ({
+      videoEntries: body.videoEntries.map((videoEntry) => ({
         ...videoEntry,
         video: filesMap[videoEntry.order.toString()],
         poster: filesMap[`${videoEntry.order.toString()}-poster`],
       })),
     };
 
+    // Pass the constructed data object to the service
     const result = await this.adminService.createGame(data);
 
-    // Send the response
+    // Return the result
     return result;
   }
 

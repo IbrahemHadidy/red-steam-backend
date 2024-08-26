@@ -75,4 +75,16 @@ export class DropboxService {
       this.logger.log('Access token refreshed.');
     }
   }
+
+  protected isValidMimeType(mimeType: string, allowedMimeTypes: string[]): boolean {
+    return allowedMimeTypes.some((pattern) => {
+      // Handle exact matches
+      if (pattern === mimeType) {
+        return true;
+      }
+      // Handle wildcard patterns
+      const regex = new RegExp('^' + pattern.replace('*', '.*') + '$');
+      return regex.test(mimeType);
+    });
+  }
 }

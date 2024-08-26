@@ -79,7 +79,7 @@ export class FeatureController {
       Number(limit),
       orderBy,
       order,
-      searchQuery ? JSON.parse(searchQuery) : {},
+      searchQuery ? JSON.parse(decodeURIComponent(searchQuery)) : {},
     );
 
     // Send the response
