@@ -1,4 +1,5 @@
-import { ApiDescriptorOptions } from "@decorators/api-descriptor.decorator";
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const getFeatureDescriptor: ApiDescriptorOptions = {
   summary: 'Get Feature',

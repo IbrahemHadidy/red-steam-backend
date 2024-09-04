@@ -1,24 +1,29 @@
-import { Controller, Get, HttpCode, Param, Post, UseGuards, Body, Query, Delete, Put } from '@nestjs/common';
+// NestJS
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+
+// Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
-import { TagService } from '@apis/tag/tag.service';
 
 // Guards
-import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 import { AdminGuard } from '@guards/admin.guard';
+import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 
-// Dtos
+// Services
+import { TagService } from '@apis/tag/tag.service';
+
+// DTOs
 import { CreateTagDto } from '@apis/tag/dtos/create-tag.dto';
 import { UpdateTagDto } from '@apis/tag/dtos/update-tag.dto';
 
 // Swagger descriptors
 import { createTagDescriptor } from '@apis/tag/api-descriptors/create-tag.descriptor';
-import { getTagDescriptor } from '@apis/tag/api-descriptors/get-tag.descriptor';
-import { getTagsDescriptor } from '@apis/tag/api-descriptors/get-tags.descriptor';
-import { getAllTagsDescriptor } from '@apis/tag/api-descriptors/get-all-tags.descriptor';
-import { getTagsPaginatedDescriptor } from '@apis/tag/api-descriptors/get-tags-paginated.descriptor';
-import { updateTagDescriptor } from '@apis/tag/api-descriptors/update-tag.descriptor';
 import { deleteTagDescriptor } from '@apis/tag/api-descriptors/delete-tag.descriptor';
+import { getAllTagsDescriptor } from '@apis/tag/api-descriptors/get-all-tags.descriptor';
+import { getTagDescriptor } from '@apis/tag/api-descriptors/get-tag.descriptor';
+import { getTagsPaginatedDescriptor } from '@apis/tag/api-descriptors/get-tags-paginated.descriptor';
+import { getTagsDescriptor } from '@apis/tag/api-descriptors/get-tags.descriptor';
+import { updateTagDescriptor } from '@apis/tag/api-descriptors/update-tag.descriptor';
 
 @Controller('tag')
 @ApiTags('Tag')

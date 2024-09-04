@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { AddToLibraryDto } from '@apis/user/interaction/dtos/add-to-library.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const addToLibraryDescriptor: ApiDescriptorOptions = {
   summary: 'Add Items To Library',

@@ -1,8 +1,12 @@
+// NestJS
 import { Injectable, Logger } from '@nestjs/common';
-import { UsersService } from '@repositories/sql/users/users.service';
+
+// Services
 import { GamesService } from '@repositories/sql/games/games.service';
 import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
-import { UserService } from '@apis/user/user.service';
+
+import { UserService } from '@apis/user/user.service'; // Api service (The Extended Service)
+import { UsersService } from '@repositories/sql/users/users.service'; // Repository service (The Injected Service)
 
 @Injectable()
 export class InteractionService extends UserService {

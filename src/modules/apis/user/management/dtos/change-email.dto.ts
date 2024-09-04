@@ -1,5 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+// Class-validator
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
+
+// Swagger
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ChangeEmailDto {
   @ApiProperty({ description: 'Current email', example: 'enter current email here', required: true })

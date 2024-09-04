@@ -1,32 +1,45 @@
+// NestJS
 import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+
+// Fastify
 import { FastifyRequest as Request } from 'fastify';
-import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
+
+// Serializer decorator
 import { Serialize } from '@decorators/serialize.decorator';
+
+// Mask Email decorator
 import { MaskEmail } from '@decorators/mask-email.decorator';
+
+// Swagger
+import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
+import { ApiTags } from '@nestjs/swagger';
+
+// Guards
 import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 import { JwtRefreshAuthGuard } from '@guards/jwt-refresh-auth.guard';
+
+// Services
 import { AuthService } from '@apis/user/auth/auth.service';
 
-// importing dtos
-import { SignupDto } from '@apis/user/auth/dtos/signup.dto';
+// DTOs
 import { LoginDto } from '@apis/user/auth/dtos/login.dto';
+import { SignupDto } from '@apis/user/auth/dtos/signup.dto';
 import { VerifyEmailDto } from '@apis/user/auth/dtos/verify-email.dto';
 
-// importing serializer dtos
+// Serializer DTOs
 import { NestedDataDto } from '@apis/user/serializer-dtos/nested-data.dto';
 
-// importing swagger descriptors
-import { signupDescriptor } from '@apis/user/auth/api-descriptors/signup.descriptor';
-import { loginDescriptor } from '@apis/user/auth/api-descriptors/login.descriptor';
+// Swagger descriptors
 import { autoLoginDescriptor } from '@apis/user/auth/api-descriptors/auto-login.descriptor';
+import { loginDescriptor } from '@apis/user/auth/api-descriptors/login.descriptor';
 import { logoutDescriptor } from '@apis/user/auth/api-descriptors/logout.discriptor';
 import { refreshTokenDescriptor } from '@apis/user/auth/api-descriptors/refresh-token.descriptor';
+import { resendVerificationTokenDescriptor } from '@apis/user/auth/api-descriptors/resend-verification-token.descriptor';
+import { signupDescriptor } from '@apis/user/auth/api-descriptors/signup.descriptor';
+import { updateTokensDescriptor } from '@apis/user/auth/api-descriptors/update-tokens.descriptor';
 import { userDataDescriptor } from '@apis/user/auth/api-descriptors/user-data.descriptor';
 import { verificationStatusDescriptor } from '@apis/user/auth/api-descriptors/verification-status.descriptor';
-import { resendVerificationTokenDescriptor } from '@apis/user/auth/api-descriptors/resend-verification-token.descriptor';
 import { verifyEmailDescriptor } from '@apis/user/auth/api-descriptors/verify-email.descriptor';
-import { updateTokensDescriptor } from '@apis/user/auth/api-descriptors/update-tokens.descriptor';
 import { waitingTimeDescriptor } from '@apis/user/auth/api-descriptors/waiting-time.descriptor';
 
 @ApiTags('User Authentication')

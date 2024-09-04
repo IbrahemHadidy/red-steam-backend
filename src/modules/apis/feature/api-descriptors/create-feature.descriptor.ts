@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { CreateFeatureDto } from '@apis/feature/dtos/create-feature.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const createFeatureDescriptor: ApiDescriptorOptions = {
   summary: 'Create Feature',

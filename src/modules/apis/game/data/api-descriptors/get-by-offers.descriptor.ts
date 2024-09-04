@@ -1,4 +1,5 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const getByOffersDescriptor: ApiDescriptorOptions = {
   summary: 'Get Games By Offers',

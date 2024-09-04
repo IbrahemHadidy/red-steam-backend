@@ -1,4 +1,7 @@
+// Class-validator
 import { IsArray, IsNumber, IsOptional } from 'class-validator';
+
+// Swagger
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RemoveFromLibraryDto {

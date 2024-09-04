@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { VerifyEmailDto } from '@apis/user/auth/dtos/verify-email.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const verifyEmailDescriptor: ApiDescriptorOptions = {
   summary: 'Verify Email',

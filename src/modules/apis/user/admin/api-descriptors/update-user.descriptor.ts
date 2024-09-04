@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { UpdateUserDto } from '@apis/user/admin/dtos/update-user.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const updateUserDescriptor: ApiDescriptorOptions = {
   summary: 'Update User',

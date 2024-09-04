@@ -1,30 +1,31 @@
+// NestJS
 import { Logger, Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 
 // Modules
-import { PaypalModule } from '@services/paypal/paypal.module';
-import { NodeMailerModule } from '@services/node-mailer/node-mailer.module';
-import { DropboxModule } from '@services/dropbox/dropbox.module';
-import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
+import { JwtModule } from '@nestjs/jwt';
 import { DropboxTokensModule } from '@repositories/mongo/dropbox-tokens/token-blacklist.module';
+import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
 import { GamesModule } from '@repositories/sql/games/games.module';
-import { UsersModule } from '@repositories/sql/users/users.module';
 import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
+import { UsersModule } from '@repositories/sql/users/users.module';
+import { DropboxModule } from '@services/dropbox/dropbox.module';
+import { NodeMailerModule } from '@services/node-mailer/node-mailer.module';
+import { PaypalModule } from '@services/paypal/paypal.module';
 
 // Services
-import { UserService } from '@apis/user/user.service';
-import { AuthService } from '@apis/user/auth/auth.service';
-import { ManagementService } from '@apis/user/management/management.service';
-import { InteractionService } from '@apis/user/interaction/interaction.service';
-import { PaymentService } from '@apis/user/payment/payment.service';
 import { AdminService } from '@apis/user/admin/admin.service';
+import { AuthService } from '@apis/user/auth/auth.service';
+import { InteractionService } from '@apis/user/interaction/interaction.service';
+import { ManagementService } from '@apis/user/management/management.service';
+import { PaymentService } from '@apis/user/payment/payment.service';
+import { UserService } from '@apis/user/user.service';
 
 // Controllers
-import { AuthController } from '@apis/user/auth/auth.controller';
-import { ManagementController } from '@apis/user/management/management.controller';
-import { InteractionController } from '@apis/user/interaction/interaction.controller';
-import { PaymentController } from '@apis/user/payment/payment.controller';
 import { AdminController } from '@apis/user/admin/admin.controller';
+import { AuthController } from '@apis/user/auth/auth.controller';
+import { InteractionController } from '@apis/user/interaction/interaction.controller';
+import { ManagementController } from '@apis/user/management/management.controller';
+import { PaymentController } from '@apis/user/payment/payment.controller';
 
 @Module({
   imports: [

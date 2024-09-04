@@ -1,10 +1,17 @@
+// NestJS
 import { Injectable, Logger } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+
+// Sercices
+import { MailerService } from '@nestjs-modules/mailer';
+
+// Templates
 import { emailVerification } from '@services/node-mailer/templates/email-verification';
 import { passwordReset } from '@services/node-mailer/templates/password-reset';
-import { paymentConfirmation, gameCard } from '@services/node-mailer/templates/payment-confirmation';
-import { Game } from '@repositories/sql/games/game.entity';
+import { gameCard, paymentConfirmation } from '@services/node-mailer/templates/payment-confirmation';
+
+// Types
+import type { Game } from '@repositories/sql/games/game.entity';
 
 @Injectable()
 export class NodeMailerService {

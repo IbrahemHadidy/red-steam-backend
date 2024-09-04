@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { SignupDto } from '@apis/user/auth/dtos/signup.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const signupDescriptor: ApiDescriptorOptions = {
   summary: 'Register User',

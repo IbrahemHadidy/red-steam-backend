@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { ChangeUsernameDto } from '@apis/user/management/dtos/change-username.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const changeUsernameDescriptor: ApiDescriptorOptions = {
   summary: 'Change Username',

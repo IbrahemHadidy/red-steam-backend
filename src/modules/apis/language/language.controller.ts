@@ -1,24 +1,29 @@
-import { Controller, Get, HttpCode, Param, Post, UseGuards, Body, Query, Delete, Put } from '@nestjs/common';
+// NestJS
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+
+// Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
-import { LanguageService } from '@apis/language/language.service';
 
 // Guards
-import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 import { AdminGuard } from '@guards/admin.guard';
+import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 
-// Dtos
+// Services
+import { LanguageService } from '@apis/language/language.service';
+
+// DTOs
 import { CreateLanguageDto } from '@apis/language/dtos/create-language.dto';
 import { UpdateLanguageDto } from '@apis/language/dtos/update-language.dto';
 
 // Swagger descriptors
 import { createLanguageDescriptor } from '@apis/language/api-descriptors/create-language.descriptor';
-import { getLanguageDescriptor } from '@apis/language/api-descriptors/get-language.descriptor';
-import { getLanguagesDescriptor } from '@apis/language/api-descriptors/get-languages.descriptor';
-import { getAllLanguagesDescriptor } from '@apis/language/api-descriptors/get-all-languages.descriptor';
-import { getLanguagesPaginatedDescriptor } from '@apis/language/api-descriptors/get-languages-paginated.descriptor';
-import { updateLanguageDescriptor } from '@apis/language/api-descriptors/update-language.descriptor';
 import { deleteLanguageDescriptor } from '@apis/language/api-descriptors/delete-language.descriptor';
+import { getAllLanguagesDescriptor } from '@apis/language/api-descriptors/get-all-languages.descriptor';
+import { getLanguageDescriptor } from '@apis/language/api-descriptors/get-language.descriptor';
+import { getLanguagesPaginatedDescriptor } from '@apis/language/api-descriptors/get-languages-paginated.descriptor';
+import { getLanguagesDescriptor } from '@apis/language/api-descriptors/get-languages.descriptor';
+import { updateLanguageDescriptor } from '@apis/language/api-descriptors/update-language.descriptor';
 
 @Controller('language')
 @ApiTags('Language')

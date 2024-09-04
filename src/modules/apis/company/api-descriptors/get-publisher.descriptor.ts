@@ -1,4 +1,5 @@
-import { ApiDescriptorOptions } from "@decorators/api-descriptor.decorator";
+// Types
+import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const getPublisherDescriptor: ApiDescriptorOptions = {
   summary: 'Get Publisher',

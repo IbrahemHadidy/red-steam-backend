@@ -1,9 +1,11 @@
+// NestJS
 import { Logger, Module } from '@nestjs/common';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 
-// Modules
-import { DatabaseModule } from '@services/database/database.module';
+// TypeORM
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+
+// SQL Modules
 import { CompaniesModule } from '@repositories/sql/companies/companies.module';
 import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
 import { GamesLanguagesModule } from '@repositories/sql/games-languages/games-languages.module';
@@ -12,6 +14,7 @@ import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module'
 import { GamesModule } from '@repositories/sql/games/games.module';
 import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
 import { UsersModule } from '@repositories/sql/users/users.module';
+import { DatabaseModule } from '@services/database/database.module';
 
 // DB Config
 import { DatabaseService } from '@services/database/database.service';

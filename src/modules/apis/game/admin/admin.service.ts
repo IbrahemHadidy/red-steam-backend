@@ -1,89 +1,17 @@
+// NodeJS path
 import path from 'path';
+
+// NestJS
 import { Injectable, Logger } from '@nestjs/common';
 
+// Services
 import { GamesService } from '@repositories/sql/games/games.service';
 import { GameStorageService } from '@services/dropbox/game-storage.service';
 
+// Types
 import type { File } from '@nest-lab/fastify-multer';
 import type { ImageEntry, ThumbnailsEntry, VideoEntry } from '@repositories/sql/games/game.entity';
-
-interface CreateData {
-  name: string;
-  category: string;
-  description: string;
-  releaseDate: Date;
-  featured: boolean;
-  publishers: number[];
-  developers: number[];
-  thumbnailEntries: {
-    mainImage: File;
-    backgroundImage: File;
-    menuImg: File;
-    horizontalHeaderImage: File;
-    verticalHeaderImage: File;
-    smallHeaderImage: File;
-    searchImage: File;
-    tabImage: File;
-  };
-  imageEntries: {
-    image: File;
-    order: number;
-    featured?: boolean;
-  }[];
-  videoEntries: {
-    video: File;
-    poster: File;
-    order: number;
-  }[];
-  pricing: {
-    free: boolean;
-    basePrice?: number;
-  };
-  tags: number[];
-  gamesFeatures: number[];
-  languages: {
-    name: string;
-    interface: boolean;
-    fullAudio: boolean;
-    subtitles: boolean;
-  }[];
-  platformEntries: {
-    win: boolean;
-    mac: boolean;
-  };
-  systemRequirements: {
-    req64?: boolean;
-    mini: {
-      os?: string;
-      cpu?: string;
-      ram?: string;
-      gpu?: string;
-      dx?: string;
-      network?: string;
-      storage?: string;
-      additionalNotes?: string;
-      soundCard?: string;
-      vrSupport?: string;
-    };
-    recommended: {
-      os?: string;
-      cpu?: string;
-      ram?: string;
-      gpu?: string;
-      dx?: string;
-      network?: string;
-      storage?: string;
-      additionalNotes?: string;
-      soundCard?: string;
-      vrSupport?: string;
-    };
-  };
-  link?: string;
-  about: string;
-  mature: boolean;
-  matureDescription?: string;
-  legal?: string;
-}
+import type { CreateData } from './admin.types';
 
 @Injectable()
 export class AdminService {
@@ -94,6 +22,18 @@ export class AdminService {
   ) {}
 
   /**
+   * Upload a file sequentially
+   * @param file The file to upload
+   * @param name The name of the file
+   * @param filePath The path of the file
+   * @returns The shared link of the file
+   */
+  private async uploadFileSequentially(file: File, name: string, filePath: string): Promise<string> {
+    const result = await this.storage.uploadFile(file, name, filePath);
+    return result.sharedLink;
+  }
+
+  /**
    * Create a new game
    * @param data An object containing the game data
    * @returns
@@ -101,99 +41,86 @@ export class AdminService {
   public async createGame(data: CreateData): Promise<{ message: string }> {
     this.logger.log(`Creating game`);
 
+    // Upload thumbnail images sequentially
     const thumbnailEntries: ThumbnailsEntry = {
-      mainImage: (
-        await this.storage.uploadFile(
-          data.thumbnailEntries.mainImage,
-          data.name,
-          `thumbnails/mainImage${path.extname(data.thumbnailEntries.mainImage.originalname)}`,
-        )
-      ).sharedLink,
-      backgroundImage: (
-        await this.storage.uploadFile(
-          data.thumbnailEntries.backgroundImage,
-          data.name,
-          `thumbnails/backgroundImage${path.extname(data.thumbnailEntries.backgroundImage.originalname)}`,
-        )
-      ).sharedLink,
-      menuImg: (
-        await this.storage.uploadFile(
-          data.thumbnailEntries.menuImg,
-          data.name,
-          `thumbnails/menuImg${path.extname(data.thumbnailEntries.menuImg.originalname)}`,
-        )
-      ).sharedLink,
-      horizontalHeaderImage: (
-        await this.storage.uploadFile(
-          data.thumbnailEntries.horizontalHeaderImage,
-          data.name,
-          `thumbnails/horizontalHeaderImage${path.extname(data.thumbnailEntries.horizontalHeaderImage.originalname)}`,
-        )
-      ).sharedLink,
-      verticalHeaderImage: (
-        await this.storage.uploadFile(
-          data.thumbnailEntries.verticalHeaderImage,
-          data.name,
-          `thumbnails/verticalHeaderImage${path.extname(data.thumbnailEntries.verticalHeaderImage.originalname)}`,
-        )
-      ).sharedLink,
-      smallHeaderImage: (
-        await this.storage.uploadFile(
-          data.thumbnailEntries.smallHeaderImage,
-          data.name,
-          `thumbnails/smallHeaderImage${path.extname(data.thumbnailEntries.smallHeaderImage.originalname)}`,
-        )
-      ).sharedLink,
-      searchImage: (
-        await this.storage.uploadFile(
-          data.thumbnailEntries.searchImage,
-          data.name,
-          `thumbnails/searchImage${path.extname(data.thumbnailEntries.searchImage.originalname)}`,
-        )
-      ).sharedLink,
-      tabImage: (
-        await this.storage.uploadFile(
-          data.thumbnailEntries.tabImage,
-          data.name,
-          `thumbnails/tabImage${path.extname(data.thumbnailEntries.tabImage.originalname)}`,
-        )
-      ).sharedLink,
+      mainImage: await this.uploadFileSequentially(
+        data.thumbnailEntries.mainImage,
+        data.name,
+        `thumbnails/mainImage${path.extname(data.thumbnailEntries.mainImage.originalname)}`,
+      ),
+      backgroundImage: await this.uploadFileSequentially(
+        data.thumbnailEntries.backgroundImage,
+        data.name,
+        `thumbnails/backgroundImage${path.extname(data.thumbnailEntries.backgroundImage.originalname)}`,
+      ),
+      menuImg: await this.uploadFileSequentially(
+        data.thumbnailEntries.menuImg,
+        data.name,
+        `thumbnails/menuImg${path.extname(data.thumbnailEntries.menuImg.originalname)}`,
+      ),
+      horizontalHeaderImage: await this.uploadFileSequentially(
+        data.thumbnailEntries.horizontalHeaderImage,
+        data.name,
+        `thumbnails/horizontalHeaderImage${path.extname(data.thumbnailEntries.horizontalHeaderImage.originalname)}`,
+      ),
+      verticalHeaderImage: await this.uploadFileSequentially(
+        data.thumbnailEntries.verticalHeaderImage,
+        data.name,
+        `thumbnails/verticalHeaderImage${path.extname(data.thumbnailEntries.verticalHeaderImage.originalname)}`,
+      ),
+      smallHeaderImage: await this.uploadFileSequentially(
+        data.thumbnailEntries.smallHeaderImage,
+        data.name,
+        `thumbnails/smallHeaderImage${path.extname(data.thumbnailEntries.smallHeaderImage.originalname)}`,
+      ),
+      searchImage: await this.uploadFileSequentially(
+        data.thumbnailEntries.searchImage,
+        data.name,
+        `thumbnails/searchImage${path.extname(data.thumbnailEntries.searchImage.originalname)}`,
+      ),
+      tabImage: await this.uploadFileSequentially(
+        data.thumbnailEntries.tabImage,
+        data.name,
+        `thumbnails/tabImage${path.extname(data.thumbnailEntries.tabImage.originalname)}`,
+      ),
     };
 
-    const imageEntries: ImageEntry[] = await Promise.all(
-      data.imageEntries.map(async (imageEntry) => ({
+    // Upload image entries sequentially
+    const imageEntries: ImageEntry[] = [];
+    for (const imageEntry of data.imageEntries) {
+      const link = await this.uploadFileSequentially(
+        imageEntry.image,
+        data.name,
+        `images/${imageEntry.order}${path.extname(imageEntry.image.originalname)}`,
+      );
+      imageEntries.push({
         featured: imageEntry.featured,
         order: imageEntry.order,
-        link: (
-          await this.storage.uploadFile(
-            imageEntry.image,
-            data.name,
-            `images/${imageEntry.order}${path.extname(imageEntry.image.originalname)}`,
-          )
-        ).sharedLink,
-      })),
-    );
+        link,
+      });
+    }
 
-    const videoEntries: VideoEntry[] = await Promise.all(
-      data.videoEntries.map(async (videoEntry) => ({
+    // Upload video entries sequentially
+    const videoEntries: VideoEntry[] = [];
+    for (const videoEntry of data.videoEntries) {
+      const link = await this.uploadFileSequentially(
+        videoEntry.video,
+        data.name,
+        `videos/${videoEntry.order}${path.extname(videoEntry.video.originalname)}`,
+      );
+      const posterLink = await this.uploadFileSequentially(
+        videoEntry.poster,
+        data.name,
+        `videos/${videoEntry.order}-poster${path.extname(videoEntry.poster.originalname)}`,
+      );
+      videoEntries.push({
         order: videoEntry.order,
-        link: (
-          await this.storage.uploadFile(
-            videoEntry.video,
-            data.name,
-            `videos/${videoEntry.order}${path.extname(videoEntry.video.originalname)}`,
-          )
-        ).sharedLink,
-        posterLink: (
-          await this.storage.uploadFile(
-            videoEntry.poster,
-            data.name,
-            `videos/${videoEntry.order}-poster${path.extname(videoEntry.poster.originalname)}`,
-          )
-        ).sharedLink,
-      })),
-    );
+        link,
+        posterLink,
+      });
+    }
 
+    // Construct game data
     const gameData = {
       name: data.name,
       category: data.category,
@@ -218,8 +145,10 @@ export class AdminService {
       legal: data.legal,
     };
 
+    // Create game
     await this.game.create(gameData);
 
+    // Return success message
     return { message: 'Game created successfully' };
   }
 
@@ -230,12 +159,17 @@ export class AdminService {
    */
   public async delete(id: string): Promise<{ message: string }> {
     this.logger.log(`Deleting game with ID: ${id}`);
-    
+
+    // Get game data
     const game = await this.game.getById(Number(id));
 
+    // Delete game files
     await this.storage.deleteDirectory(game.name);
+
+    // Delete game
     await this.game.remove(Number(id));
 
+    // Return success message
     return { message: 'Game deleted successfully' };
   }
 }

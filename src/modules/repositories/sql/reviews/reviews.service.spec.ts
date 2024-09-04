@@ -1,29 +1,29 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { v4 as uuidv4 } from 'uuid';
 import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
+import { v4 as uuidv4 } from 'uuid';
 
 // Modules
-import { GamesModule } from '@repositories/sql/games/games.module';
-import { UsersModule } from '@repositories/sql/users/users.module';
-import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
 import { CompaniesModule } from '@repositories/sql/companies/companies.module';
-import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
-import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
 import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
 import { GamesLanguagesModule } from '@repositories/sql/games-languages/games-languages.module';
+import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
+import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
+import { GamesModule } from '@repositories/sql/games/games.module';
+import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
+import { UsersModule } from '@repositories/sql/users/users.module';
 
 // Services
-import { GamesService } from '@repositories/sql/games/games.service';
-import { UsersService } from '@repositories/sql/users/users.service';
-import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
+import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
 import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
-import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
+import { GamesService } from '@repositories/sql/games/games.service';
+import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
+import { UsersService } from '@repositories/sql/users/users.service';
 
 // Entities
 import { Game } from '@repositories/sql/games/game.entity';
@@ -304,21 +304,21 @@ describe('gamesService', () => {
 
   describe('getByGameId', () => {
     it('should return all reviews by game id', async () => {
-      const result = await reviewsService.getByGameId(game.id, 'all', 'date', 'DESC');
+      const result = await reviewsService.getByGameId(game.id, 'all', 'newest');
 
       // Assertions
       expect(result.length).toBe(2);
     });
 
     it('should return all positive reviews by game id', async () => {
-      const result = await reviewsService.getByGameId(game.id, 'positive', 'date', 'DESC');
+      const result = await reviewsService.getByGameId(game.id, 'positive', 'newest');
 
       // Assertions
       expect(result.length).toBe(1);
     });
 
     it('should return all negative reviews by game id', async () => {
-      const result = await reviewsService.getByGameId(game.id, 'negative', 'date', 'DESC');
+      const result = await reviewsService.getByGameId(game.id, 'negative', 'newest');
 
       // Assertions
       expect(result.length).toBe(1);
@@ -327,21 +327,21 @@ describe('gamesService', () => {
 
   describe('getByUserId', () => {
     it('should return all reviews by user id', async () => {
-      const result = await reviewsService.getByUserId(user.id, 'all', 'date', 'DESC');
+      const result = await reviewsService.getByUserId(user.id, 'all', 'newest');
 
       // Assertions
       expect(result.length).toBe(2);
     });
 
     it('should return all positive reviews by user id', async () => {
-      const result = await reviewsService.getByUserId(user.id, 'positive', 'date', 'DESC');
+      const result = await reviewsService.getByUserId(user.id, 'positive', 'newest');
 
       // Assertions
       expect(result.length).toBe(1);
     });
 
     it('should return all negative reviews by user id', async () => {
-      const result = await reviewsService.getByUserId(user.id, 'negative', 'date', 'DESC');
+      const result = await reviewsService.getByUserId(user.id, 'negative', 'newest');
 
       // Assertions
       expect(result.length).toBe(1);
@@ -457,7 +457,7 @@ describe('gamesService', () => {
   describe('removeAllUserReviews', () => {
     it('should remove all reviews by user', async () => {
       await reviewsService.removeAllUserReviews(user.id);
-      const allReviews = await reviewsService.getByUserId(user.id, 'all', 'date', 'DESC');
+      const allReviews = await reviewsService.getByUserId(user.id, 'all', 'newest');
 
       // Assertions
       expect(allReviews).toEqual([]);
@@ -471,7 +471,7 @@ describe('gamesService', () => {
   describe('removeAllGameReviews', () => {
     it('should remove all reviews by game', async () => {
       await reviewsService.removeAllGameReviews(game.id);
-      const allReviews = await reviewsService.getByGameId(game.id, 'all', 'date', 'DESC');
+      const allReviews = await reviewsService.getByGameId(game.id, 'all', 'newest');
 
       // Assertions
       expect(allReviews).toEqual([]);

@@ -1,13 +1,10 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  BaseEntity,
-  ManyToMany,
-} from 'typeorm';
+// TypeORM
+import { BaseEntity, Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+// Entities
 import { Game } from '@repositories/sql/games/game.entity';
 
-// Importing game type to fix circular dependency
+// Types
 import type { Game as GameType } from '@repositories/sql/games/game.entity';
 
 @Entity({ name: 'languages' })

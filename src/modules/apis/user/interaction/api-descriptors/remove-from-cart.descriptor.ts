@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { RemoveFromCartDto } from '@apis/user/interaction/dtos/remove-from-cart.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const removeFromCartDescriptor: ApiDescriptorOptions = {
   summary: 'Remove Items from Cart',

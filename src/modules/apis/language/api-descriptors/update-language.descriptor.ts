@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { UpdateLanguageDto } from '@apis/language/dtos/update-language.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const updateLanguageDescriptor: ApiDescriptorOptions = {
   summary: 'Update Language',

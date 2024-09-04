@@ -1,5 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+// Class-validator
 import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
+
+// Swagger
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateOfferDto {
   @ApiProperty({ example: 10, description: 'discount price', required: false })

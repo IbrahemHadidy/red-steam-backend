@@ -1,6 +1,6 @@
-import { Expose, Type } from 'class-transformer';
-import { GameDataDto } from '@apis/game/serializer-dtos/game-data.dto';
 import type { GameDataDto as GameDataDtoType } from '@apis/game/serializer-dtos/game-data.dto';
+import { GameDataDto } from '@apis/game/serializer-dtos/game-data.dto';
+import { Expose, Type } from 'class-transformer';
 
 export class UserDataDto {
   @Expose()
@@ -22,7 +22,8 @@ export class UserDataDto {
   profilePicture: string;
 
   @Expose()
-  tags: [];
+  @Type(() => TagDto)
+  tags: TagDto[];
 
   @Expose()
   isVerified: boolean;
@@ -59,6 +60,14 @@ class BaseItem {
 
   @Expose()
   addedOn: Date;
+}
+
+class TagDto {
+  @Expose()
+  id: number;
+
+  @Expose()
+  name: string;
 }
 
 class reviewDto {

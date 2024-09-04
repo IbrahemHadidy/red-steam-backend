@@ -1,11 +1,12 @@
+// NestJS
 import { Logger, Module } from '@nestjs/common';
 
 // Modules
 import { JwtModule } from '@nestjs/jwt';
 import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
-import { UsersModule } from '@repositories/sql/users/users.module';
 import { GamesModule } from '@repositories/sql/games/games.module';
 import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
+import { UsersModule } from '@repositories/sql/users/users.module';
 
 // Services
 import { ReviewService } from '@modules/apis/review/review.service';

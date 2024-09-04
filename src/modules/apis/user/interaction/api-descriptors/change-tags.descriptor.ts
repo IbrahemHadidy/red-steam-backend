@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { ChangeTagsDto } from '@apis/user/interaction/dtos/change-tags.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const changeTagsDescriptor: ApiDescriptorOptions = {
   summary: 'Change User Tags',

@@ -1,24 +1,34 @@
+// NestJS
 import { ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+
+// TypeORM
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsRelations, In, Repository } from 'typeorm';
+
+// Services
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
 import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
 import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
-import {
-  Game,
+
+// Entities
+import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
+import { Game } from '@repositories/sql/games/game.entity';
+
+// Types
+import type {
+  Game as GameType,
   ImageEntry,
   PlatformEntry,
   SystemRequirementEntry,
-  VideoEntry,
   ThumbnailsEntry,
+  VideoEntry,
 } from '@repositories/sql/games/game.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
 
 @Injectable()
 export class GamesService {
-  private readonly relations: FindOptionsRelations<Game> = {};
+  private readonly relations: FindOptionsRelations<GameType> = {};
 
   constructor(
     private readonly logger: Logger,
@@ -35,7 +45,6 @@ export class GamesService {
       publishers: true,
       tags: true,
       pricing: true,
-      reviews: true,
       gamesFeatures: true,
       languages: true,
     };
@@ -45,61 +54,81 @@ export class GamesService {
    * Retrieves all games.
    * @param {string} orderBy - The property to order by.
    * @param {string} order - The order to use.
-   * @return {Promise<Game[]>} A Promise that resolves to an array of game entities.
+   * @return {Promise<GameType[]>} A Promise that resolves to an array of game entities.
    */
-  public async getAll(orderBy: 'id' | 'name' | 'releaseDate', order: 'ASC' | 'DESC'): Promise<Game[]> {
-    // Log the retrieval of all games
+  public async getAll(orderBy: 'id' | 'name' | 'releaseDate', order: 'ASC' | 'DESC'): Promise<GameType[]> {
     this.logger.log(`Retrieving all games from the database`);
 
-    const games = await this.gameRepository.find({ relations: this.relations, order: { [orderBy]: order } });
+    // Retrieve all games
+    const games = await this.gameRepository.find({ order: { [orderBy]: order } });
+
+    // Return the games
     return games;
   }
 
   /**
    * Retrieves a game by its ID.
    * @param {number} id - The ID of the game to retrieve.
-   * @return {Promise<Game>} A Promise that resolves to the game entity.
+   * @return {Promise<GameType>} A Promise that resolves to the game entity.
    * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
    */
-  public async getById(id: number): Promise<Game> {
-    // Log the retrieval of a game
+  public async getById(id: number): Promise<GameType> {
     this.logger.log(`Retrieving game with ID ${id} from the database`);
 
+    // Retrieve the game by ID
     const game = await this.gameRepository.findOne({ where: { id }, relations: this.relations });
+
+    // Throw a NotFoundException if the game is not found
     if (!game) throw new NotFoundException(`Game with ID ${id} not found`);
+
+    // Return the game
     return game;
   }
 
   /**
    * Retrieves games by their IDs.
    * @param {number[]} ids - The IDs of the games to retrieve.
-   * @return {Promise<Game[]>} A Promise that resolves to an array of game entities.
+   * @return {Promise<GameType[]>} A Promise that resolves to an array of game entities.
    * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
    */
-  public async getByIds(ids: number[]): Promise<Game[]> {
-    const games = await this.gameRepository.find({ where: { id: In(ids) }, relations: this.relations });
-    if (!games) throw new NotFoundException(`Games with ids ${ids} not found`);
+  public async getByIds(ids: number[]): Promise<GameType[]> {
+    this.logger.log(`Retrieving games with IDs ${ids} from the database`);
+
+    // Retrieve the games by IDs
+    const games = await this.gameRepository.find({ where: { id: In(ids) }, relations: { tags: true } });
+
+    // Throw a NotFoundException if any of the games are not found
+    if (games.length !== ids.length) {
+      const missingIds = ids.filter((id) => !games.some((game) => game.id === id));
+      throw new NotFoundException(`Games with IDs ${missingIds} not found`);
+    }
+
+    // Return the games
     return games;
   }
 
   /**
    * Retrieves games by their name.
    * @param {string} name - The name of the games to retrieve.
-   * @return {Promise<Game[]>} A Promise that resolves to an array of game entities.
+   * @return {Promise<GameType[]>} A Promise that resolves to an array of game entities.
    */
-  public async getByName(name: string): Promise<Game> {
-    // Log the retrieval of a game
+  public async getByName(name: string): Promise<GameType> {
     this.logger.log(`Retrieving game with name ${name} from the database`);
 
-    const games = await this.gameRepository.findOne({ where: { name }, relations: this.relations });
+    // Retrieve the game by name
+    const games = await this.gameRepository.findOne({ where: { name }, relations: { tags: true } });
+
+    // Throw a NotFoundException if the game is not found
     if (!games) throw new NotFoundException(`Game with name ${name} not found`);
+
+    // Return the game
     return games;
   }
 
   /**
    * Creates a new game.
    * @param {Game} game - The game entity to be created.
-   * @return {Promise<Game>} A Promise that resolves to the created game entity.
+   * @return {Promise<GameType>} A Promise that resolves to the created game entity.
    * @throws {ConflictException} Throws a ConflictException if the game already exists.
    * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the creation fails.
    */
@@ -133,8 +162,7 @@ export class GamesService {
     matureDescription: string;
     systemRequirements: SystemRequirementEntry;
     legal: string;
-  }): Promise<Game> {
-    // Log the creation of a game
+  }): Promise<GameType> {
     this.logger.log(`Creating game with name ${game.name} in the database`);
 
     // Check if game already exists
@@ -197,7 +225,7 @@ export class GamesService {
    * Updates a game by its ID.
    * @param {number} id - The ID of the game to be updated.
    * @param {Game} game - The updated game entity.
-   * @return {Promise<Game>} A Promise that resolves to the updated game entity.
+   * @return {Promise<GameType>} A Promise that resolves to the updated game entity.
    * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
    * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the update fails.
    */
@@ -233,14 +261,14 @@ export class GamesService {
       systemRequirements?: SystemRequirementEntry;
       legal?: string;
     },
-  ): Promise<Game> {
-    // Log the update of a game
+  ): Promise<GameType> {
     this.logger.log(`Updating game with ID ${id} in the database`);
 
+    // Check if game exists
     const existingGame = await this.gameRepository.findOne({
       where: { id },
-      relations: this.relations,
     });
+    // Throw a not found exception if game does not exist
     if (!existingGame) throw new NotFoundException(`Game with ID ${id} not found`);
 
     // Update fields if they are provided
@@ -307,20 +335,27 @@ export class GamesService {
    * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
    * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the removal fails.
    */
-  public async remove(id: number): Promise<Game> {
-    // Log the removal of a game
+  public async remove(id: number): Promise<GameType> {
     this.logger.log(`Removing game with ID ${id} from the database`);
 
+    // Check if game exists
     const game = await this.getById(id);
+    // Throw a not found exception if game does not exist
     if (!game) throw new NotFoundException(`Game with ID ${id} not found`);
 
+    // Remove the game from the database
     const removedGame = await this.gameRepository.remove(game);
+
+    // Throw an internal server error if the removal fails
     if (!removedGame) throw new InternalServerErrorException('Failed to remove game from the database');
 
     // Get game pricing id
     const gamePricingId = game.pricing.id;
+
+    // Remove game pricing from the database
     await this.gamesPricingService.remove(gamePricingId);
 
+    // Return the removed game
     return removedGame;
   }
 
@@ -330,11 +365,15 @@ export class GamesService {
    * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the removal fails.
    */
   public async removeAll(): Promise<void> {
-    // Log the removal of all games
     this.logger.log('Removing all games from the database');
 
+    // Remove all games from the database
     const result = await this.gameRepository.delete({});
+
+    // Throw an internal server error if the removal fails
     if (!result) throw new InternalServerErrorException('Failed to remove games from the database');
+
+    // Remove all game pricing from the database
     await this.gamesPricingService.removeAll();
   }
 }

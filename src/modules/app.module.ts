@@ -1,12 +1,26 @@
-import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+// NestJS
 import { Logger, Module, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import multipart from '@fastify/multipart';
+// import { ConfigService } from '@nestjs/config';
+import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+
+// Fastify
+import { fastifyMultipart } from '@fastify/multipart';
+
+// Cache Manager
+// import { CacheModule } from '@nestjs/cache-manager';
+// import { redisStore } from 'cache-manager-redis-yet';
+
+// Global interceptors
 import { ExceptionInterceptor } from '@interceptors/exception.interceptor';
-import { ServicesModule } from '@services/services.module';
+
+// Main Modules
 import { ApisModule } from '@apis/apis.module';
 import { RepositoriesModule } from '@repositories/repositories.module';
+import { ServicesModule } from '@services/services.module';
+
+// Types
+import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 
 @Module({
   imports: [
@@ -18,6 +32,18 @@ import { RepositoriesModule } from '@repositories/repositories.module';
         'src/common/configs/environments/.env',
       ],
     }),
+    // CacheModule.registerAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (configService: ConfigService) => ({
+    //     store: redisStore,
+    //     host: configService.get<string>('REDIS_HOST'),
+    //     port: configService.get<number>('REDIS_PORT'),
+    //     ttl: configService.get<number>('CACHE_TTL') || 600,
+    //     max: configService.get<number>('CACHE_MAX_ITEMS') || 100,
+    //     password: configService.get<string>('REDIS_PASSWORD'),
+    //   }),
+    // }),
     RepositoriesModule,
     ServicesModule,
     ApisModule,
@@ -42,7 +68,7 @@ import { RepositoriesModule } from '@repositories/repositories.module';
 export class AppModule {
   static async register(app: NestFastifyApplication): Promise<NestFastifyApplication> {
     // Register the multipart plugin
-    await app.register(multipart);
+    await app.register(fastifyMultipart);
 
     // Set global prefix for all routes
     app.setGlobalPrefix('api');

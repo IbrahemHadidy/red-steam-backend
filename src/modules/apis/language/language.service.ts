@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
 import type { GameLanguage } from '@repositories/sql/games-languages/game-language.entity';
+import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
 
 @Injectable()
 export class LanguageService {
@@ -16,7 +16,11 @@ export class LanguageService {
   public async createLanguage(data: { name: string }): Promise<{ message: string }> {
     const { name } = data;
     this.logger.log(`Creating tag with name ${name}`);
+
+    // Create the language
     await this.language.create(name);
+
+    // Send a success response
     return { message: 'Language created successfully' };
   }
 
@@ -27,6 +31,8 @@ export class LanguageService {
    */
   public async getLanguage(id: number) {
     this.logger.log(`Retrieving language with ID ${id}`);
+
+    // Send the response
     return this.language.getById(id);
   }
 
@@ -37,6 +43,8 @@ export class LanguageService {
    */
   public async getLanguages(ids: number[]) {
     this.logger.log(`Retrieving languages with IDs ${ids}`);
+
+    // Send the response
     return this.language.getByIds(ids);
   }
 
@@ -46,6 +54,8 @@ export class LanguageService {
    */
   public async getAllLanguages() {
     this.logger.log(`Retrieving all languages`);
+
+    // Send the response
     return this.language.getAll('id', 'ASC');
   }
 
@@ -81,7 +91,11 @@ export class LanguageService {
   public async updateLanguage(id: number, data: { name?: string; icon?: string }): Promise<{ message: string }> {
     const { name } = data;
     this.logger.log(`Updating language with ID ${id}`);
+
+    // Update the language
     await this.language.update(id, name);
+
+    // Send a success message
     return { message: 'Language updated successfully' };
   }
 
@@ -92,8 +106,11 @@ export class LanguageService {
    */
   public async deleteLanguage(id: number): Promise<{ message: string }> {
     this.logger.log(`Deleting language with ID ${id}`);
+
+    // Delete the language
     await this.language.remove(id);
 
+    // Send a success message
     return { message: 'Language deleted successfully' };
   }
 }

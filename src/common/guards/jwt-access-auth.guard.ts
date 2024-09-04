@@ -1,4 +1,7 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+// NestJS
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+
+// Services
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
@@ -6,7 +9,7 @@ import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token
 @Injectable()
 export class JwtAccessAuthGuard implements CanActivate {
   private readonly accessTokenSecret: string;
-  
+
   constructor(
     private readonly config: ConfigService,
     private readonly jwtService: JwtService,
@@ -27,7 +30,7 @@ export class JwtAccessAuthGuard implements CanActivate {
 
       // Check if the refresh token is blacklisted
       const isBlacklisted = await this.tokenBlacklist.isBlacklisted(token);
-      if (isBlacklisted)  throw new UnauthorizedException('Token is blacklisted');
+      if (isBlacklisted) throw new UnauthorizedException('Token is blacklisted');
 
       // Add payload to request
       request.userId = payload.id;
@@ -45,9 +48,9 @@ export class JwtAccessAuthGuard implements CanActivate {
 
   private extractTokenFromHeader(headers: Record<string, string>): string {
     const authHeader = headers['authorization'];
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
-    
+
     const token = authHeader.split(' ')[1];
     return token;
   }

@@ -1,11 +1,19 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, NotFoundException, BadRequestException } from '@nestjs/common';
+// NestJS
+import {
+  BadRequestException,
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+
+//Services
 import { UsersService } from '@repositories/sql/users/users.service';
 
 @Injectable()
 export class VerifiedUserGuard implements CanActivate {
-  constructor(
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -20,7 +28,7 @@ export class VerifiedUserGuard implements CanActivate {
 
     // Check if user is verified
     if (!user.isVerified) throw new UnauthorizedException('User is not verified');
-    
-    return true; 
+
+    return true;
   }
 }

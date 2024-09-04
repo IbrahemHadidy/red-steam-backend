@@ -1,18 +1,23 @@
-import { Get, Controller, HttpCode, Query, UseGuards, Param, Delete, Body, Put } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+// NestJS
+import { Body, Controller, Delete, Get, HttpCode, Param, Put, Query, UseGuards } from '@nestjs/common';
+
+// Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
-import { AdminService } from '@apis/user/admin/admin.service';
+import { ApiTags } from '@nestjs/swagger';
 
 // Guards
-import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 import { AdminGuard } from '@guards/admin.guard';
+import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 
-// Dtos
+// Services
+import { AdminService } from '@apis/user/admin/admin.service';
+
+// DTOs
 import { UpdateUserDto } from '@apis/user/admin/dtos/update-user.dto';
 
 // Swagger descriptors
-import { getUsersPaginatedDescriptor } from '@apis/user/admin/api-descriptors/get-users-paginated.descriptor';
 import { deleteUserDescriptor } from '@apis/user/admin/api-descriptors/delete-user.descriptor';
+import { getUsersPaginatedDescriptor } from '@apis/user/admin/api-descriptors/get-users-paginated.descriptor';
 import { updateUserDescriptor } from '@apis/user/admin/api-descriptors/update-user.descriptor';
 
 @Controller('user/admin')

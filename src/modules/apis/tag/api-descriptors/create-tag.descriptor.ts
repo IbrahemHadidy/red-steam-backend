@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { CreateTagDto } from '@apis/tag/dtos/create-tag.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const createTagDescriptor: ApiDescriptorOptions = {
   summary: 'Create Tag',
@@ -26,4 +29,4 @@ export const createTagDescriptor: ApiDescriptorOptions = {
     type: CreateTagDto,
   },
   security: ['access-token'],
-}
+};

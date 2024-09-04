@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { CreatePublisherDto } from '@apis/company/dtos/create-publisher.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const createPublisherDescriptor: ApiDescriptorOptions = {
   summary: 'Create Publisher',

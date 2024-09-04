@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { CreateLanguageDto } from '@apis/language/dtos/create-language.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const createLanguageDescriptor: ApiDescriptorOptions = {
   summary: 'Create Language',

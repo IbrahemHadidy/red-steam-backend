@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { UpdatePublisherDto } from '@apis/company/dtos/update-publisher.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const updatePublisherDescriptor: ApiDescriptorOptions = {
   summary: 'Update Publisher',

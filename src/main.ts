@@ -1,50 +1,70 @@
+// NestJS
 import { NestFactory } from '@nestjs/core';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { SwaggerModule, DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
-import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
+
+// Main entry point of the application (App Module)
 import { AppModule } from '@modules/app.module';
 
+// Fastify
+import { FastifyAdapter } from '@nestjs/platform-fastify';
+
+// Swagger
+import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
+
+// Types
+import type { NestFastifyApplication } from '@nestjs/platform-fastify';
+
 // Declare 'module' variable for hot module replacement (HMR) support
-declare const module: any;
+declare const module: {
+  hot: { reload: () => void; dispose: (func: () => void) => void; status: () => string; accept: () => void };
+};
 
-// Bootstrap function to initialize the NestJS application
-async function bootstrap() {
-  // Create Nest application instance
-  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { snapshot: true });
+class AppBootstrapper {
+  private readonly port: number;
 
-  // Register other configurations and middleware
-  await AppModule.register(app);
+  constructor() {
+    this.port = parseInt(process.env.PORT) || 4000;
+  }
 
-  // Configure Swagger documentation
-  const config = new DocumentBuilder()
-    .setTitle('Red Steam API') // Set title of the API documentation
-    .setDescription('A backend API for Red Steam') // Set description of the API
-    .setVersion('1.0')
-    .addApiKey({ type: 'apiKey', name: 'authorization' }, 'access-token')
-    .addApiKey({ type: 'apiKey', name: 'x-refresh-token' }, 'refresh-token')
-    .build();
+  public async bootstrap() {
+    // Create Nest application instance
+    const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { snapshot: true });
 
-  // Configure custom Swagger theme
-  const theme = new SwaggerTheme();
-  const options: SwaggerCustomOptions = {
-    customCss: theme.getBuffer(SwaggerThemeNameEnum.DARK),
-  };
+    // Register other configurations and middleware
+    await AppModule.register(app);
 
-  // Create Swagger document
-  const document = SwaggerModule.createDocument(app, config);
+    // Configure Swagger documentation
+    const config = new DocumentBuilder()
+      .setTitle('Red Steam API')
+      .setDescription('A backend API for Red Steam')
+      .setVersion('1.0')
+      .addApiKey({ type: 'apiKey', name: 'authorization' }, 'access-token')
+      .addApiKey({ type: 'apiKey', name: 'x-refresh-token' }, 'refresh-token')
+      .build();
 
-  // Setup Swagger UI endpoint
-  SwaggerModule.setup('api', app, document, options);
+    // Configure custom Swagger theme
+    const theme = new SwaggerTheme();
+    const options: SwaggerCustomOptions = {
+      customCss: theme.getBuffer(SwaggerThemeNameEnum.DARK),
+    };
 
-  // Start the Nest application on specified port (or default to 4000)
-  await app.listen(parseInt(process.env.PORT) || 4000);
+    // Create Swagger document
+    const document = SwaggerModule.createDocument(app, config);
 
-  // Enable hot module replacement (HMR) support for development
-  if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => app.close());
+    // Setup Swagger UI endpoint
+    SwaggerModule.setup('api', app, document, options);
+
+    // Start the Nest application on specified port
+    await app.listen(this.port);
+
+    // Enable hot module replacement (HMR) support for development
+    if (module.hot) {
+      module.hot.accept();
+      module.hot.dispose(() => app.close());
+    }
   }
 }
 
-// Call the bootstrap function to start the Nest application
-bootstrap();
+// Instantiate and run the application
+const appBootstrapper = new AppBootstrapper();
+appBootstrapper.bootstrap();

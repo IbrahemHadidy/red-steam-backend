@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { AddToCartDto } from '@apis/user/interaction/dtos/add-to-cart.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const addToCartDescriptor: ApiDescriptorOptions = {
   summary: 'Add Items to Cart',

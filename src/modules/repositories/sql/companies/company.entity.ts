@@ -1,7 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, BaseEntity } from 'typeorm';
+// TypeORM
+import { BaseEntity, Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+// Entites
 import { Game } from '@repositories/sql/games/game.entity';
 
-// Importing game type to fix circular dependency
+// Types
 import type { Game as GameType } from '@repositories/sql/games/game.entity';
 
 export class Company extends BaseEntity {

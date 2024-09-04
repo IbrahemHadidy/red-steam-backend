@@ -1,40 +1,41 @@
-import {
-  Controller,
-  Get,
-  HttpCode,
-  Param,
-  Query,
-} from '@nestjs/common';
+// NestJS
+import { Controller, Get, HttpCode, Param, Query } from '@nestjs/common';
+
+// Swagger
+import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
 
-// Decorators
-import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
+// Serializer decorator
 import { Serialize } from '@decorators/serialize.decorator';
 
 // Services
 import { DataService } from '@apis/game/data/data.service';
 
-// Serializing dtos
+// Serializing DTOs
 import { GameDataDto } from '@apis/game/serializer-dtos/game-data.dto';
+import { ReviewDto } from '@apis/review/serializer-dtos/review.dto';
 
 // importing swagger descriptors
-import { getByPartialNameDescriptor } from '@apis/game/data/api-descriptors/get-by-partial-name.descriptor';
-import { getByParametersDescriptor } from '@apis/game/data/api-descriptors/get-by-parameters.descriptor';
-import { getFeaturedDescriptor } from '@apis/game/data/api-descriptors/get-featured.descriptor';
-import { getByTagsDescriptor } from '@apis/game/data/api-descriptors/get-by-tags.descriptor';
 import { getByIdDescriptor } from '@apis/game/data/api-descriptors/get-by-id.descriptor';
-import { getByOffersDescriptor } from '@apis/game/data/api-descriptors/get-by-offers.descriptor';
+import { getByIdsDescriptor } from '@apis/game/data/api-descriptors/get-by-ids.descriptor';
 import { getByNewestDescriptor } from '@apis/game/data/api-descriptors/get-by-newest.descriptor';
-import { getByTopSalesDescriptor } from '@apis/game/data/api-descriptors/get-by-top-sales.descriptor';
+import { getByOffersDescriptor } from '@apis/game/data/api-descriptors/get-by-offers.descriptor';
+import { getByParametersDescriptor } from '@apis/game/data/api-descriptors/get-by-parameters.descriptor';
+import { getByPartialNameDescriptor } from '@apis/game/data/api-descriptors/get-by-partial-name.descriptor';
 import { getBySpecialsDescriptor } from '@apis/game/data/api-descriptors/get-by-specials.descriptor';
+import { getByTagsDescriptor } from '@apis/game/data/api-descriptors/get-by-tags.descriptor';
+import { getByTopSalesDescriptor } from '@apis/game/data/api-descriptors/get-by-top-sales.descriptor';
+import { getByUpcommingDescriptor } from '@apis/game/data/api-descriptors/get-by-upcomming.descriptor';
+import { getFeaturedDescriptor } from '@apis/game/data/api-descriptors/get-featured.descriptor';
+import { getGameReviewsDescriptor } from '@apis/game/data/api-descriptors/get-game-reviews.descriptor';
 
 @Controller('game/data')
 @ApiTags('Game Data')
-@Serialize(GameDataDto)
 export class DataController {
   constructor(private readonly dataService: DataService) {}
 
   @ApiDescriptor(getByPartialNameDescriptor)
+  @Serialize(GameDataDto)
   @Get('search/:partialName')
   @HttpCode(200)
   async search(@Param('partialName') partialName: string) {
@@ -45,10 +46,11 @@ export class DataController {
   }
 
   @ApiDescriptor(getByParametersDescriptor)
+  @Serialize(GameDataDto)
   @Get('search')
   @HttpCode(200)
   async getByParameters(
-    @Query('sort') sort?: string,
+    @Query('sort') sort?: 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews',
     @Query('partialName') partialName?: string,
     @Query('maxPrice') maxPrice?: string,
     @Query('tags') tags?: string,
@@ -62,12 +64,14 @@ export class DataController {
     @Query('languages') languages?: string,
     @Query('featured') featured?: string,
     @Query('excludeMature') excludeMature?: string,
+    @Query('excludedGames') excludedGames?: string,
+    @Query('upcomingMode') upcomingMode?: 'onlyUpcoming' | 'exclude',
     @Query('offset') offset?: string,
     @Query('limit') limit?: string,
   ) {
     const result = await this.dataService.getByParameters(
       {
-        sort: sort as 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews',
+        sort,
         partialName,
         maxPrice,
         tags: tags ? tags.split(',') : [],
@@ -81,6 +85,8 @@ export class DataController {
         languages: languages ? languages.split(',') : [],
         featured: featured === 'true',
         excludeMature: excludeMature === 'true',
+        excludedGames: excludedGames ? excludedGames.split(',') : [],
+        upcomingMode: upcomingMode,
       },
       {
         offset: parseInt(offset, 10) || 0,
@@ -93,12 +99,10 @@ export class DataController {
   }
 
   @ApiDescriptor(getFeaturedDescriptor)
+  @Serialize(GameDataDto)
   @Get('featured')
   @HttpCode(200)
-  async getFeatured(
-    @Query()
-    limit: string = '10',
-  ) {
+  async getFeatured(@Query('limit') limit: string = '10') {
     const result = await this.dataService.getFeaturedGames(limit);
 
     // Send the response
@@ -106,12 +110,13 @@ export class DataController {
   }
 
   @ApiDescriptor(getByTagsDescriptor)
+  @Serialize(GameDataDto)
   @Get('tags')
   @HttpCode(200)
   async getByUserTags(
-    @Query()
+    @Query('tags')
     tags: string[],
-    @Query()
+    @Query('limit')
     limit: string,
   ) {
     const result = await this.dataService.getByUserTags(tags, limit);
@@ -121,6 +126,7 @@ export class DataController {
   }
 
   @ApiDescriptor(getByIdDescriptor)
+  @Serialize(GameDataDto)
   @Get(':id')
   @HttpCode(200)
   async getById(@Param('id') id: string) {
@@ -130,7 +136,19 @@ export class DataController {
     return result;
   }
 
+  @ApiDescriptor(getByIdsDescriptor)
+  @Serialize(GameDataDto)
+  @Get('bulk')
+  @HttpCode(200)
+  async getByIds(@Query('ids') ids: string) {
+    const result = await this.dataService.getByIds(ids.split(','));
+
+    // Send the response
+    return result;
+  }
+
   @ApiDescriptor(getByOffersDescriptor)
+  @Serialize(GameDataDto)
   @Get('offers')
   @HttpCode(200)
   async getByOffers() {
@@ -141,6 +159,7 @@ export class DataController {
   }
 
   @ApiDescriptor(getByNewestDescriptor)
+  @Serialize(GameDataDto)
   @Get('newest')
   @HttpCode(200)
   async getByNewest() {
@@ -151,6 +170,7 @@ export class DataController {
   }
 
   @ApiDescriptor(getByTopSalesDescriptor)
+  @Serialize(GameDataDto)
   @Get('top-sales')
   @HttpCode(200)
   async getByTopSales() {
@@ -161,10 +181,42 @@ export class DataController {
   }
 
   @ApiDescriptor(getBySpecialsDescriptor)
+  @Serialize(GameDataDto)
   @Get('specials')
   @HttpCode(200)
   async getBySpecials() {
     const result = await this.dataService.getBySpecials();
+
+    // Send the response
+    return result;
+  }
+
+  @ApiDescriptor(getByUpcommingDescriptor)
+  @Serialize(GameDataDto)
+  @Get('upcomming')
+  @HttpCode(200)
+  async getByUpcomming() {
+    const result = await this.dataService.getByUpcomming();
+
+    // Send the response
+    return result;
+  }
+
+  @ApiDescriptor(getGameReviewsDescriptor)
+  @Serialize(ReviewDto)
+  @Get(':id/reviews')
+  @HttpCode(200)
+  async getGameReviews(
+    @Param('gameId') gameId: string,
+    @Query('filter') filter: 'positive' | 'negative' | 'all',
+    @Query('sort') sort: 'newest' | 'oldest',
+    @Query('offset') offset: string,
+    @Query('limit') limit: string,
+  ) {
+    const result = await this.dataService.getGameReviews(gameId, filter, sort, {
+      offset: parseInt(offset, 10),
+      limit: parseInt(limit, 10),
+    });
 
     // Send the response
     return result;

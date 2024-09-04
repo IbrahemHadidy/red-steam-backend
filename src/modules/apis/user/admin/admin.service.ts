@@ -1,7 +1,11 @@
+// NestJS
 import { Injectable, Logger } from '@nestjs/common';
-import { UsersService } from '@repositories/sql/users/users.service';
-import { UserService } from '@apis/user/user.service';
 
+// Services
+import { UserService } from '@apis/user/user.service'; // Api service (The Extended Service)
+import { UsersService } from '@repositories/sql/users/users.service'; // Repository service (The Injected Service)
+
+// Types
 import type { User } from '@repositories/sql/users/user.entity';
 
 @Injectable()
@@ -33,6 +37,8 @@ export class AdminService extends UserService {
     this.logger.log(
       `Retrieving users, page: ${page}, limit: ${limit}, order by: ${orderBy}, order: ${order}, search query: ${JSON.stringify(searchQuery)}`,
     );
+
+    // Send the response
     return await this.user.getUsersPaginated(page, limit, orderBy, order, searchQuery);
   }
 
@@ -56,8 +62,11 @@ export class AdminService extends UserService {
    */
   public async deleteUser(id: string): Promise<{ message: string }> {
     this.logger.log(`Deleting user with ID ${id}`);
+
+    // Delete the user
     await this.user.remove(id);
 
+    // Send success message
     return { message: 'User deleted successfully' };
   }
 }

@@ -1,18 +1,21 @@
+// NestJS
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DataSourceOptions, DataSource} from 'typeorm';
+
+// TypeORM
+import { DataSource, DataSourceOptions } from 'typeorm';
 
 // Entities
-import { BlacklistedToken } from '@repositories/mongo/token-blacklist/blacklisted-token.entity';
 import { DropboxToken } from '@repositories/mongo/dropbox-tokens/dropbox-token.entity';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
+import { BlacklistedToken } from '@repositories/mongo/token-blacklist/blacklisted-token.entity';
+import { Developer, Publisher } from '@repositories/sql/companies/company.entity';
 import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
+import { GameLanguage } from '@repositories/sql/games-languages/game-language.entity';
 import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
 import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
 import { Game } from '@repositories/sql/games/game.entity';
 import { Review } from '@repositories/sql/reviews/review.entity';
 import { User } from '@repositories/sql/users/user.entity';
-import { GameLanguage } from '@repositories/sql/games-languages/game-language.entity';
 
 @Injectable()
 export class DatabaseService {

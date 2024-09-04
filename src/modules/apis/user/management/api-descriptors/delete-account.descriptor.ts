@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { DeleteAccountDto } from '@apis/user/management/dtos/delete-account.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const deleteAccountDescriptor: ApiDescriptorOptions = {
   summary: 'Delete Account',

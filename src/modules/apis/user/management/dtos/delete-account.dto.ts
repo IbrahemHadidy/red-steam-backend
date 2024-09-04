@@ -1,5 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+// Class-validator
 import { IsNotEmpty, IsStrongPassword } from 'class-validator';
+
+// Swagger
+import { ApiProperty } from '@nestjs/swagger';
 
 export class DeleteAccountDto {
   @ApiProperty({ description: 'user password', example: 'enter password here', required: true })

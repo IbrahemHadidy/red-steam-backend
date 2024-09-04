@@ -1,5 +1,8 @@
+// Class-validator
+import { IsNotEmpty, IsString } from 'class-validator';
+
+// Swagger
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator'
 
 export class PasswordResetDto {
   @ApiProperty({ description: 'Password reset token', example: 'enter your token here', required: true })

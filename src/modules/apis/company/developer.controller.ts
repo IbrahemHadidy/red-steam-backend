@@ -1,24 +1,29 @@
+// NestJS
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+
+// Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
-import { CompanyService } from '@apis/company/company.service';
 
 // Guards
-import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 import { AdminGuard } from '@guards/admin.guard';
+import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 
-// Dtos
+// Services
+import { CompanyService } from '@apis/company/company.service';
+
+// DTOs
 import { CreateDeveloperDto } from '@apis/company/dtos/create-developer.dto';
 import { UpdateDeveloperDto } from '@apis/company/dtos/update-developer.dto';
 
 // Swagger descriptors
 import { createDeveloperDescriptor } from '@apis/company/api-descriptors/create-developer.descriptor';
-import { getDeveloperDescriptor } from '@apis/company/api-descriptors/get-developer.descriptor';
-import { getDevelopersDescriptor } from '@apis/company/api-descriptors/get-developers.descriptor';
-import { getAllDevelopersDescriptor } from '@apis/company/api-descriptors/get-all-developers.descriptor';
-import { getDevelopersPaginatedDescriptor } from '@apis/company/api-descriptors/get-developers-paginated.descriptor';
-import { updateDeveloperDescriptor } from '@apis/company/api-descriptors/update-developer.descriptor';
 import { deleteDeveloperDescriptor } from '@apis/company/api-descriptors/delete-developer.descriptor';
+import { getAllDevelopersDescriptor } from '@apis/company/api-descriptors/get-all-developers.descriptor';
+import { getDeveloperDescriptor } from '@apis/company/api-descriptors/get-developer.descriptor';
+import { getDevelopersPaginatedDescriptor } from '@apis/company/api-descriptors/get-developers-paginated.descriptor';
+import { getDevelopersDescriptor } from '@apis/company/api-descriptors/get-developers.descriptor';
+import { updateDeveloperDescriptor } from '@apis/company/api-descriptors/update-developer.descriptor';
 
 @Controller('developer')
 @ApiTags('Developer')

@@ -1,6 +1,9 @@
+// NestJS
 import { Logger, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DatabaseService } from './database.service';
+
+// Services
+import { DatabaseService } from '@services/database/database.service';
 
 @Module({
   providers: [DatabaseService, ConfigService, Logger],

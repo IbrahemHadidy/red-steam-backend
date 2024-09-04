@@ -1,23 +1,28 @@
+// NestJS
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+
+// Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
-import { CompanyService } from '@apis/company/company.service';
 
 // Guards
-import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 import { AdminGuard } from '@guards/admin.guard';
+import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 
-// Dtos
+// Services
+import { CompanyService } from '@apis/company/company.service';
+
+// DTOs
 import { CreatePublisherDto } from '@apis/company/dtos/create-publisher.dto';
 import { UpdatePublisherDto } from '@apis/company/dtos/update-publisher.dto';
 
 // Swagger descriptors
 import { createPublisherDescriptor } from '@apis/company/api-descriptors/create-publisher.descriptor';
-import { getPublishersDescriptor } from '@apis/company/api-descriptors/get-publishers.descriptor';
+import { deletePublisherDescriptor } from '@apis/company/api-descriptors/delete-publisher.descriptor';
 import { getAllPublishersDescriptor } from '@apis/company/api-descriptors/get-all-publishers.descriptor';
 import { getPublishersPaginatedDescriptor } from '@apis/company/api-descriptors/get-publishers-paginated.descriptor';
+import { getPublishersDescriptor } from '@apis/company/api-descriptors/get-publishers.descriptor';
 import { updatePublisherDescriptor } from '@apis/company/api-descriptors/update-publisher.descriptor';
-import { deletePublisherDescriptor } from '@apis/company/api-descriptors/delete-publisher.descriptor';
 
 @Controller('publisher')
 @ApiTags('Publisher')

@@ -1,5 +1,5 @@
-import { Expose, Type } from 'class-transformer';
 import { GameDataDto } from '@apis/game/serializer-dtos/game-data.dto';
+import { Expose, Type } from 'class-transformer';
 
 export class NestedDataDto {
   @Expose()

@@ -1,12 +1,20 @@
+// NestJS
 import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+
+// UUID
 import { v4 as UUIDv4 } from 'uuid';
-import { UserService } from '@apis/user/user.service';
-import { User } from '@repositories/sql/users/user.entity';
-import { UsersService } from '@repositories/sql/users/users.service';
+
+// Services
+import { JwtService } from '@nestjs/jwt';
 import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
 import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
+
+import { UserService } from '@apis/user/user.service'; // Api service (The Extended Service)
+import { UsersService } from '@repositories/sql/users/users.service'; // Repository service (The Injected Service)
+
+// Types
+import type { User } from '@repositories/sql/users/user.entity';
 
 @Injectable()
 export class AuthService extends UserService {

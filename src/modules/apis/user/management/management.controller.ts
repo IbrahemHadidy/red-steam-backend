@@ -1,33 +1,60 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+// NestJS
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+
+// Fastify
 import { FastifyRequest as Request } from 'fastify';
-import { File, FileInterceptor } from '@nest-lab/fastify-multer';
+
+// Multer
+import { FileInterceptor } from '@nest-lab/fastify-multer';
+
+// Swagger
+import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
+import { ApiTags } from '@nestjs/swagger';
+
+// Guards
 import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 import { VerifiedUserGuard } from '@guards/verified-user.guard';
-import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
+
+// Services
 import { ManagementService } from '@apis/user/management/management.service';
 
-// importing dtos
-import { ChangeUsernameDto } from '@apis/user/management/dtos/change-username.dto';
-import { ChangeEmailDto } from '@apis/user/management/dtos/change-email.dto';
+// DTOs
 import { ChangeCountryDto } from '@apis/user/management/dtos/change-country.dto';
+import { ChangeEmailDto } from '@apis/user/management/dtos/change-email.dto';
 import { ChangePasswordDto } from '@apis/user/management/dtos/change-password.dto';
+import { ChangeUsernameDto } from '@apis/user/management/dtos/change-username.dto';
+import { DeleteAccountDto } from '@apis/user/management/dtos/delete-account.dto';
 import { ForgotPasswordDto } from '@apis/user/management/dtos/forgot-password.dto';
 import { PasswordResetDto } from '@apis/user/management/dtos/password-reset.dto';
-import { DeleteAccountDto } from '@apis/user/management/dtos/delete-account.dto';
 
-// importing swagger descriptors
+// Swagger descriptors
+import { changeCountryDescriptor } from '@apis/user/management/api-descriptors/change-country.descriptor';
+import { changeEmailDescriptor } from '@apis/user/management/api-descriptors/change-email.descriptor';
+import { changePasswordDescriptor } from '@apis/user/management/api-descriptors/change-password.descriptor';
+import { changeUsernameDescriptor } from '@apis/user/management/api-descriptors/change-username.descriptor';
 import { checkEmailExistsDescriptor } from '@apis/user/management/api-descriptors/check-email-exists.descriptor';
 import { checkUsernameExistsDescriptor } from '@apis/user/management/api-descriptors/check-username-exists.descriptor';
-import { changeUsernameDescriptor } from '@apis/user/management/api-descriptors/change-username.descriptor';
-import { changeEmailDescriptor } from '@apis/user/management/api-descriptors/change-email.descriptor';
-import { changeCountryDescriptor } from '@apis/user/management/api-descriptors/change-country.descriptor';
-import { uploadAvatarDescriptor } from '@apis/user/management/api-descriptors/upload-avatar.descriptor';
+import { deleteAccountDescriptor } from '@apis/user/management/api-descriptors/delete-account.descriptor';
 import { deleteAvatarDescriptor } from '@apis/user/management/api-descriptors/delete-avatar.descriptor';
-import { changePasswordDescriptor } from '@apis/user/management/api-descriptors/change-password.descriptor';
 import { forgotPasswordDescriptor } from '@apis/user/management/api-descriptors/forgot-password.descriptor';
 import { passwordResetDescriptor } from '@apis/user/management/api-descriptors/password-reset.descriptor';
-import { deleteAccountDescriptor } from '@apis/user/management/api-descriptors/delete-account.descriptor';
+import { uploadAvatarDescriptor } from '@apis/user/management/api-descriptors/upload-avatar.descriptor';
+
+// Types
+import type { File } from '@nest-lab/fastify-multer';
 
 @Controller('user/management')
 @ApiTags('User Management')

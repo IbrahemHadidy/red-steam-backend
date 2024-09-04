@@ -1,8 +1,13 @@
+// NestJS
 import { Logger, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
+// TypeORM
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
+
+// MongoDB Modules
 import { DropboxTokensModule } from '@repositories/mongo/dropbox-tokens/token-blacklist.module';
+import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
 
 // DB Config
 import { DatabaseService } from '@services/database/database.service';

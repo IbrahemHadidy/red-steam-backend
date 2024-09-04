@@ -1,8 +1,13 @@
-import { Logger, Module } from "@nestjs/common";
+// NestJS
+import { Logger, Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+// Modules
+import { DropboxTokensModule } from '@repositories/mongo/dropbox-tokens/token-blacklist.module';
+
+// Services
+import { AvatarStorageService } from '@services/dropbox/avatar-storage.service';
 import { DropboxService } from '@services/dropbox/dropbox.service';
-import { ConfigService } from "@nestjs/config";
-import { DropboxTokensModule } from "@repositories/mongo/dropbox-tokens/token-blacklist.module";
-import { AvatarStorageService } from "@services/dropbox/avatar-storage.service";
 import { GameStorageService } from '@services/dropbox/game-storage.service';
 
 @Module({

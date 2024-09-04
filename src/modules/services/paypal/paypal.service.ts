@@ -1,6 +1,11 @@
+// NestJS
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
+// Paypal
 import paypal from '@paypal/checkout-server-sdk';
+
+// Types
 import type { HttpResponse } from 'paypal__paypalhttp';
 
 @Injectable()
@@ -31,7 +36,9 @@ export class PaypalService {
    * @param totalPrice
    * @returns Order response
    */
-  async createOrder(totalPrice: number): Promise<HttpResponse<any>> {
+  async createOrder(
+    totalPrice: number,
+  ): Promise<HttpResponse<{ id: string; links: { href: string; method: string }[] }>> {
     // Log the initiation of the order creation process
     this.logger.log(`Creating PayPal order for user with ID ${totalPrice}`);
 

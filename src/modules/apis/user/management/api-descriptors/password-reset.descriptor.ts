@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { PasswordResetDto } from '@apis/user/management/dtos/password-reset.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const passwordResetDescriptor: ApiDescriptorOptions = {
   summary: 'Submit Password Reset',

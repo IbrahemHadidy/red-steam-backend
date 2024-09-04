@@ -1,3 +1,4 @@
+// NestJS
 import {
   BadRequestException,
   ConflictException,
@@ -6,14 +7,19 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+
+// TypeORM
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, FindOptionsWhere, In, Like, Repository } from 'typeorm';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
+import { FindOptionsWhere, ILike, In, Repository } from 'typeorm';
+
+// Entities
+import { Developer, Publisher } from '@repositories/sql/companies/company.entity';
+
+// Types
+import { Developer as DeveloperType, Publisher as PublisherType } from '@repositories/sql/companies/company.entity';
 
 @Injectable()
 export class CompaniesService {
-  private readonly relations: FindOptionsRelations<Publisher | Developer>;
-
   constructor(
     private readonly logger: Logger,
 
@@ -22,11 +28,7 @@ export class CompaniesService {
 
     @InjectRepository(Developer, 'sql')
     private readonly developerRepository: Repository<Developer>,
-  ) {
-    this.relations = {
-      games: true,
-    };
-  }
+  ) {}
 
   /**
    * Checks if a company with the given property exists.
@@ -40,8 +42,13 @@ export class CompaniesService {
     checkValue: number | string,
     type: 'publisher' | 'developer',
   ): Promise<void> {
+    // Get the repository based on the type
     const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
+
+    // Check if company exists
     const company = await repository.findOne({ where: { [checkBy]: checkValue } });
+
+    // Throw a not found exception if company does not exist
     if (!company) throw new NotFoundException(`${type.charAt(0).toUpperCase() + type.slice(1)} not found`);
   }
 
@@ -57,8 +64,13 @@ export class CompaniesService {
     value: string,
     type: 'publisher' | 'developer',
   ): Promise<void> {
+    // Get the repository based on the type
     const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
+
+    // Check if value is unique
     const company = await repository.findOne({ where: { [updateType]: value } });
+
+    // Throw a conflict exception if value is not unique
     if (company)
       throw new ConflictException(`${type.charAt(0).toUpperCase() + type.slice(1)} ${updateType} already exists`);
   }
@@ -69,7 +81,10 @@ export class CompaniesService {
    * @throws {BadRequestException} If the website is not valid.
    */
   private async checkValidWebsite(website: string): Promise<void> {
+    // Regular expression to match a valid website URL
     const urlRegex = /^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/;
+
+    // Throw a bad request exception if the website is not valid
     if (!website.match(urlRegex)) throw new BadRequestException('Invalid website URL');
   }
 
@@ -82,11 +97,16 @@ export class CompaniesService {
     sortBy: 'id' | 'name' | 'website',
     sortOrder: 'asc' | 'desc',
     type: 'publishers' | 'developers',
-  ): Promise<Publisher[] | Developer[]> {
-    // Log the retrieval of all publishers/developers from the database
+  ): Promise<(PublisherType | DeveloperType)[]> {
     this.logger.log(`Retrieving all ${type.charAt(0).toUpperCase() + type.slice(1)} from the database`);
+
+    // Get the repository based on the type
     const repository = type === 'publishers' ? this.publisherRepository : this.developerRepository;
-    const companies = repository.find({ relations: this.relations, order: { [sortBy]: sortOrder } });
+
+    // Find all companies
+    const companies = repository.find({ order: { [sortBy]: sortOrder } });
+
+    // Return the list of companies
     return companies;
   }
 
@@ -97,12 +117,19 @@ export class CompaniesService {
    * @returns The retrieved company.
    * @throws {NotFoundException} If the company is not found.
    */
-  public async getById(id: number, type: 'publisher' | 'developer'): Promise<Publisher | Developer> {
-    // Log the retrieval of a publisher/developer from the database
+  public async getById(id: number, type: 'publisher' | 'developer'): Promise<DeveloperType | PublisherType> {
     this.logger.log(`Retrieving ${type.charAt(0).toUpperCase() + type.slice(1)} with ID ${id} from the database`);
+
+    // Get the repository based on the type
     const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
-    const company = await repository.findOne({ where: { id }, relations: this.relations });
+
+    // Find the company by ID
+    const company = await repository.findOne({ where: { id } });
+
+    // Throw a not found exception if the company is not found
     if (!company) throw new NotFoundException(`${type.charAt(0).toUpperCase() + type.slice(1)} not found`);
+
+    // Return the company
     return company;
   }
 
@@ -113,18 +140,24 @@ export class CompaniesService {
    * @returns The retrieved companies.
    * @throws {NotFoundException} If any of the companies are not found.
    */
-  public async getByIds(ids: number[], type: 'publisher' | 'developer'): Promise<Publisher[] | Developer[]> {
-    // Log the retrieval of multiple publishers/developers from the database
+  public async getByIds(ids: number[], type: 'publisher' | 'developer'): Promise<(PublisherType | DeveloperType)[]> {
     this.logger.log(`Retrieving ${type.charAt(0).toUpperCase() + type.slice(1)} with IDs ${ids} from the database`);
 
+    // Get the repository based on the type
     const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
-    const companies = await repository.find({ where: { id: In(ids) }, relations: this.relations });
+
+    // Find the companies by IDs
+    const companies = await repository.find({ where: { id: In(ids) } });
+
+    // Throw a not found exception if any of the companies are not found
     if (companies.length !== ids.length) {
       const missingIds = ids.filter((id) => !companies.some((company) => company.id === id));
       throw new NotFoundException(
         `${type.charAt(0).toUpperCase() + type.slice(1)} not found: ${missingIds.join(', ')}`,
       );
     }
+
+    // Return the companies
     return companies;
   }
 
@@ -135,12 +168,16 @@ export class CompaniesService {
    * @returns The retrieved company.
    * @throws {NotFoundException} If the company is not found.
    */
-  public async getByName(name: string, type: 'publisher' | 'developer'): Promise<Publisher | Developer> {
-    // Log the retrieval of a publisher/developer from the database
+  public async getByName(name: string, type: 'publisher' | 'developer'): Promise<DeveloperType | PublisherType> {
     this.logger.log(`Retrieving ${type.charAt(0).toUpperCase() + type.slice(1)} with name ${name} from the database`);
 
+    // Get the repository based on the type
     const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
-    const company = await repository.findOne({ where: { name }, relations: this.relations });
+
+    // Find the company by name
+    const company = await repository.findOne({ where: { name } });
+
+    // Throw a not found exception if the company is not found
     if (!company) throw new NotFoundException(`${type.charAt(0).toUpperCase() + type.slice(1)} not found`);
     return company;
   }
@@ -153,7 +190,7 @@ export class CompaniesService {
    * @param {('ASC' | 'DESC')} order - The order direction.
    * @param {('publisher' | 'developer')} type - The type of companies to retrieve
    * @param {{name?: string; website?: string}} searchQuery - The search query.
-   * @returns {Promise<{ items: Company[], total: number, totalPages: number }>} A promise that resolves to the paginated companies.
+   * @returns {Promise<{ items: (PublisherType | DeveloperType)[], total: number, totalPages: number }>} A promise that resolves to the paginated companies.
    */
   public async getCompaniesPaginated(
     page: number,
@@ -162,30 +199,33 @@ export class CompaniesService {
     order: 'ASC' | 'DESC',
     type: 'publisher' | 'developer',
     searchQuery?: { name?: string; website?: string },
-  ): Promise<{ items: (Publisher | Developer)[]; total: number; totalPages: number }> {
+  ): Promise<{ items: (PublisherType | DeveloperType)[]; total: number; totalPages: number }> {
     this.logger.log(`Getting companies paginated: page ${page}, limit ${limit}, order by ${orderBy} ${order}`);
 
+    // Get the repository based on the type
     const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
 
-    const where: FindOptionsWhere<Publisher | Developer> = {}
-
+    // Build the where clause
+    const where: FindOptionsWhere<Publisher | Developer> = {};
     if (searchQuery.name) {
-      where.name = Like(`%${searchQuery.name}%`);
+      where.name = ILike(`%${searchQuery.name}%`);
     }
     if (searchQuery.website) {
-      where.website = Like(`%${searchQuery.website}%`);
+      where.website = ILike(`%${searchQuery.website}%`);
     }
-      
+
+    // Find and count the companies
     const [items, total] = await repository.findAndCount({
       where,
-      relations: this.relations,
       order: { [orderBy]: order },
       skip: Math.max((page - 1) * limit, 0),
       take: limit,
     });
 
+    // Calculate the total number of pages
     const totalPages = Math.ceil(total / limit);
 
+    // Return the paginated companies
     return { items, total, totalPages };
   }
 
@@ -200,19 +240,26 @@ export class CompaniesService {
   public async create(
     company: { name: string; website: string },
     type: 'publisher' | 'developer',
-  ): Promise<Publisher | Developer> {
-    // Log the creation of a publisher/developer in the database
+  ): Promise<PublisherType | DeveloperType> {
     this.logger.log(`Creating a new ${type.charAt(0).toUpperCase() + type.slice(1)} in the database`);
 
     // Check if the company name or website already exists
     await this.checkValueIsUnique('name', company.name, type);
     await this.checkValueIsUnique('website', company.website, type);
+
+    // Check if the url is valid
     await this.checkValidWebsite(company.website);
 
+    // Get the repository based on the type
     const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
+
+    // Create and save the new company
     const newCompany = repository.create({ name: company.name, website: company.website });
+
+    // Save the new company
     if (!newCompany) throw new InternalServerErrorException('Failed to create company');
 
+    // Return the new company
     return repository.save(newCompany);
   }
 
@@ -232,27 +279,34 @@ export class CompaniesService {
     updateType: 'name' | 'website',
     value: string,
     type: 'publisher' | 'developer',
-  ): Promise<Publisher | Developer> {
-    // Log the update of a publisher/developer in the database
+  ): Promise<PublisherType | DeveloperType> {
     this.logger.log(`Updating ${type.charAt(0).toUpperCase() + type.slice(1)} in the database`);
 
     const company = await this.getById(id, type);
 
+    // Check if the company exists
     await this.checkCompanyExists('id', id, type);
+
+    // Check if the update value is unique and website is valid
     if (updateType === 'name' && value !== company.name) await this.checkValueIsUnique(updateType, value, type);
     if (updateType === 'website' && value !== company.website) await this.checkValueIsUnique(updateType, value, type);
-
     if (updateType === 'website') {
       await this.checkValidWebsite(value);
     }
 
+    // Get the repository based on the type
     const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
+
+    // Update the company
     company[updateType] = value;
 
+    // Save the updated company
     const updatedCompany = await repository.save(company);
-    if (!updatedCompany) {
-      throw new InternalServerErrorException(`Failed to update ${type} in the database`);
-    }
+
+    // Throw an exception if the company was not updated
+    if (!updatedCompany) throw new InternalServerErrorException(`Failed to update ${type} in the database`);
+
+    // Return the updated company
     return updatedCompany;
   }
 
@@ -263,18 +317,19 @@ export class CompaniesService {
    * @throws {NotFoundException} If the company is not found.
    */
   public async remove(id: number, type: 'publisher' | 'developer'): Promise<void> {
-    // Log the removal of a publisher/developer from the database
     this.logger.log(`Removing ${type.charAt(0).toUpperCase() + type.slice(1)} from the database`);
 
     // Check if company exists
     await this.checkCompanyExists('id', id, type);
 
-    // Delete company
+    // Get the repository based on the type
     const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
+
+    // Attempt to delete the company
     const result = await repository.delete(id);
-    if (!result.affected) {
-      throw new InternalServerErrorException(`Failed to delete ${type} from the database`);
-    }
+
+    // Throw an exception if the company was not deleted
+    if (!result.affected) throw new InternalServerErrorException(`Failed to delete ${type} from the database`);
   }
 
   /**
@@ -283,13 +338,15 @@ export class CompaniesService {
    * @throws {InternalServerErrorException} If the removal fails.
    */
   public async removeAll(type: 'publishers' | 'developers'): Promise<void> {
-    // Log the removal of all publishers/developers from the database
     this.logger.log(`Removing all ${type.charAt(0).toUpperCase() + type.slice(1)} from the database`);
 
+    // Get the repository based on the type
     const repository = type === 'publishers' ? this.publisherRepository : this.developerRepository;
 
     // Attempt to delete all records
     const result = await repository.delete({});
+
+    // Throw an exception if the removal fails
     if (result.affected === undefined)
       throw new InternalServerErrorException(`Failed to remove ${type} from the database`);
   }

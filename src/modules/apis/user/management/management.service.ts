@@ -1,12 +1,18 @@
+// NestJS
 import { BadRequestException, ConflictException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+
+// Services
 import { JwtService } from '@nestjs/jwt';
-import { File } from '@nest-lab/fastify-multer';
-import { AvatarStorageService } from '@services/dropbox/avatar-storage.service';
-import { UsersService } from '@repositories/sql/users/users.service';
 import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
-import { UserService } from '@apis/user/user.service';
+import { AvatarStorageService } from '@services/dropbox/avatar-storage.service';
 import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
+
+import { UserService } from '@apis/user/user.service'; // Api service (The Extended Service)
+import { UsersService } from '@repositories/sql/users/users.service'; // Repository service (The Injected Service)
+
+// Types
+import type { File } from '@nest-lab/fastify-multer';
 
 @Injectable()
 export class ManagementService extends UserService {
@@ -39,6 +45,8 @@ export class ManagementService extends UserService {
     }
 
     const payload = { email };
+
+    // Generate reset token
     const resetToken = await this.jwt.signAsync(payload, {
       expiresIn: '1h',
       secret: this.resetTokenSecret,

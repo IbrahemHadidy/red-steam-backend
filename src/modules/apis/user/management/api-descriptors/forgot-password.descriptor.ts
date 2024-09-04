@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { ForgotPasswordDto } from '@apis/user/management/dtos/forgot-password.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const forgotPasswordDescriptor: ApiDescriptorOptions = {
   summary: 'Forgot Password',

@@ -1,4 +1,7 @@
-import { IsNotEmpty, IsNumber, IsArray, IsString } from 'class-validator';
+// Class-validator
+import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+
+// Swagger
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CaptureOrderDto {

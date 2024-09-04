@@ -1,8 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, BaseEntity } from 'typeorm';
+// TypeORM
+import { BaseEntity, Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+// Entities
 import { Game } from '@repositories/sql/games/game.entity';
 import { User } from '@repositories/sql/users/user.entity';
 
-// Importing types to fix circular dependency
+// Types
 import type { Game as GameType } from '@repositories/sql/games/game.entity';
 import type { User as UserType } from '@repositories/sql/users/user.entity';
 

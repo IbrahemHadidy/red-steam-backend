@@ -1,31 +1,34 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
 import { BadRequestException, Logger } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { environmentConfig, getMongoTypeOrmConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
 
 // Modules
+import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
+import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
 import { UsersModule } from '@repositories/sql/users/users.module';
 import { NodeMailerModule } from '@services/node-mailer/node-mailer.module';
-import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
-import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
 
 // Services
 import { AuthService } from '@apis/user/auth/auth.service';
-import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
-import { UsersService } from '@repositories/sql/users/users.service';
-import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
 import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
-import { GamesService } from '@repositories/sql/games/games.service';
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
-import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
+import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
+import { GamesService } from '@repositories/sql/games/games.service';
+import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
+import { UsersService } from '@repositories/sql/users/users.service';
+import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
+
+// Types
+import type { User } from '@repositories/sql/users/user.entity';
 
 describe('AuthController', () => {
-  let data: { message: string; accessToken: string; refreshToken: string; userData: any };
+  let data: { message: string; accessToken: string; refreshToken: string; userData: User & { identifier?: string } };
   let authService: AuthService;
   let usersService: UsersService;
   let tokenBlacklistService: TokenBlacklistService;
@@ -130,7 +133,7 @@ describe('AuthController', () => {
   describe('autoLogin', () => {
     it('should auto login successfully with valid token', async () => {
       // Call the autoLogin method
-      const result = await authService.autoLogin(data.userData.id);
+      const result = await authService.autoLogin({ userId: data.userData.id });
 
       expect(result).toEqual({
         message: 'Auto login successful',
@@ -162,7 +165,7 @@ describe('AuthController', () => {
   describe('refreshToken', () => {
     it('should refresh access token successfully', async () => {
       // Call the refreshToken method
-      const result = await authService.refreshToken(data.userData.id);
+      const result = await authService.refreshToken({ userId: data.userData.id });
 
       // Assert
       expect(result).toEqual({
@@ -175,7 +178,7 @@ describe('AuthController', () => {
   describe('getUserData', () => {
     it('should get user data successfully', async () => {
       // Call the getUserData method
-      const result = await authService.getUserData(data.userData.id);
+      const result = await authService.getUserData({ userId: data.userData.id });
 
       // Assertions
       expect(result).toEqual({

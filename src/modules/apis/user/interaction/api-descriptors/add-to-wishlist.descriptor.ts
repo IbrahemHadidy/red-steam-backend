@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { AddToWishlistDto } from '@apis/user/interaction/dtos/add-to-wishlist.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const addToWishlistDescriptor: ApiDescriptorOptions = {
   summary: 'Add Items to Wishlist',

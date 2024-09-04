@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { CreateOrderDto } from '@apis/user/payment/dtos/create-order.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const createOrderDescriptor: ApiDescriptorOptions = {
   summary: 'Create Order',

@@ -1,36 +1,27 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Game } from '@repositories/sql/games/game.entity';
 import {
+  FindOperator,
   FindOptionsOrder,
   FindOptionsRelations,
   FindOptionsWhere,
+  ILike,
   In,
+  LessThan,
   LessThanOrEqual,
-  Like,
+  MoreThan,
   Not,
   Repository,
 } from 'typeorm';
-import { Game } from '@repositories/sql/games/game.entity';
 
 @Injectable()
 export class SearchService {
-  private readonly relations: FindOptionsRelations<Game> = {};
-
   constructor(
     private readonly logger: Logger,
     @InjectRepository(Game, 'sql')
     private readonly gameRepository: Repository<Game>,
-  ) {
-    this.relations = {
-      developers: true,
-      publishers: true,
-      tags: true,
-      pricing: true,
-      reviews: true,
-      gamesFeatures: true,
-      languages: true,
-    };
-  }
+  ) {}
 
   /**
    * Get games by partial name (for mini search)
@@ -41,14 +32,17 @@ export class SearchService {
   public async getByPartialName(partialName: string): Promise<Game[]> {
     this.logger.log(`Finding games with partial name: ${partialName}`);
 
+    // Find games with the given partial name
     const games = await this.gameRepository.find({
-      where: { name: Like(`%${partialName}%`) },
+      where: { name: ILike(`%${partialName}%`) },
       take: 10,
       relations: { pricing: true, tags: true },
     });
 
+    // Throw a NotFoundException if no games are found
     if (!games.length) throw new NotFoundException('No games found');
 
+    // Return the games
     return games;
   }
 
@@ -56,8 +50,8 @@ export class SearchService {
    * Get games by parameters
    * @param searchData An object containing the parameters (partialName, price, tags, offers, platforms, sortBy, publishers, developers, features, featured)
    * @param pagination An object containing the pagination offset and limit
-   * @returns An array of games
-   * @throws NotFoundException if no games are found
+   * @returns {Promise<Game[]>} An array of games
+   * @throws {NotFoundException} Throws a NotFoundException if no games are found
    */
   public async getByParameters(
     searchData: {
@@ -75,6 +69,8 @@ export class SearchService {
       languages?: number[];
       featured?: boolean;
       excludeMature?: boolean;
+      excludedGames?: number[];
+      upcomingMode?: 'onlyUpcoming' | 'exclude';
     },
     pagination: { offset: number; limit: number } = { offset: 0, limit: 20 },
   ): Promise<Game[]> {
@@ -93,22 +89,47 @@ export class SearchService {
       languages,
       featured,
       excludeMature,
+      excludedGames,
+      upcomingMode,
     } = searchData;
 
     const { offset, limit } = pagination;
 
     this.logger.log(`Finding games with parameters: ${JSON.stringify(searchData)}`);
 
+    // Prepare relations option
+    const relations: FindOptionsRelations<Game> = {
+      developers: developers && developers.length > 0,
+      publishers: publishers && publishers.length > 0,
+      tags: true,
+      pricing: true,
+      reviews: false,
+      gamesFeatures: features && features.length > 0,
+      languages: languages && languages.length > 0,
+    };
+
+    // Prepare platforms option for the where clause
     let platformEntries: { mac: boolean; win: boolean };
     if (platforms) {
       platformEntries = {
-        ...(platforms.includes('win') ? { win: true } : { win: false }),
-        ...(platforms.includes('mac') ? { mac: true } : { mac: false }),
+        mac: platforms.includes('mac'),
+        win: platforms.includes('win'),
       };
     }
 
+    // Prepare upcoming option for the where clause
+    let upcommingOption: FindOperator<Date>;
+    if (upcomingMode === 'onlyUpcoming') {
+      upcommingOption = MoreThan(new Date());
+    } else if (upcomingMode === 'exclude') {
+      upcommingOption = LessThan(new Date());
+    } else {
+      upcommingOption = undefined;
+    }
+
+    // Prepare where clause
     const where: FindOptionsWhere<Game> = {
-      ...(partialName ? { name: Like(`%${partialName}%`) } : {}),
+      ...(partialName ? { name: ILike(`%${partialName}%`) } : {}),
       ...(offers ? { pricing: { discount: true } } : {}),
       ...(maxPrice ? { pricing: { basePrice: LessThanOrEqual(maxPrice), discount: false } } : {}),
       ...(maxPrice ? { pricing: { discountPrice: LessThanOrEqual(maxPrice), discount: true } } : {}),
@@ -122,48 +143,38 @@ export class SearchService {
       ...(languages ? { languages: { id: In(languages) } } : {}),
       ...(featured ? { featured } : {}),
       ...(excludeMature ? { mature: false } : {}),
+      ...(excludedGames ? { id: Not(In(excludedGames)) } : {}),
+      ...(upcomingMode ? { releaseDate: upcommingOption } : {}),
     };
 
-    let sorting: FindOptionsOrder<Game> = {};
-    switch (sort) {
-      case 'name':
-        sorting = { name: { direction: 'ASC' } };
-        break;
-      case 'totalSales':
-        sorting = { totalSales: { direction: 'DESC' } };
-        break;
-      case 'lowestPrice':
-        sorting = { pricing: { price: { direction: 'ASC' } } };
-        break;
-      case 'highestPrice':
-        sorting = { pricing: { price: { direction: 'DESC' } } };
-        break;
-      case 'releaseDate':
-        sorting = { releaseDate: { direction: 'DESC' } };
-        break;
-      case 'reviews':
-        sorting = { averageRating: { direction: 'DESC' } };
-        break;
-      case 'relevance':
-        sorting = { reviewsCount: { direction: 'DESC' } };
-        break;
-      default:
-        sorting = { reviewsCount: { direction: 'DESC' } };
-        break;
-    }
+    // Prepare sorting option
+    const sorting: FindOptionsOrder<Game> = {
+      name: sort === 'name' ? { direction: 'ASC' } : undefined,
+      totalSales: sort === 'totalSales' ? { direction: 'DESC' } : undefined,
+      pricing:
+        sort === 'lowestPrice'
+          ? { price: { direction: 'ASC' } }
+          : sort === 'highestPrice'
+            ? { price: { direction: 'DESC' } }
+            : undefined,
+      releaseDate: sort === 'releaseDate' ? { direction: 'DESC' } : undefined,
+      averageRating: sort === 'reviews' ? { direction: 'DESC' } : undefined,
+      reviewsCount: sort === 'relevance' || !sort ? { direction: 'DESC' } : undefined,
+    };
 
+    // Retrieve games with the given parameters
     const games = await this.gameRepository.find({
       where,
-      relations: this.relations,
+      relations,
       order: sorting,
       skip: offset,
       take: limit,
     });
 
-    if (!games.length) {
-      throw new NotFoundException('No games found with the given parameters.');
-    }
+    // Throw a NotFoundException if no games are found
+    if (!games || games.length === 0) throw new NotFoundException('No games found with the given parameters.');
 
+    // Return the games
     return games;
   }
 
@@ -175,17 +186,17 @@ export class SearchService {
    * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
    */
   public async getByUserTags(tags: number[], limit: number = 12): Promise<Game[]> {
-    // Log the retrieval of games
     this.logger.log(`Retrieving games with tags ids ${tags} from the database`);
 
     // Fetch all games with their tags
     const games = await this.gameRepository.find({
-      relations: ['tags'],
+      relations: { tags: true },
     });
 
     // Create a map to count tag occurrences in each game
     const gameTagCounts: { [key: number]: number } = {};
 
+    // Count the number of matching tags in each game
     games.forEach((game) => {
       const tagCount = game.tags.filter((tag) => tags.includes(tag.id)).length;
       gameTagCounts[game.id] = tagCount;
@@ -197,10 +208,10 @@ export class SearchService {
       .sort((a, b) => gameTagCounts[b.id] - gameTagCounts[a.id]) // Sort by tag count in descending order
       .slice(0, limit); // Limit the number of results
 
-    if (sortedGames.length === 0) {
-      throw new NotFoundException(`Games with tags ${tags} not found`);
-    }
+    // Throw a NotFoundException if no games are found
+    if (sortedGames.length === 0) throw new NotFoundException(`Games with tags ${tags} not found`);
 
+    // Return the sorted games
     return sortedGames;
   }
 }

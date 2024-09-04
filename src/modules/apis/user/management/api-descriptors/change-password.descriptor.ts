@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { ChangePasswordDto } from '@apis/user/management/dtos/change-password.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const changePasswordDescriptor: ApiDescriptorOptions = {
   summary: 'Change Password',

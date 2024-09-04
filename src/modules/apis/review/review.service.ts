@@ -1,5 +1,10 @@
+// NestJS
 import { Injectable, Logger } from '@nestjs/common';
+
+// Services
 import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
+
+// Types
 import type { Review } from '@repositories/sql/reviews/review.entity';
 
 @Injectable()
@@ -24,11 +29,13 @@ export class ReviewService {
     limit: number,
     orderBy: 'id' | 'username' | 'gameName' | 'content' | 'rating',
     order: 'ASC' | 'DESC',
-    searchQuery: { username?: string; gameName?: string; content?: string; },
+    searchQuery: { username?: string; gameName?: string; content?: string },
   ): Promise<{ items: Review[]; total: number; totalPages: number }> {
     this.logger.log(
       `Retrieving reviews, page: ${page}, limit: ${limit}, order by: ${orderBy}, order: ${order}, search query: ${JSON.stringify(searchQuery)}`,
     );
+
+    // Send the paginated reviews
     return await this.review.getReviewsPaginated(page, limit, orderBy, order, searchQuery);
   }
 
@@ -39,8 +46,11 @@ export class ReviewService {
    */
   public async deleteReview(id: number): Promise<{ message: string }> {
     this.logger.log(`Deleting review with ID ${id}`);
+
+    // Delete the review
     await this.review.remove(id);
 
+    // Send a success message
     return { message: 'Review deleted successfully' };
   }
 }

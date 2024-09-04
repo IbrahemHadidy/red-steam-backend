@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { ChangeCountryDto } from '@apis/user/management/dtos/change-country.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const changeCountryDescriptor: ApiDescriptorOptions = {
   summary: 'Change Country',

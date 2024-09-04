@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { CreateDeveloperDto } from '@apis/company/dtos/create-developer.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const createDeveloperDescriptor: ApiDescriptorOptions = {
   summary: 'Create Developer',
@@ -26,4 +29,4 @@ export const createDeveloperDescriptor: ApiDescriptorOptions = {
     type: CreateDeveloperDto,
   },
   security: ['access-token'],
-}
+};

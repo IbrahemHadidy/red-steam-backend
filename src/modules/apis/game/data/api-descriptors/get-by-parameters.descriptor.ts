@@ -1,4 +1,5 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const getByParametersDescriptor: ApiDescriptorOptions = {
   summary: 'Get Games By Parameters',
@@ -97,6 +98,18 @@ export const getByParametersDescriptor: ApiDescriptorOptions = {
       type: Boolean,
       required: false,
       description: 'Exclude mature content',
+    },
+    {
+      name: 'excludedGames',
+      type: [Number],
+      required: false,
+      description: 'Excluded games',
+    },
+    {
+      name: 'upcomingMode',
+      type: String,
+      enum: ['exclude', 'upcomingOnly'],
+      required: false,
     },
     {
       name: 'offset',

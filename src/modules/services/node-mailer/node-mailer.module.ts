@@ -1,6 +1,11 @@
+// NestJS
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
+// Modules
 import { MailerModule } from '@nestjs-modules/mailer';
+
+// Services
 import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
 
 @Module({

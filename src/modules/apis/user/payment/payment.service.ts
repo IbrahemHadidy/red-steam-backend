@@ -1,10 +1,16 @@
+// NestJS
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { UsersService } from '@repositories/sql/users/users.service';
+
+// Services
 import { GamesService } from '@repositories/sql/games/games.service';
-import { Game } from '@repositories/sql/games/game.entity';
 import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
 import { PaypalService } from '@services/paypal/paypal.service';
-import { UserService } from '@apis/user/user.service';
+
+import { UserService } from '@apis/user/user.service'; // Api service (The Extended Service)
+import { UsersService } from '@repositories/sql/users/users.service'; // Repository service (The Injected Service)
+
+// Types
+import type { Game } from '@repositories/sql/games/game.entity';
 
 @Injectable()
 export class PaymentService extends UserService {

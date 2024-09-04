@@ -1,5 +1,10 @@
+// NestJS
 import { UseInterceptors } from '@nestjs/common';
+
+// Class-transformer
 import { ClassConstructor } from 'class-transformer';
+
+// Interceptors
 import { SerializeInterceptor } from '@interceptors/serialize.interceptor';
 
 /**
@@ -7,6 +12,6 @@ import { SerializeInterceptor } from '@interceptors/serialize.interceptor';
  * @param dto - DTO class
  * @returns Serialized data
  */
-export function Serialize(dto: ClassConstructor<any>) {
+export function Serialize(dto: ClassConstructor<unknown>): MethodDecorator {
   return UseInterceptors(new SerializeInterceptor(dto));
 }

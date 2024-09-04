@@ -1,4 +1,7 @@
-import { IsNotEmpty, IsNumber, IsArray } from 'class-validator';
+// Class-validator
+import { IsArray, IsNotEmpty, IsNumber } from 'class-validator';
+
+// Swagger
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOrderDto {

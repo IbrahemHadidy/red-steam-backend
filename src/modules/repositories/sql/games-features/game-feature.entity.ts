@@ -1,7 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, BaseEntity } from 'typeorm';
+// Types
+import { BaseEntity, Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+// Entites
 import { Game } from '@repositories/sql/games/game.entity';
 
-// Importing game type to fix circular dependency
+// Types
 import type { Game as GameType } from '@repositories/sql/games/game.entity';
 
 @Entity({ name: 'features' })
@@ -12,7 +15,7 @@ export class GameFeature extends BaseEntity {
   @Column()
   name: string;
 
-  @Column({ type: 'bytea'})
+  @Column({ type: 'bytea' })
   icon: Buffer;
 
   @ManyToMany(() => Game, (game: GameType) => game.gamesFeatures)

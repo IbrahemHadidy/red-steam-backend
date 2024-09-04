@@ -1,6 +1,11 @@
+// Class-transformer
 import { Expose, Type } from 'class-transformer';
-import { UserDataDto } from '@apis/user/serializer-dtos/user-data.dto';
-import type { UserDataDto as UserDataDtoType } from '@apis/user/serializer-dtos/user-data.dto';
+
+// DTOs
+import { ReviewDto } from '@apis/review/serializer-dtos/review.dto';
+
+// Types
+import type { ReviewDto as ReviewDtoType } from '@apis/review/serializer-dtos/review.dto';
 
 export class GameDataDto {
   @Expose()
@@ -85,8 +90,8 @@ export class GameDataDto {
   legal: string;
 
   @Expose()
-  @Type(() => reviewDto)
-  reviews: reviewDto[];
+  @Type(() => ReviewDto)
+  reviews: ReviewDtoType[];
 
   @Expose()
   totalSales: number;
@@ -281,26 +286,4 @@ class GameFeatureDto {
 
   @Expose()
   icon: { type: string; data: number[] };
-}
-
-class reviewDto {
-  @Expose()
-  id: number;
-
-  @Expose()
-  positive: boolean;
-
-  @Expose()
-  date: Date;
-
-  @Expose()
-  content: string;
-
-  @Expose()
-  @Type(() => UserDataDto)
-  user: UserDataDtoType;
-
-  @Expose()
-  @Type(() => GameDataDto)
-  game: GameDataDto;
 }

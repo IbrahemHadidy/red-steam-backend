@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { CaptureOrderDto } from '@apis/user/payment/dtos/capture-order.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const captureOrderDescriptor: ApiDescriptorOptions = {
   summary: 'Capture Order',

@@ -1,16 +1,13 @@
+// NestJS
 import { BadRequestException } from '@nestjs/common';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  BaseEntity,
-  BeforeInsert,
-  BeforeUpdate,
-} from 'typeorm';
+
+// TypeORM
+import { BaseEntity, BeforeInsert, BeforeUpdate, Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+
+// Entities
 import { Game } from '@repositories/sql/games/game.entity';
 
-// Importing game type to fix circular dependency
+// Types
 import type { Game as GameType } from '@repositories/sql/games/game.entity';
 
 @Entity({ name: 'games_pricing' })

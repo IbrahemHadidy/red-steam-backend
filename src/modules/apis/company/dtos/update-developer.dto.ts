@@ -1,4 +1,7 @@
+// Class-validator
 import { IsString } from 'class-validator';
+
+// Swagger
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateDeveloperDto {

@@ -1,11 +1,17 @@
+// NestJS
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Dropbox } from 'dropbox';
-import { InvalidFileException } from '@exceptions/invalid-file.exception';
-import { DropboxService } from '@services/dropbox/dropbox.service';
-import { DropboxTokensService } from '@repositories/mongo/dropbox-tokens/dropbox-tokens.service';
 
+// Exceptions
+import { InvalidFileException } from '@exceptions/invalid-file.exception';
+
+// Services
+import { DropboxTokensService } from '@repositories/mongo/dropbox-tokens/dropbox-tokens.service';
+import { DropboxService } from '@services/dropbox/dropbox.service';
+
+// Types
 import type { File } from '@nest-lab/fastify-multer';
+import type { Dropbox } from 'dropbox';
 interface UploadResponse extends Dropbox {
   sharedLink: string;
 }
@@ -81,8 +87,11 @@ export class AvatarStorageService extends DropboxService {
   public async deleteAvatar(filePath: string): Promise<void> {
     // Ensure valid access token
     await this.ensureValidAccessToken();
-    
+
+    // Log the deletion message
     this.logger.log(`Deleting avatar file: ${filePath}`);
+
+    // Delete the avatar file from Dropbox
     await this.dropbox.filesDeleteV2({ path: filePath });
 
     // Log the success message

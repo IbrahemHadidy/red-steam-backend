@@ -1,4 +1,6 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+
 export const deleteOfferDescriptor: ApiDescriptorOptions = {
   summary: 'Delete Offer',
   description: 'Delete a offer',

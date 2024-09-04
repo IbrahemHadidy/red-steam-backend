@@ -1,25 +1,28 @@
+// NestJS
 import { Body, Controller, Delete, HttpCode, Param, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+
+// Multer
 import { AnyFilesInterceptor } from '@nest-lab/fastify-multer';
 
 // Decorators
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
 // Guards
-import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 import { AdminGuard } from '@guards/admin.guard';
+import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 
 // Services
 import { OfferService } from '@apis/game/offer/offer.service';
 
-// Dtos
+// DTOs
 import { CreateOfferDto } from '@apis/game/offer/dtos/create-offer.dto';
 import { UpdateOfferDto } from '@apis/game/offer/dtos/update-offer.dto';
 
 // importing swagger descriptors
 import { createOfferDescriptor } from '@apis/game/offer/api-descriptors/create-offer.descriptor';
-import { updateOfferDescriptor } from '@apis/game/offer/api-descriptors/update-offer.descriptor';
 import { deleteOfferDescriptor } from '@apis/game/offer/api-descriptors/delete-offer.descriptor';
+import { updateOfferDescriptor } from '@apis/game/offer/api-descriptors/update-offer.descriptor';
 
 @Controller('game/offer')
 @ApiTags('Game Offer')

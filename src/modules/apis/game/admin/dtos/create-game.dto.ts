@@ -1,6 +1,21 @@
-import { ApiProperty } from '@nestjs/swagger';
+// Class-transformer
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+
+// Class-validator
+import {
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+
+// Swagger
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateGameDto {
   @ApiProperty({ description: 'The name of the game', example: 'Red Dead Redemption 2', required: true })

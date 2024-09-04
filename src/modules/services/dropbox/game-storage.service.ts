@@ -1,11 +1,17 @@
+// NestJS
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Dropbox } from 'dropbox';
-import { InvalidFileException } from '@exceptions/invalid-file.exception';
-import { DropboxService } from '@services/dropbox/dropbox.service';
-import { DropboxTokensService } from '@repositories/mongo/dropbox-tokens/dropbox-tokens.service';
 
+// Exceptions
+import { InvalidFileException } from '@exceptions/invalid-file.exception';
+
+// Services
+import { DropboxTokensService } from '@repositories/mongo/dropbox-tokens/dropbox-tokens.service';
+import { DropboxService } from '@services/dropbox/dropbox.service';
+
+// Types
 import type { File } from '@nest-lab/fastify-multer';
+import type { Dropbox } from 'dropbox';
 interface UploadResponse extends Dropbox {
   sharedLink: string;
 }
@@ -82,8 +88,13 @@ export class GameStorageService extends DropboxService {
     // Ensure valid access token
     await this.ensureValidAccessToken();
 
+    // Construct the path of the directory to delete
     const directoryPath = `${this.gameFolderPath}/${gameName}`;
+
+    // Log the deletion message
     this.logger.log(`Deleting directory: ${directoryPath}`);
+
+    // Delete the directory from Dropbox
     await this.dropbox.filesDeleteV2({ path: directoryPath });
 
     // Log the success message

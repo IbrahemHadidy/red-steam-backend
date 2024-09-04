@@ -1,10 +1,22 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, BaseEntity, JoinColumn, AfterRemove, AfterInsert } from 'typeorm';
-import { User } from '@repositories/sql/users/user.entity';
-import { Game } from '@repositories/sql/games/game.entity';
+// TypeORM
+import {
+  AfterInsert,
+  AfterRemove,
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-// Importing types to fix circular dependency
-import type { User as UserType } from '@repositories/sql/users/user.entity';
+// Entities
+import { Game } from '@repositories/sql/games/game.entity';
+import { User } from '@repositories/sql/users/user.entity';
+
+// Types
 import type { Game as GameType } from '@repositories/sql/games/game.entity';
+import type { User as UserType } from '@repositories/sql/users/user.entity';
 
 @Entity({ name: 'reviews' })
 export class Review extends BaseEntity {

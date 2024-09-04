@@ -1,24 +1,31 @@
+// NestJS
 import { applyDecorators } from '@nestjs/common';
+
+// Swagger decorators
 import {
-  ApiBody,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiExcludeEndpoint,
   ApiHeaders,
-  ApiQuery,
-  ApiTags,
-  ApiSecurity,
   ApiOAuth2,
-  ApiParamOptions,
-  ApiResponseOptions,
-  ApiBodyOptions,
-  ApiQueryOptions,
-  ApiHeaderOptions,
-  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiSecurity,
+  ApiTags,
 } from '@nestjs/swagger';
-import { SecurityRequirementObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+
+// Types
+import type {
+  ApiBodyOptions,
+  ApiHeaderOptions,
+  ApiParamOptions,
+  ApiQueryOptions,
+  ApiResponseOptions,
+} from '@nestjs/swagger';
+import type { SecurityRequirementObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 
 export interface ApiDescriptorOptions {
   summary?: string;
@@ -31,8 +38,8 @@ export interface ApiDescriptorOptions {
   queries?: ApiQueryOptions[];
   headers?: ApiHeaderOptions[];
   authBearer?: string | null;
-  oauth2?: any;
-  exclude?: any;
+  oauth2?: { scopes: string[]; name?: string };
+  exclude?: boolean;
   consumes?: string[];
 }
 
@@ -41,7 +48,7 @@ export interface ApiDescriptorOptions {
  * @param options Options for defining the API operation.
  * @returns A combination of Swagger decorators based on the provided options.
  */
-export function ApiDescriptor(options: ApiDescriptorOptions) {
+export function ApiDescriptor(options: ApiDescriptorOptions): MethodDecorator {
   const {
     summary,
     description,
@@ -65,10 +72,10 @@ export function ApiDescriptor(options: ApiDescriptorOptions) {
     ...(responses?.map((response: ApiResponseOptions) => ApiResponse(response)) || []),
     ...((tags && [ApiTags(...tags)]) || []),
     ...(security?.map((security: string | SecurityRequirementObject) => ApiSecurity(security)) || []),
-    ...((queries?.map((query: ApiQueryOptions) => ApiQuery(query))) || []),
+    ...(queries?.map((query: ApiQueryOptions) => ApiQuery(query)) || []),
     ...((headers && [ApiHeaders(headers)]) || []),
     ...((authBearer && [ApiBearerAuth(authBearer)]) || []),
-    ...((oauth2 && [ApiOAuth2(oauth2)]) || []),
+    ...((oauth2 && [ApiOAuth2(oauth2.scopes)]) || []),
     ...((exclude && [ApiExcludeEndpoint(exclude)]) || []),
     ...((consumes && [ApiConsumes(...consumes)]) || []),
   );

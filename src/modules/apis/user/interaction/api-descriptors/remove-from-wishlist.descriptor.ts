@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { RemoveFromWishlistDto } from '@apis/user/interaction/dtos/remove-from-wishlist.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const removeFromWishlistDescriptor: ApiDescriptorOptions = {
   summary: 'Remove Items from Wishlist',

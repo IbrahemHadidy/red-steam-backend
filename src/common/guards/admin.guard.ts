@@ -1,11 +1,14 @@
+// NestJS
 import {
-  Injectable,
+  BadRequestException,
   CanActivate,
   ExecutionContext,
-  UnauthorizedException,
+  Injectable,
   NotFoundException,
-  BadRequestException,
+  UnauthorizedException,
 } from '@nestjs/common';
+
+// Services
 import { UsersService } from '@repositories/sql/users/users.service';
 
 @Injectable()

@@ -1,5 +1,10 @@
-import { Catch, ExceptionFilter, ArgumentsHost, HttpStatus } from '@nestjs/common';
+// NestJS
+import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
+
+// Fastify
 import { FastifyReply } from 'fastify';
+
+// Exceptions
 import { InvalidFileException } from '@exceptions/invalid-file.exception';
 
 @Catch(InvalidFileException)

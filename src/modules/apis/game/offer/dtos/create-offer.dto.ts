@@ -1,5 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+// Class-validator
 import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+
+// Swagger
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOfferDto {
   @ApiProperty({ example: 1, description: 'offer id', required: true })

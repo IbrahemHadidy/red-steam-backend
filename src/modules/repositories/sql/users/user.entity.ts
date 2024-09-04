@@ -1,8 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable, BaseEntity } from 'typeorm';
-import { Review } from '@repositories/sql/reviews/review.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
+// NestJS
+import { BaseEntity, Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-// Importing types to fix circular dependency
+// Entities
+import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
+import { Review } from '@repositories/sql/reviews/review.entity';
+
+// Types
 import type { GameTag as GameTagType } from '@repositories/sql/games-tags/game-tag.entity';
 import type { Review as ReviewType } from '@repositories/sql/reviews/review.entity';
 

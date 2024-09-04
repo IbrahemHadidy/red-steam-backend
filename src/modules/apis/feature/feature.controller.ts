@@ -1,24 +1,29 @@
-import { Controller, Get, HttpCode, Param, Post, UseGuards, Body, Query, Delete, Put } from '@nestjs/common';
+// NestJS
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+
+// Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
-import { FeatureService } from '@apis/feature/feature.service';
 
 // Guards
-import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 import { AdminGuard } from '@guards/admin.guard';
+import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 
-// Dtos
+// Services
+import { FeatureService } from '@apis/feature/feature.service';
+
+// DTOs
 import { CreateFeatureDto } from '@apis/feature/dtos/create-feature.dto';
 import { UpdateFeatureDto } from '@apis/feature/dtos/update-feature.dto';
 
 // Swagger descriptors
 import { createFeatureDescriptor } from '@apis/feature/api-descriptors/create-feature.descriptor';
-import { getFeatureDescriptor } from '@apis/feature/api-descriptors/get-feature.descriptor';
-import { getFeaturesDescriptor } from '@apis/feature/api-descriptors/get-features.descriptor';
-import { getAllFeaturesDescriptor } from '@apis/feature/api-descriptors/get-all-features.descriptor';
-import { getFeaturesPaginatedDescriptor } from '@apis/feature/api-descriptors/get-features-paginated.descriptor';
-import { updateFeatureDescriptor } from '@apis/feature/api-descriptors/update-feature.descriptor';
 import { deleteFeatureDescriptor } from '@apis/feature/api-descriptors/delete-feature.descriptor';
+import { getAllFeaturesDescriptor } from '@apis/feature/api-descriptors/get-all-features.descriptor';
+import { getFeatureDescriptor } from '@apis/feature/api-descriptors/get-feature.descriptor';
+import { getFeaturesPaginatedDescriptor } from '@apis/feature/api-descriptors/get-features-paginated.descriptor';
+import { getFeaturesDescriptor } from '@apis/feature/api-descriptors/get-features.descriptor';
+import { updateFeatureDescriptor } from '@apis/feature/api-descriptors/update-feature.descriptor';
 
 @Controller('feature')
 @ApiTags('Feature')

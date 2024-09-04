@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { LoginDto } from '@apis/user/auth/dtos/login.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const loginDescriptor: ApiDescriptorOptions = {
   summary: 'Login User',

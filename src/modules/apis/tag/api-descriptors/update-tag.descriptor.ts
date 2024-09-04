@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { UpdateTagDto } from '@apis/tag/dtos/update-tag.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const updateTagDescriptor: ApiDescriptorOptions = {
   summary: 'Update Tag',

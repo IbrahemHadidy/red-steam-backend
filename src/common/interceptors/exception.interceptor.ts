@@ -1,4 +1,7 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpException, Logger } from '@nestjs/common';
+// NestJS
+import { CallHandler, ExecutionContext, HttpException, Injectable, Logger, NestInterceptor } from '@nestjs/common';
+
+// RxJS
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -8,7 +11,7 @@ import { catchError } from 'rxjs/operators';
 @Injectable()
 export class ExceptionInterceptor implements NestInterceptor {
   constructor(private readonly logger: Logger) {}
-  intercept(_context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept(_context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
       catchError((error) => {
         let statusCode = 500;

@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { RemoveFromLibraryDto } from '@apis/user/interaction/dtos/remove-from-library.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const removeFromLibraryDescriptor: ApiDescriptorOptions = {
   summary: 'Remove Items From Library',

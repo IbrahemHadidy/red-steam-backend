@@ -1,5 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+// Class-validator
 import { IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
+
+// Swagger
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ChangeUsernameDto {
   @ApiProperty({ description: 'new username', example: 'enter new username here', required: true })

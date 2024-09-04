@@ -1,5 +1,8 @@
-import { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
+// DTOs
 import { ReviewGameDto } from '@apis/user/interaction/dtos/review-game.dto';
+
+// Types
+import type { ApiDescriptorOptions } from '@decorators/api-descriptor.decorator';
 
 export const reviewGameDescriptor: ApiDescriptorOptions = {
   summary: 'Review Game',

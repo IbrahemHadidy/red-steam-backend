@@ -1,29 +1,32 @@
+// TypeORM
 import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToMany,
-  JoinTable,
-  OneToMany,
   BaseEntity,
-  OneToOne,
+  Column,
+  Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
+
+// Entities
+import { Developer, Publisher } from '@repositories/sql/companies/company.entity';
 import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
+import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
+import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
 import { Review } from '@repositories/sql/reviews/review.entity';
 import { GameLanguage } from '../games-languages/game-language.entity';
 
-// Importing types to fix circular dependency
+// Types
 import type {
-  Publisher as PublisherType,
   Developer as DeveloperType,
+  Publisher as PublisherType,
 } from '@repositories/sql/companies/company.entity';
-import type { GameTag as GameTagType } from '@repositories/sql/games-tags/game-tag.entity';
-import type { GamePricing as GamePricingType } from '@repositories/sql/games-pricing/game-pricing.entity';
 import type { GameFeature as GameFeatureType } from '@repositories/sql/games-features/game-feature.entity';
+import type { GamePricing as GamePricingType } from '@repositories/sql/games-pricing/game-pricing.entity';
+import type { GameTag as GameTagType } from '@repositories/sql/games-tags/game-tag.entity';
 import type { Review as ReviewType } from '@repositories/sql/reviews/review.entity';
 import type { GameLanguage as GameLanguageType } from '../games-languages/game-language.entity';
 

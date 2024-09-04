@@ -1,8 +1,15 @@
+// Class-validator
 import { IsBoolean, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
+
+// Swagger
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto {
-  @ApiProperty({ description: 'The unique identifier for the user, can be either username or email.', example: 'enter username or email here', required: true })
+  @ApiProperty({
+    description: 'The unique identifier for the user, can be either username or email.',
+    example: 'enter username or email here',
+    required: true,
+  })
   @IsNotEmpty({ message: 'Identifier is required.' })
   @IsString({ message: 'Identifier must be a string.' })
   identifier: string;
