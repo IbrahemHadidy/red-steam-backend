@@ -3,11 +3,11 @@ import { Expose, Type } from 'class-transformer';
 
 // DTOs
 import { GameDto } from '@apis/game/serializer-dtos/game.dto';
-import { UserDto } from '@apis/user/serializer-dtos/user-data.dto';
+import { UserDto } from '@apis/user/serializer-dtos/user.dto';
 
 // Types
 import type { GameDto as GameDtoType } from '@apis/game/serializer-dtos/game.dto';
-import type { UserDto as UserDtoType } from '@apis/user/serializer-dtos/user-data.dto';
+import type { UserDto as UserDtoType } from '@apis/user/serializer-dtos/user.dto';
 
 export class ReviewDto {
   @Expose()
