@@ -21,9 +21,9 @@ export const getDevelopersDescriptor: ApiDescriptorOptions = {
   parameters: [
     {
       name: 'ids',
-      type: [Number],
+      type: String,
       required: true,
-      description: 'The ids of the developers',
+      description: 'The ids of the developers comma separated',
     },
   ],
 };

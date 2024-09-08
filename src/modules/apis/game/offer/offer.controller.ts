@@ -24,8 +24,8 @@ import { createOfferDescriptor } from '@apis/game/offer/api-descriptors/create-o
 import { deleteOfferDescriptor } from '@apis/game/offer/api-descriptors/delete-offer.descriptor';
 import { updateOfferDescriptor } from '@apis/game/offer/api-descriptors/update-offer.descriptor';
 
-@Controller('game/offer')
 @ApiTags('Game Offer')
+@Controller('game/offer')
 export class OfferController {
   constructor(private readonly offerService: OfferService) {}
 
@@ -40,8 +40,8 @@ export class OfferController {
     return result;
   }
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(updateOfferDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Put(':id')
   @HttpCode(200)
   async updateOffer(@Param('id') id: string, @Body() body: UpdateOfferDto) {

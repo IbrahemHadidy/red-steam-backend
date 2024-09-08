@@ -21,9 +21,9 @@ export const getPublishersDescriptor: ApiDescriptorOptions = {
   parameters: [
     {
       name: 'ids',
-      type: [Number],
+      type: String,
       required: true,
-      description: 'The ids of the publishers',
+      description: 'The ids of the publishers comma separated',
     },
   ],
 };

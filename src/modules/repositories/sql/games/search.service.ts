@@ -186,32 +186,39 @@ export class SearchService {
    * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
    */
   public async getByUserTags(tags: number[], limit: number = 12): Promise<Game[]> {
-    this.logger.log(`Retrieving games with tags ids ${tags} from the database`);
+    this.logger.log(`Retrieving games with tag ids ${tags} from the database`);
 
-    // Fetch all games with their tags
-    const games = await this.gameRepository.find({
+    // Check if tags array is empty to avoid unnecessary queries
+    if (tags.length === 0) {
+      throw new NotFoundException(`No tags provided`);
+    }
+
+    // Fetch games that have at least one of the specified tags and count the occurrences of tags
+    const rawGames: Game[] = await this.gameRepository
+      .createQueryBuilder('game')
+      .leftJoin('game.tags', 'tag')
+      .where('tag.id IN (:...tags)', { tags })
+      .groupBy('game.id')
+      .addSelect('COUNT(tag.id) as tagCount')
+      .orderBy('tagCount', 'DESC')
+      .limit(limit)
+      .getMany();
+
+    // If no games are found, throw a NotFoundException
+    if (rawGames.length === 0) {
+      throw new NotFoundException(`Games with tags ${tags} not found`);
+    }
+
+    // Extract the game IDs from raw results
+    const gameIds = rawGames.map((game) => game.id);
+
+    // Fetch the full Game entities with tags
+    const foundGames = await this.gameRepository.find({
+      where: { id: In(gameIds) },
       relations: { tags: true },
     });
 
-    // Create a map to count tag occurrences in each game
-    const gameTagCounts: { [key: number]: number } = {};
-
-    // Count the number of matching tags in each game
-    games.forEach((game) => {
-      const tagCount = game.tags.filter((tag) => tags.includes(tag.id)).length;
-      gameTagCounts[game.id] = tagCount;
-    });
-
-    // Sort games by the number of matching tags
-    const sortedGames = games
-      .filter((game) => gameTagCounts[game.id] > 0) // Filter out games with 0 matching tags
-      .sort((a, b) => gameTagCounts[b.id] - gameTagCounts[a.id]) // Sort by tag count in descending order
-      .slice(0, limit); // Limit the number of results
-
-    // Throw a NotFoundException if no games are found
-    if (sortedGames.length === 0) throw new NotFoundException(`Games with tags ${tags} not found`);
-
     // Return the sorted games
-    return sortedGames;
+    return foundGames;
   }
 }

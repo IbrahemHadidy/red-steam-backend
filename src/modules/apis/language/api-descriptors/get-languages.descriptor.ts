@@ -21,9 +21,9 @@ export const getLanguagesDescriptor: ApiDescriptorOptions = {
   parameters: [
     {
       name: 'ids',
-      type: [Number],
+      type: String,
       required: true,
-      description: 'The ids of the languages',
+      description: 'The ids of the languages comma separated',
     },
   ],
 };

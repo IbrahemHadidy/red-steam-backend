@@ -15,9 +15,7 @@ import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 
 // Declare 'module' variable for hot module replacement (HMR) support
-declare const module: {
-  hot: { reload: () => void; dispose: (func: () => void) => void; status: () => string; accept: () => void };
-};
+declare const module: NodeModule;
 
 class AppBootstrapper {
   private readonly port: number;
@@ -30,7 +28,7 @@ class AppBootstrapper {
     // Create Nest application instance
     const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { snapshot: true });
 
-    // Register other configurations and middleware
+    // Register configurations and middleware to the application instance
     await AppModule.register(app);
 
     // Configure Swagger documentation

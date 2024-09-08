@@ -1,6 +1,9 @@
 // NestJS
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 
+// Serializer decorator
+import { Serialize } from '@decorators/serialize.decorator';
+
 // Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,6 +19,9 @@ import { LanguageService } from '@apis/language/language.service';
 import { CreateLanguageDto } from '@apis/language/dtos/create-language.dto';
 import { UpdateLanguageDto } from '@apis/language/dtos/update-language.dto';
 
+// Serializer DTOs
+import { LanguageDto } from '@apis/language/serializer-dtos/language.dto';
+
 // Swagger descriptors
 import { createLanguageDescriptor } from '@apis/language/api-descriptors/create-language.descriptor';
 import { deleteLanguageDescriptor } from '@apis/language/api-descriptors/delete-language.descriptor';
@@ -25,13 +31,13 @@ import { getLanguagesPaginatedDescriptor } from '@apis/language/api-descriptors/
 import { getLanguagesDescriptor } from '@apis/language/api-descriptors/get-languages.descriptor';
 import { updateLanguageDescriptor } from '@apis/language/api-descriptors/update-language.descriptor';
 
-@Controller('language')
 @ApiTags('Language')
+@Controller('language')
 export class LanguageController {
   constructor(private readonly languageService: LanguageService) {}
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(createLanguageDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Post()
   @HttpCode(201)
   async createLanguage(@Body() body: CreateLanguageDto) {
@@ -41,8 +47,10 @@ export class LanguageController {
     return result;
   }
 
-  @Get(':id')
   @ApiDescriptor(getLanguageDescriptor)
+  @Serialize(LanguageDto)
+  @Get(':id')
+  @HttpCode(200)
   async getLanguage(@Param('id') id: string) {
     const result = await this.languageService.getLanguage(Number(id));
 
@@ -50,8 +58,10 @@ export class LanguageController {
     return result;
   }
 
-  @Get('bulk/:ids')
   @ApiDescriptor(getLanguagesDescriptor)
+  @Serialize(LanguageDto)
+  @Get('bulk/:ids')
+  @HttpCode(200)
   async getLanguages(@Param('ids') ids: string) {
     const result = await this.languageService.getLanguages(ids.split(',').map(Number));
 
@@ -60,6 +70,7 @@ export class LanguageController {
   }
 
   @ApiDescriptor(getAllLanguagesDescriptor)
+  @Serialize(LanguageDto)
   @Get()
   @HttpCode(200)
   async getAllLanguages() {
@@ -70,6 +81,7 @@ export class LanguageController {
   }
 
   @ApiDescriptor(getLanguagesPaginatedDescriptor)
+  @Serialize(LanguageDto)
   @Get('paginated')
   @HttpCode(200)
   async getLanguagesPaginated(
@@ -91,8 +103,8 @@ export class LanguageController {
     return result;
   }
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(updateLanguageDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Put(':id')
   @HttpCode(200)
   async updateLanguage(@Param('id') id: string, @Body() body: UpdateLanguageDto) {
@@ -102,8 +114,8 @@ export class LanguageController {
     return result;
   }
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(deleteLanguageDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Delete(':id')
   @HttpCode(200)
   async deleteLanguage(@Param('id') id: string) {

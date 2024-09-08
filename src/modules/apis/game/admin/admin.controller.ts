@@ -44,8 +44,8 @@ import { deleteGameDescriptor } from '@apis/game/admin/api-descriptors/delete-ga
 // Types
 import type { File } from '@nest-lab/fastify-multer';
 
-@Controller('game/admin')
 @ApiTags('Game Admin')
+@Controller('game/admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 

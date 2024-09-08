@@ -1,6 +1,9 @@
 // NestJS
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 
+// Serializer decorator
+import { Serialize } from '@decorators/serialize.decorator';
+
 // Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,6 +19,9 @@ import { CompanyService } from '@apis/company/company.service';
 import { CreatePublisherDto } from '@apis/company/dtos/create-publisher.dto';
 import { UpdatePublisherDto } from '@apis/company/dtos/update-publisher.dto';
 
+// Serializer DTOs
+import { CompanyDto } from '@apis/company/serializer-dtos/company.dto';
+
 // Swagger descriptors
 import { createPublisherDescriptor } from '@apis/company/api-descriptors/create-publisher.descriptor';
 import { deletePublisherDescriptor } from '@apis/company/api-descriptors/delete-publisher.descriptor';
@@ -24,13 +30,13 @@ import { getPublishersPaginatedDescriptor } from '@apis/company/api-descriptors/
 import { getPublishersDescriptor } from '@apis/company/api-descriptors/get-publishers.descriptor';
 import { updatePublisherDescriptor } from '@apis/company/api-descriptors/update-publisher.descriptor';
 
-@Controller('publisher')
 @ApiTags('Publisher')
+@Controller('publisher')
 export class PublisherController {
   constructor(private readonly companyService: CompanyService) {}
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(createPublisherDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Post()
   @HttpCode(201)
   async createPublisher(@Body() body: CreatePublisherDto) {
@@ -41,6 +47,7 @@ export class PublisherController {
   }
 
   @ApiDescriptor(getPublishersDescriptor)
+  @Serialize(CompanyDto)
   @Get(':id')
   @HttpCode(200)
   async getPublisher(@Param('id') id: string) {
@@ -51,6 +58,7 @@ export class PublisherController {
   }
 
   @ApiDescriptor(getPublishersDescriptor)
+  @Serialize(CompanyDto)
   @Get('bulk/:ids')
   @HttpCode(200)
   async getPublishers(@Param('ids') ids: string) {
@@ -61,6 +69,7 @@ export class PublisherController {
   }
 
   @ApiDescriptor(getAllPublishersDescriptor)
+  @Serialize(CompanyDto)
   @Get()
   @HttpCode(200)
   async getAllPublishers() {
@@ -71,6 +80,7 @@ export class PublisherController {
   }
 
   @ApiDescriptor(getPublishersPaginatedDescriptor)
+  @Serialize(CompanyDto)
   @Get('paginated')
   @HttpCode(200)
   async getPublishersPaginated(
@@ -92,8 +102,8 @@ export class PublisherController {
     return result;
   }
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(updatePublisherDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Put(':id')
   @HttpCode(200)
   async updatePublisher(@Param('id') id: string, @Body() body: UpdatePublisherDto) {
@@ -103,8 +113,8 @@ export class PublisherController {
     return result;
   }
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(deletePublisherDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Delete(':id')
   @HttpCode(200)
   async deletePublisher(@Param('id') id: string) {

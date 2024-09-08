@@ -2,12 +2,12 @@
 import { Expose, Type } from 'class-transformer';
 
 // DTOs
-import { GameDataDto } from '@apis/game/serializer-dtos/game-data.dto';
-import { UserDataDto } from '@apis/user/serializer-dtos/user-data.dto';
+import { GameDto } from '@apis/game/serializer-dtos/game.dto';
+import { UserDto } from '@apis/user/serializer-dtos/user-data.dto';
 
 // Types
-import type { GameDataDto as GameDataDtoType } from '@apis/game/serializer-dtos/game-data.dto';
-import type { UserDataDto as UserDataDtoType } from '@apis/user/serializer-dtos/user-data.dto';
+import type { GameDto as GameDtoType } from '@apis/game/serializer-dtos/game.dto';
+import type { UserDto as UserDtoType } from '@apis/user/serializer-dtos/user-data.dto';
 
 export class ReviewDto {
   @Expose()
@@ -23,10 +23,10 @@ export class ReviewDto {
   content: string;
 
   @Expose()
-  @Type(() => UserDataDto)
-  user: UserDataDtoType;
+  @Type(() => UserDto)
+  user: UserDtoType;
 
   @Expose()
-  @Type(() => GameDataDto)
-  game: GameDataDtoType;
+  @Type(() => GameDto)
+  game: GameDtoType;
 }

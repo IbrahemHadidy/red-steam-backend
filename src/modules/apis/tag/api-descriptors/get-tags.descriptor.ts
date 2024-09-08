@@ -21,9 +21,9 @@ export const getTagsDescriptor: ApiDescriptorOptions = {
   parameters: [
     {
       name: 'ids',
-      type: [Number],
+      type: String,
       required: true,
-      description: 'The ids of the tags',
+      description: 'The ids of the tags comma separated',
     },
   ],
 };

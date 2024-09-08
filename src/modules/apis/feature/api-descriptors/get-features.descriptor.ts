@@ -21,9 +21,9 @@ export const getFeaturesDescriptor: ApiDescriptorOptions = {
   parameters: [
     {
       name: 'ids',
-      type: [Number],
+      type: String,
       required: true,
-      description: 'The ids of the features',
+      description: 'The ids of the features comma separated',
     },
   ],
 };

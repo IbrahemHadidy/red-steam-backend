@@ -1,6 +1,9 @@
 // NestJS
 import { Controller, Delete, Get, HttpCode, Param, Query, UseGuards } from '@nestjs/common';
 
+// Serializer decorator
+import { Serialize } from '@decorators/serialize.decorator';
+
 // Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,12 +19,16 @@ import { ReviewService } from '@apis/review/review.service';
 import { deleteReviewDescriptor } from '@apis/review/api-descriptors/delete-review.descriptor';
 import { getReviewsPaginatedDescriptor } from '@apis/review/api-descriptors/get-reviews-paginated.descriptor';
 
-@Controller('review')
+// Serializer DTOs
+import { ReviewDto } from '@apis/review/serializer-dtos/review.dto';
+
 @ApiTags('Review')
+@Controller('review')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
   @ApiDescriptor(getReviewsPaginatedDescriptor)
+  @Serialize(ReviewDto)
   @Get('paginated')
   @HttpCode(200)
   async getReviewsPaginated(
@@ -43,8 +50,8 @@ export class ReviewController {
     return result;
   }
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(deleteReviewDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Delete(':id')
   @HttpCode(200)
   async deleteReview(@Param('id') id: string) {

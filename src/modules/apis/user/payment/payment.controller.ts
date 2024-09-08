@@ -23,8 +23,8 @@ import { CreateOrderDto } from '@apis/user/payment/dtos/create-order.dto';
 import { captureOrderDescriptor } from '@apis/user/payment/api-descriptors/capture-order.descriptor';
 import { createOrderDescriptor } from '@apis/user/payment/api-descriptors/create-order.descriptor';
 
-@Controller('user/payment')
 @ApiTags('User Payment')
+@Controller('user/payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 

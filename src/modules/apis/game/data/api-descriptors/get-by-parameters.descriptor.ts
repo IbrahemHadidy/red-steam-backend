@@ -40,15 +40,15 @@ export const getByParametersDescriptor: ApiDescriptorOptions = {
     },
     {
       name: 'tags',
-      type: [Number],
+      type: String,
       required: false,
-      description: 'Tags of the games',
+      description: 'Tags of the games comma separated',
     },
     {
       name: 'excludeTags',
-      type: [Number],
+      type: String,
       required: false,
-      description: 'Excluded tags of the games',
+      description: 'Excluded tags of the games comma separated',
     },
     {
       name: 'paid',
@@ -64,28 +64,28 @@ export const getByParametersDescriptor: ApiDescriptorOptions = {
     },
     {
       name: 'platforms',
-      type: [String],
+      type: String,
       enum: ['win', 'mac'],
       required: false,
-      description: 'Platforms of the games',
+      description: 'Platforms of the games comma separated',
     },
     {
       name: 'publishers',
-      type: [Number],
+      type: String,
       required: false,
-      description: 'Publishers of the games',
+      description: 'Publishers of the games comma separated',
     },
     {
       name: 'developers',
-      type: [Number],
+      type: String,
       required: false,
-      description: 'Developers of the games',
+      description: 'Developers of the games comma separated',
     },
     {
       name: 'features',
-      type: [Number],
+      type: String,
       required: false,
-      description: 'Features of the games',
+      description: 'Features of the games comma separated',
     },
     {
       name: 'featured',
@@ -101,9 +101,9 @@ export const getByParametersDescriptor: ApiDescriptorOptions = {
     },
     {
       name: 'excludedGames',
-      type: [Number],
+      type: String,
       required: false,
-      description: 'Excluded games',
+      description: 'Excluded games comma separated',
     },
     {
       name: 'upcomingMode',

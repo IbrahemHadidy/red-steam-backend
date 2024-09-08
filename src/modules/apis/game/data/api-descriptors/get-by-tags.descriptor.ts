@@ -21,9 +21,9 @@ export const getByTagsDescriptor: ApiDescriptorOptions = {
   queries: [
     {
       name: 'tags',
-      type: [Number],
+      type: String,
       required: false,
-      description: 'Tags of the games',
+      description: 'Tags of the games comma separated',
     },
     {
       name: 'limit',

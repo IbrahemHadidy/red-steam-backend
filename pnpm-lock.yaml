@@ -74,6 +74,9 @@ importers:
       emoji-regex:
         specifier: ^10.4.0
         version: 10.4.0
+      fastify:
+        specifier: ^4.28.1
+        version: 4.28.1
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
@@ -156,12 +159,18 @@ importers:
       '@types/paypal__checkout-server-sdk':
         specifier: ^1.0.8
         version: 1.0.8
+      '@types/paypal__paypalhttp':
+        specifier: ^1.0.3
+        version: 1.0.3
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.2
       '@types/uuid':
         specifier: ^9.0.8
         version: 9.0.8
+      '@types/webpack-env':
+        specifier: ^1.18.5
+        version: 1.18.5
       '@types/webpack-node-externals':
         specifier: ^3.0.4
         version: 3.0.4(@swc/core@1.7.22)
@@ -1190,6 +1199,9 @@ packages:
 
   '@types/webidl-conversions@7.0.3':
     resolution: {integrity: sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA==}
+
+  '@types/webpack-env@1.18.5':
+    resolution: {integrity: sha512-wz7kjjRRj8/Lty4B+Kr0LN6Ypc/3SymeCCGSbaXp2leH0ZVg/PriNiOwNj4bD4uphI7A8NXS4b6Gl373sfO5mA==}
 
   '@types/webpack-node-externals@3.0.4':
     resolution: {integrity: sha512-8Z3/edqxE3RRlOJwKSgOFxLZRt/i1qFlv/Bi308ZUKo9jh8oGngd9r8GR0ZNKW5AEJq8QNQE3b17CwghTjQ0Uw==}
@@ -5910,6 +5922,8 @@ snapshots:
   '@types/validator@13.12.1': {}
 
   '@types/webidl-conversions@7.0.3': {}
+
+  '@types/webpack-env@1.18.5': {}
 
   '@types/webpack-node-externals@3.0.4(@swc/core@1.7.22)':
     dependencies:

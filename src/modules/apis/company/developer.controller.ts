@@ -1,6 +1,9 @@
 // NestJS
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 
+// Serializer decorator
+import { Serialize } from '@decorators/serialize.decorator';
+
 // Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,6 +19,9 @@ import { CompanyService } from '@apis/company/company.service';
 import { CreateDeveloperDto } from '@apis/company/dtos/create-developer.dto';
 import { UpdateDeveloperDto } from '@apis/company/dtos/update-developer.dto';
 
+// Serializer DTOs
+import { CompanyDto } from '@apis/company/serializer-dtos/company.dto';
+
 // Swagger descriptors
 import { createDeveloperDescriptor } from '@apis/company/api-descriptors/create-developer.descriptor';
 import { deleteDeveloperDescriptor } from '@apis/company/api-descriptors/delete-developer.descriptor';
@@ -25,13 +31,13 @@ import { getDevelopersPaginatedDescriptor } from '@apis/company/api-descriptors/
 import { getDevelopersDescriptor } from '@apis/company/api-descriptors/get-developers.descriptor';
 import { updateDeveloperDescriptor } from '@apis/company/api-descriptors/update-developer.descriptor';
 
-@Controller('developer')
 @ApiTags('Developer')
+@Controller('developer')
 export class DeveloperController {
   constructor(private readonly companyService: CompanyService) {}
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(createDeveloperDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Post()
   @HttpCode(201)
   async createDeveloper(@Body() body: CreateDeveloperDto) {
@@ -42,6 +48,7 @@ export class DeveloperController {
   }
 
   @ApiDescriptor(getDeveloperDescriptor)
+  @Serialize(CompanyDto)
   @Get(':id')
   @HttpCode(200)
   async getDeveloper(@Param('id') id: string) {
@@ -52,6 +59,7 @@ export class DeveloperController {
   }
 
   @ApiDescriptor(getDevelopersDescriptor)
+  @Serialize(CompanyDto)
   @Get('bulk/:ids')
   @HttpCode(200)
   async getDevelopers(@Param('ids') ids: string) {
@@ -62,6 +70,7 @@ export class DeveloperController {
   }
 
   @ApiDescriptor(getAllDevelopersDescriptor)
+  @Serialize(CompanyDto)
   @Get()
   @HttpCode(200)
   async getAllDevelopers() {
@@ -72,6 +81,7 @@ export class DeveloperController {
   }
 
   @ApiDescriptor(getDevelopersPaginatedDescriptor)
+  @Serialize(CompanyDto)
   @Get('paginated')
   @HttpCode(200)
   async getDevelopersPaginated(
@@ -93,8 +103,8 @@ export class DeveloperController {
     return result;
   }
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(updateDeveloperDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Put(':id')
   @HttpCode(200)
   async updateDeveloper(@Param('id') id: string, @Body() body: UpdateDeveloperDto) {
@@ -104,8 +114,8 @@ export class DeveloperController {
     return result;
   }
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(deleteDeveloperDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Delete(':id')
   @HttpCode(200)
   async deleteDeveloper(@Param('id') id: string) {

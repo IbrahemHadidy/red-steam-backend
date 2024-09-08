@@ -56,8 +56,8 @@ import { uploadAvatarDescriptor } from '@apis/user/management/api-descriptors/up
 // Types
 import type { File } from '@nest-lab/fastify-multer';
 
-@Controller('user/management')
 @ApiTags('User Management')
+@Controller('user/management')
 export class ManagementController {
   constructor(private readonly managementService: ManagementService) {}
 

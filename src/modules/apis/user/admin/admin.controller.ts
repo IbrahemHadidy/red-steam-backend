@@ -20,8 +20,8 @@ import { deleteUserDescriptor } from '@apis/user/admin/api-descriptors/delete-us
 import { getUsersPaginatedDescriptor } from '@apis/user/admin/api-descriptors/get-users-paginated.descriptor';
 import { updateUserDescriptor } from '@apis/user/admin/api-descriptors/update-user.descriptor';
 
-@Controller('user/admin')
 @ApiTags('User Admin')
+@Controller('user/admin')
 export class AdminController {
   constructor(private readonly admin: AdminService) {}
 
@@ -47,8 +47,8 @@ export class AdminController {
     return result;
   }
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(updateUserDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Put(':id')
   @HttpCode(200)
   async updateTag(@Param('id') id: string, @Body() body: UpdateUserDto) {
@@ -58,8 +58,8 @@ export class AdminController {
     return result;
   }
 
-  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @ApiDescriptor(deleteUserDescriptor)
+  @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Delete(':id')
   @HttpCode(200)
   async deleteUser(@Param('id') id: string) {
