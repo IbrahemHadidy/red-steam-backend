@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { CreateLanguageDto } from '@apis/language/dtos/create-language.dto';
 
 // Types

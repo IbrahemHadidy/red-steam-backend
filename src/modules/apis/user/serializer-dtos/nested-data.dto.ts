@@ -1,8 +1,11 @@
 // Class-transformer
 import { Expose, Type } from 'class-transformer';
 
-// DTOs
-import { UserDto } from '@apis/user/serializer-dtos/user-data.dto';
+// Body DTOs
+import { UserDto } from '@apis/user/serializer-dtos/user.dto';
+
+// Types
+import { UserDto as UserDtoType } from '@apis/user/serializer-dtos/user.dto';
 
 export class NestedDataDto {
   @Expose()
@@ -10,5 +13,5 @@ export class NestedDataDto {
 
   @Expose()
   @Type(() => UserDto)
-  userData: UserDto;
+  userData: UserDtoType;
 }

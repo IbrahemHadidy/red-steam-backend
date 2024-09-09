@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { ForgotPasswordDto } from '@apis/user/management/dtos/forgot-password.dto';
 
 // Types

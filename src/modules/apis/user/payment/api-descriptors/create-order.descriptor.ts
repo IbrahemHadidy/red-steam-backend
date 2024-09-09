@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { CreateOrderDto } from '@apis/user/payment/dtos/create-order.dto';
 
 // Types

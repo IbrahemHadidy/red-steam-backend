@@ -17,7 +17,7 @@ import { map } from 'rxjs/operators';
 export class SerializeInterceptor implements NestInterceptor {
   constructor(private dto: ClassConstructor<unknown>) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
       map((data: { accessToken?: string; refreshToken?: string } = {}) => {
         const ctx = context.switchToHttp();

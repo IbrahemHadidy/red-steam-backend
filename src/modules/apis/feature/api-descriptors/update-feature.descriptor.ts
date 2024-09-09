@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { UpdateFeatureDto } from '@apis/feature/dtos/update-feature.dto';
 
 // Types

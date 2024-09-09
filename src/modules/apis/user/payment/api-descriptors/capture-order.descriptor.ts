@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { CaptureOrderDto } from '@apis/user/payment/dtos/capture-order.dto';
 
 // Types

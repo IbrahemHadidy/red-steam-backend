@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { IsNotEmpty, IsString } from 'class-validator';
 
 // Swagger

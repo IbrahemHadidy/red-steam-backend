@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { PasswordResetDto } from '@apis/user/management/dtos/password-reset.dto';
 
 // Types

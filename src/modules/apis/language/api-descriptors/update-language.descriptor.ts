@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { UpdateLanguageDto } from '@apis/language/dtos/update-language.dto';
 
 // Types

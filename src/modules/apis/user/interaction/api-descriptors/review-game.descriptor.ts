@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { ReviewGameDto } from '@apis/user/interaction/dtos/review-game.dto';
 
 // Types

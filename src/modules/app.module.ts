@@ -1,5 +1,5 @@
 // NestJS
-import { Logger, Module, ValidationPipe } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 // import { ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
@@ -13,6 +13,9 @@ import { fastifyMultipart } from '@fastify/multipart';
 
 // Global interceptors
 import { ExceptionInterceptor } from '@interceptors/exception.interceptor';
+
+// Global Middlewares
+import { LoggerMiddleware } from '@middlewares/logger.middleware';
 
 // Main Modules
 import { ApisModule } from '@apis/apis.module';
@@ -49,10 +52,12 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify';
     ApisModule,
   ],
   providers: [
+    // Use Exception Interceptor
     {
       provide: APP_INTERCEPTOR,
       useClass: ExceptionInterceptor,
     },
+    // Use Validation Pipe
     {
       provide: APP_PIPE,
       useClass: ValidationPipe,
@@ -65,22 +70,13 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify';
     Logger,
   ],
 })
-export class AppModule {
+export class AppModule implements NestModule {
   static async register(app: NestFastifyApplication): Promise<NestFastifyApplication> {
     // Register the multipart plugin
     await app.register(fastifyMultipart);
 
     // Set global prefix for all routes
     app.setGlobalPrefix('api');
-
-    // Use global validation pipe to validate incoming data
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
 
     // Configure CORS
     app.enableCors({
@@ -95,5 +91,9 @@ export class AppModule {
     });
 
     return app;
+  }
+
+  public configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }

@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { CreateTagDto } from '@apis/tag/dtos/create-tag.dto';
 
 // Types

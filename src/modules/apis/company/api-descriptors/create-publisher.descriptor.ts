@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { CreatePublisherDto } from '@apis/company/dtos/create-publisher.dto';
 
 // Types

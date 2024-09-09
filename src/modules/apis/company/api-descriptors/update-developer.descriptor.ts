@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { UpdateDeveloperDto } from '@apis/company/dtos/update-developer.dto';
 
 // Types

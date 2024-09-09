@@ -195,12 +195,12 @@ export class CompaniesService {
   public async getCompaniesPaginated(
     page: number,
     limit: number,
-    orderBy: 'id' | 'name',
+    orderBy: 'id' | 'name' | 'website',
     order: 'ASC' | 'DESC',
     type: 'publisher' | 'developer',
     searchQuery?: { name?: string; website?: string },
   ): Promise<{ items: (PublisherType | DeveloperType)[]; total: number; totalPages: number }> {
-    this.logger.log(`Getting companies paginated: page ${page}, limit ${limit}, order by ${orderBy} ${order}`);
+    this.logger.log(`Getting ${type}s paginated: page ${page}, limit ${limit}, order by ${orderBy} ${order}`);
 
     // Get the repository based on the type
     const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
@@ -224,6 +224,8 @@ export class CompaniesService {
 
     // Calculate the total number of pages
     const totalPages = Math.ceil(total / limit);
+
+    this.logger.log(`Found ${total} ${type}s in the database`);
 
     // Return the paginated companies
     return { items, total, totalPages };

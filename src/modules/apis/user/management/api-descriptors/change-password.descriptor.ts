@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { ChangePasswordDto } from '@apis/user/management/dtos/change-password.dto';
 
 // Types

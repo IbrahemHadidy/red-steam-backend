@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { SignupDto } from '@apis/user/auth/dtos/signup.dto';
 
 // Types

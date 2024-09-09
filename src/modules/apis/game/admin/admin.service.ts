@@ -157,17 +157,17 @@ export class AdminService {
    * @param id The ID of the game
    * @returns A message indicating the success of the operation
    */
-  public async delete(id: string): Promise<{ message: string }> {
+  public async delete(id: number): Promise<{ message: string }> {
     this.logger.log(`Deleting game with ID: ${id}`);
 
     // Get game data
-    const game = await this.game.getById(Number(id));
+    const game = await this.game.getById(id);
 
     // Delete game files
     await this.storage.deleteDirectory(game.name);
 
     // Delete game
-    await this.game.remove(Number(id));
+    await this.game.remove(id);
 
     // Return success message
     return { message: 'Game deleted successfully' };

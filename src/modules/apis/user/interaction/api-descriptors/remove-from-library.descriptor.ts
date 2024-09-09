@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { RemoveFromLibraryDto } from '@apis/user/interaction/dtos/remove-from-library.dto';
 
 // Types

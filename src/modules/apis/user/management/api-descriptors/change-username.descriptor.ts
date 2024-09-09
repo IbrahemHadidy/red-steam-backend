@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { ChangeUsernameDto } from '@apis/user/management/dtos/change-username.dto';
 
 // Types

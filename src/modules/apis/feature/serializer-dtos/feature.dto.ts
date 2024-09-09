@@ -1,7 +1,7 @@
 // Class-transformer
 import { Expose, Type } from 'class-transformer';
 
-// DTOs
+// Body DTOs
 import { GameDto } from '@apis/game/serializer-dtos/game.dto';
 
 // Types

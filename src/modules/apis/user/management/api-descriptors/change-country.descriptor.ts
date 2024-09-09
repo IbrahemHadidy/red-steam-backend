@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { ChangeCountryDto } from '@apis/user/management/dtos/change-country.dto';
 
 // Types

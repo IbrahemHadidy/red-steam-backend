@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { DeleteAccountDto } from '@apis/user/management/dtos/delete-account.dto';
 
 // Types

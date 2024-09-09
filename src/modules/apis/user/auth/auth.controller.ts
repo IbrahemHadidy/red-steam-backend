@@ -21,7 +21,7 @@ import { JwtRefreshAuthGuard } from '@guards/jwt-refresh-auth.guard';
 // Services
 import { AuthService } from '@apis/user/auth/auth.service';
 
-// DTOs
+// Body DTOs
 import { LoginDto } from '@apis/user/auth/dtos/login.dto';
 import { SignupDto } from '@apis/user/auth/dtos/signup.dto';
 import { VerifyEmailDto } from '@apis/user/auth/dtos/verify-email.dto';
@@ -78,7 +78,7 @@ export class AuthController {
   @Post('auto-login')
   @HttpCode(200)
   public async autoLogin(@Req() request: Request) {
-    const data = {
+    const data: { userId: string } = {
       userId: request['userId'],
     };
 
@@ -93,7 +93,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(200)
   async logout(@Req() request: Request) {
-    const data = {
+    const data: { userId: string; accessToken: string; refreshToken: string } = {
       userId: request['userId'],
       accessToken: request['accessToken'],
       refreshToken: request['refreshToken'],
@@ -111,7 +111,7 @@ export class AuthController {
   @Post('refresh-token')
   @HttpCode(200)
   public async refreshToken(@Req() request: Request) {
-    const data = {
+    const data: { userId: string } = {
       userId: request['userId'],
     };
 
@@ -127,7 +127,7 @@ export class AuthController {
   @Get('user-data')
   @HttpCode(200)
   public async getUserData(@Req() request: Request) {
-    const data = {
+    const data: { userId: string } = {
       userId: request['userId'],
     };
 
@@ -142,7 +142,7 @@ export class AuthController {
   @Get('verification-status')
   @HttpCode(200)
   public async getVerificationStatus(@Req() request: Request) {
-    const data = {
+    const data: { email: string } = {
       email: request['email'],
     };
 
@@ -157,7 +157,7 @@ export class AuthController {
   @Post('resend-verification-token')
   @HttpCode(200)
   public async resendVerificationToken(@Req() request: Request) {
-    const data = {
+    const data: { email: string } = {
       email: request['email'],
     };
 
@@ -183,7 +183,7 @@ export class AuthController {
   @Post('update-tokens')
   @HttpCode(200)
   public async updateTokens(@Req() request: Request) {
-    const data = {
+    const data: { userId: string; accessToken: string; refreshToken: string } = {
       userId: request['userId'],
       accessToken: request['accessToken'],
       refreshToken: request['refreshToken'],

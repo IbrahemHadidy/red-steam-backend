@@ -15,7 +15,7 @@ import { UsersService } from '@repositories/sql/users/users.service';
 export class AdminGuard implements CanActivate {
   constructor(private readonly usersService: UsersService) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  public async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const userId = request['userId'];
 

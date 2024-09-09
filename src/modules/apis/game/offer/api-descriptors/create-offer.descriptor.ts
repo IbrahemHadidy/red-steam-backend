@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { CreateOfferDto } from '@apis/game/offer/dtos/create-offer.dto';
 
 // Types

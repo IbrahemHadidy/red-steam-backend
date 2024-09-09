@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { UpdateUserDto } from '@apis/user/admin/dtos/update-user.dto';
 
 // Types

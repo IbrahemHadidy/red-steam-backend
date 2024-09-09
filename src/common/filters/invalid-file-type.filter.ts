@@ -9,7 +9,7 @@ import { InvalidFileException } from '@exceptions/invalid-file.exception';
 
 @Catch(InvalidFileException)
 export class InvalidFileTypeFilter implements ExceptionFilter {
-  catch(exception: InvalidFileException, host: ArgumentsHost) {
+  public catch(exception: InvalidFileException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<FastifyReply>();
 

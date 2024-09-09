@@ -15,7 +15,7 @@ import { VerifiedUserGuard } from '@guards/verified-user.guard';
 // Services
 import { PaymentService } from '@apis/user/payment/payment.service';
 
-// DTOs
+// Body DTOs
 import { CaptureOrderDto } from '@apis/user/payment/dtos/capture-order.dto';
 import { CreateOrderDto } from '@apis/user/payment/dtos/create-order.dto';
 
@@ -33,7 +33,7 @@ export class PaymentController {
   @Post('order/create')
   @HttpCode(201)
   async createOrder(@Req() request: Request, @Body() bodyData: CreateOrderDto) {
-    const data = {
+    const data: CreateOrderDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };
@@ -48,7 +48,7 @@ export class PaymentController {
   @Post('order/capture')
   @HttpCode(200)
   async captureOrder(@Req() request: Request, @Body() bodyData: CaptureOrderDto) {
-    const data = {
+    const data: CaptureOrderDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };

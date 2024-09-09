@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { ChangeEmailDto } from '@apis/user/management/dtos/change-email.dto';
 
 // Types

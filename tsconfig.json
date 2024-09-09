@@ -36,6 +36,7 @@
       "@middlewares/*": ["src/common/middlewares/*"],
       "@guards/*": ["src/common/guards/*"],
       "@exceptions/*": ["src/common/exceptions/*"],
+      "@pipes/*": ["src/common/pipes/*"],
       "@models/*": ["src/models/*"],
       "@credentials/*": ["src/credentials/*"]
     }

@@ -45,7 +45,7 @@ export const getDevelopersPaginatedDescriptor: ApiDescriptorOptions = {
     },
     {
       name: 'searchQuery',
-      type: Object,
+      type: String,
       required: false,
       description: 'The search query',
     },

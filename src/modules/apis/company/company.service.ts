@@ -129,7 +129,7 @@ export class CompanyService {
   public async getPublishersPaginated(
     page: number,
     limit: number,
-    orderBy: 'id' | 'name',
+    orderBy: 'id' | 'name' | 'website',
     order: 'ASC' | 'DESC',
     searchQuery: { name?: string; website?: string },
   ): Promise<{ items: Publisher[]; total: number; totalPages: number }> {
@@ -156,7 +156,7 @@ export class CompanyService {
   public async getDevelopersPaginated(
     page: number,
     limit: number,
-    orderBy: 'id' | 'name',
+    orderBy: 'id' | 'name' | 'website',
     order: 'ASC' | 'DESC',
     searchQuery: { name?: string; website?: string },
   ): Promise<{ items: Developer[]; total: number; totalPages: number }> {

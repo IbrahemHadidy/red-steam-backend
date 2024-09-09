@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { AddToWishlistDto } from '@apis/user/interaction/dtos/add-to-wishlist.dto';
 
 // Types

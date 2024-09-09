@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { ChangeTagsDto } from '@apis/user/interaction/dtos/change-tags.dto';
 
 // Types

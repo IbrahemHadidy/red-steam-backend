@@ -1,5 +1,16 @@
 // NestJS
-import { Body, Controller, Delete, HttpCode, Param, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 
 // Multer
 import { AnyFilesInterceptor } from '@nest-lab/fastify-multer';
@@ -15,7 +26,7 @@ import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 // Services
 import { OfferService } from '@apis/game/offer/offer.service';
 
-// DTOs
+// Body DTOs
 import { CreateOfferDto } from '@apis/game/offer/dtos/create-offer.dto';
 import { UpdateOfferDto } from '@apis/game/offer/dtos/update-offer.dto';
 
@@ -44,8 +55,8 @@ export class OfferController {
   @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Put(':id')
   @HttpCode(200)
-  async updateOffer(@Param('id') id: string, @Body() body: UpdateOfferDto) {
-    const result = await this.offerService.updateOffer({ gameId: Number(id), ...body });
+  async updateOffer(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateOfferDto) {
+    const result = await this.offerService.updateOffer({ gameId: id, ...body });
 
     // Send the response
     return result;
@@ -55,8 +66,8 @@ export class OfferController {
   @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Delete('/:id')
   @HttpCode(200)
-  async deleteOffer(@Param('id') id: string) {
-    const result = await this.offerService.delete(Number(id));
+  async deleteOffer(@Param('id', ParseIntPipe) id: number) {
+    const result = await this.offerService.delete(id);
 
     // Send the response
     return result;

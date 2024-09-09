@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { AddToLibraryDto } from '@apis/user/interaction/dtos/add-to-library.dto';
 
 // Types

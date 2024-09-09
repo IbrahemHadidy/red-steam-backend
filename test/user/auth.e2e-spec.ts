@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { DataSource } from 'typeorm';
+import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
+import { DataSource } from 'typeorm';
 import { cleanAllEntities } from '../e2e-setup';
 
 import { AppModule } from '@modules/app.module';
@@ -118,7 +118,6 @@ describe('AuthController (e2e)', () => {
             wishlist: [],
             cart: [],
             library: [],
-            reviews: [],
           }),
         }),
       );
@@ -173,7 +172,6 @@ describe('AuthController (e2e)', () => {
             wishlist: [],
             cart: [],
             library: [],
-            reviews: [],
           }),
         }),
       );
@@ -240,7 +238,6 @@ describe('AuthController (e2e)', () => {
             wishlist: [],
             cart: [],
             library: [],
-            reviews: [],
           }),
         }),
       );

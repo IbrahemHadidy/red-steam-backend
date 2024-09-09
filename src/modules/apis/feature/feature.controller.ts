@@ -1,5 +1,18 @@
 // NestJS
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseArrayPipe,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 
 // Serializer decorator
 import { Serialize } from '@decorators/serialize.decorator';
@@ -8,6 +21,10 @@ import { Serialize } from '@decorators/serialize.decorator';
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
 
+// Pipes
+import { ParseJsonPipe } from '@pipes/parse-json.pipe';
+import { UnionTypeValidationPipe } from '@pipes/union-type-validation.pipe';
+
 // Guards
 import { AdminGuard } from '@guards/admin.guard';
 import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
@@ -15,12 +32,16 @@ import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 // Services
 import { FeatureService } from '@apis/feature/feature.service';
 
-// DTOs
+// Body DTOs
 import { CreateFeatureDto } from '@apis/feature/dtos/create-feature.dto';
 import { UpdateFeatureDto } from '@apis/feature/dtos/update-feature.dto';
 
+// Query DTOs
+import { FeatureQueryDto } from '@apis/feature/dtos/feature-search-query.dto';
+
 // Serializer DTOs
 import { FeatureDto } from '@apis/feature/serializer-dtos/feature.dto';
+import { PaginatedFeaturesDataDto } from '@apis/feature/serializer-dtos/paginated-features-data.dto';
 
 // Swagger descriptors
 import { createFeatureDescriptor } from '@apis/feature/api-descriptors/create-feature.descriptor';
@@ -51,8 +72,8 @@ export class FeatureController {
   @Serialize(FeatureDto)
   @Get(':id')
   @HttpCode(200)
-  async getFeature(@Param('id') id: string) {
-    const result = await this.featureService.getFeature(Number(id));
+  async getFeature(@Param('id', ParseIntPipe) id: number) {
+    const result = await this.featureService.getFeature(id);
 
     // Send the response
     return result;
@@ -62,8 +83,8 @@ export class FeatureController {
   @Serialize(FeatureDto)
   @Get('bulk/:ids')
   @HttpCode(200)
-  async getFeatures(@Param('ids') ids: string) {
-    const result = await this.featureService.getFeatures(ids.split(',').map(Number));
+  async getFeatures(@Param('ids', new ParseArrayPipe({ items: Number })) ids: number[]) {
+    const result = await this.featureService.getFeatures(ids);
 
     // Send the response
     return result;
@@ -81,23 +102,17 @@ export class FeatureController {
   }
 
   @ApiDescriptor(getFeaturesPaginatedDescriptor)
-  @Serialize(FeatureDto)
+  @Serialize(PaginatedFeaturesDataDto)
   @Get('paginated')
   @HttpCode(200)
   async getFeaturesPaginated(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
-    @Query('orderBy') orderBy: 'id' | 'name',
-    @Query('order') order: 'ASC' | 'DESC',
-    @Query('searchQuery') searchQuery?: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('orderBy', new UnionTypeValidationPipe(['id', 'name'])) orderBy: 'id' | 'name',
+    @Query('order', new UnionTypeValidationPipe(['ASC', 'DESC'])) order: 'ASC' | 'DESC',
+    @Query('searchQuery', new ParseJsonPipe(FeatureQueryDto, { optional: true })) searchQuery: FeatureQueryDto = {},
   ) {
-    const result = await this.featureService.getFeaturesPaginated(
-      Number(page),
-      Number(limit),
-      orderBy,
-      order,
-      searchQuery ? JSON.parse(decodeURIComponent(searchQuery)) : {},
-    );
+    const result = await this.featureService.getFeaturesPaginated(page, limit, orderBy, order, searchQuery);
 
     // Send the response
     return result;
@@ -107,8 +122,8 @@ export class FeatureController {
   @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Put(':id')
   @HttpCode(200)
-  async updateFeature(@Param('id') id: string, @Body() body: UpdateFeatureDto) {
-    const result = await this.featureService.updateFeature(Number(id), body);
+  async updateFeature(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateFeatureDto) {
+    const result = await this.featureService.updateFeature(id, body);
 
     // Send the response
     return result;
@@ -118,8 +133,8 @@ export class FeatureController {
   @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Delete(':id')
   @HttpCode(200)
-  async deleteFeature(@Param('id') id: string) {
-    const result = await this.featureService.deleteFeature(Number(id));
+  async deleteFeature(@Param('id', ParseIntPipe) id: number) {
+    const result = await this.featureService.deleteFeature(id);
 
     // Send the response
     return result;

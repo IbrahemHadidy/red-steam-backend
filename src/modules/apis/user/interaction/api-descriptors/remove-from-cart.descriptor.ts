@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { RemoveFromCartDto } from '@apis/user/interaction/dtos/remove-from-cart.dto';
 
 // Types

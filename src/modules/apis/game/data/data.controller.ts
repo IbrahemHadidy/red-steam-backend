@@ -1,5 +1,5 @@
 // NestJS
-import { Controller, Get, HttpCode, Param, Query } from '@nestjs/common';
+import { Controller, Get, HttpCode, Param, ParseArrayPipe, ParseIntPipe, Query } from '@nestjs/common';
 
 // Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
@@ -8,12 +8,20 @@ import { ApiTags } from '@nestjs/swagger';
 // Serializer decorator
 import { Serialize } from '@decorators/serialize.decorator';
 
+// Pipes
+import { ParseQueryArrayPipe } from '@pipes/parse-query-array.pipe';
+import { ParseQueryBoolPipe } from '@pipes/parse-query-boolean.pipe';
+import { ParseQueryFloatPipe } from '@pipes/parse-query-float.pipe';
+import { ParseQueryIntPipe } from '@pipes/parse-query-integer.pipe';
+import { UnionTypeValidationPipe } from '@pipes/union-type-validation.pipe';
+
 // Services
 import { DataService } from '@apis/game/data/data.service';
 
 // Serializing DTOs
 import { GameDto } from '@apis/game/serializer-dtos/game.dto';
 import { ReviewDto } from '@apis/review/serializer-dtos/review.dto';
+// import { PaginatedGamesDataDto } from '@apis/game/serializer-dtos/paginated-games-data.dto';
 
 // importing swagger descriptors
 import { getByIdDescriptor } from '@apis/game/data/api-descriptors/get-by-id.descriptor';
@@ -50,47 +58,56 @@ export class DataController {
   @Get('search')
   @HttpCode(200)
   async getByParameters(
-    @Query('sort') sort?: 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews',
+    @Query(
+      'sort',
+      new UnionTypeValidationPipe(['relevance', 'name', 'lowestPrice', 'highestPrice', 'releaseDate', 'reviews'], {
+        optional: true,
+      }),
+    )
+    sort?: 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews',
     @Query('partialName') partialName?: string,
-    @Query('maxPrice') maxPrice?: string,
-    @Query('tags') tags?: string,
-    @Query('excludeTags') excludeTags?: string,
-    @Query('paid') paid?: string,
-    @Query('offers') offers?: string,
-    @Query('platforms') platforms?: string,
-    @Query('publishers') publishers?: string,
-    @Query('developers') developers?: string,
-    @Query('features') features?: string,
-    @Query('languages') languages?: string,
-    @Query('featured') featured?: string,
-    @Query('excludeMature') excludeMature?: string,
-    @Query('excludedGames') excludedGames?: string,
-    @Query('upcomingMode') upcomingMode?: 'onlyUpcoming' | 'exclude',
-    @Query('offset') offset?: string,
-    @Query('limit') limit?: string,
+    @Query('maxPrice', new ParseQueryFloatPipe()) maxPrice?: number,
+    @Query('tags', new ParseQueryArrayPipe({ items: Number })) tags?: number[],
+    @Query('excludeTags', new ParseQueryArrayPipe({ items: Number })) excludeTags?: number[],
+    @Query('paid', new ParseQueryBoolPipe()) paid?: boolean,
+    @Query('offers', new ParseQueryBoolPipe()) offers?: boolean,
+    @Query('platforms', new ParseQueryArrayPipe({ items: String }))
+    platforms?: ('win' | 'mac')[],
+    @Query('publishers', new ParseQueryArrayPipe({ items: Number })) publishers?: number[],
+    @Query('developers', new ParseQueryArrayPipe({ items: Number })) developers?: number[],
+    @Query('features', new ParseQueryArrayPipe({ items: Number })) features?: number[],
+    @Query('languages', new ParseQueryArrayPipe({ items: Number })) languages?: number[],
+    @Query('featured', new ParseQueryBoolPipe()) featured?: boolean,
+    @Query('excludeMature', new ParseQueryBoolPipe()) excludeMature?: boolean,
+    @Query('excludedGames', new ParseQueryArrayPipe({ items: Number }))
+    excludedGames?: number[],
+    @Query('upcomingMode', new UnionTypeValidationPipe(['onlyUpcoming', 'exclude'], { optional: true }))
+    upcomingMode?: 'onlyUpcoming' | 'exclude',
+    @Query('offset', new ParseQueryIntPipe()) offset?: number,
+    @Query('limit', new ParseQueryIntPipe()) limit?: number,
   ) {
     const result = await this.dataService.getByParameters(
       {
         sort,
         partialName,
         maxPrice,
-        tags: tags ? tags.split(',') : [],
-        excludeTags: excludeTags ? excludeTags.split(',') : [],
-        paid: paid === 'true',
-        offers: offers === 'true',
-        platforms: platforms ? (platforms.split(',') as ('win' | 'mac')[]) : [],
-        publishers: publishers ? publishers.split(',') : [],
-        developers: developers ? developers.split(',') : [],
-        features: features ? features.split(',') : [],
-        languages: languages ? languages.split(',') : [],
-        featured: featured === 'true',
-        excludeMature: excludeMature === 'true',
-        excludedGames: excludedGames ? excludedGames.split(',') : [],
-        upcomingMode: upcomingMode,
+        tags,
+        excludeTags,
+        paid,
+        offers,
+        platforms,
+        publishers,
+        developers,
+        features,
+        languages,
+        featured,
+        excludeMature,
+        excludedGames,
+        upcomingMode,
       },
       {
-        offset: parseInt(offset, 10) || 0,
-        limit: parseInt(limit, 10) || 10,
+        offset,
+        limit,
       },
     );
 
@@ -102,7 +119,7 @@ export class DataController {
   @Serialize(GameDto)
   @Get('featured')
   @HttpCode(200)
-  async getFeatured(@Query('limit') limit: string = '10') {
+  async getFeatured(@Query('limit', ParseIntPipe) limit: number = 10) {
     const result = await this.dataService.getFeaturedGames(limit);
 
     // Send the response
@@ -114,12 +131,12 @@ export class DataController {
   @Get('tags')
   @HttpCode(200)
   async getByUserTags(
-    @Query('tags')
-    tags: string,
-    @Query('limit')
-    limit: string,
+    @Query('tags', new ParseArrayPipe({ items: Number }))
+    tags: number[],
+    @Query('limit', ParseIntPipe)
+    limit: number,
   ) {
-    const result = await this.dataService.getByUserTags(tags.split(','), limit);
+    const result = await this.dataService.getByUserTags(tags, limit);
 
     // Send the response
     return result;
@@ -129,7 +146,7 @@ export class DataController {
   @Serialize(GameDto)
   @Get(':id')
   @HttpCode(200)
-  async getById(@Param('id') id: string) {
+  async getById(@Param('id', ParseIntPipe) id: number) {
     const result = await this.dataService.getById(id);
 
     // Send the response
@@ -140,8 +157,8 @@ export class DataController {
   @Serialize(GameDto)
   @Get('bulk')
   @HttpCode(200)
-  async getByIds(@Query('ids') ids: string) {
-    const result = await this.dataService.getByIds(ids.split(','));
+  async getByIds(@Query('ids', new ParseArrayPipe({ items: Number })) ids: number[]) {
+    const result = await this.dataService.getByIds(ids);
 
     // Send the response
     return result;
@@ -204,18 +221,19 @@ export class DataController {
 
   @ApiDescriptor(getGameReviewsDescriptor)
   @Serialize(ReviewDto)
-  @Get(':id/reviews')
+  @Get(':gameId/reviews')
   @HttpCode(200)
   async getGameReviews(
-    @Param('gameId') gameId: string,
-    @Query('filter') filter: 'positive' | 'negative' | 'all',
-    @Query('sort') sort: 'newest' | 'oldest',
-    @Query('offset') offset: string,
-    @Query('limit') limit: string,
+    @Param('gameId', ParseIntPipe) gameId: number,
+    @Query('filter', new UnionTypeValidationPipe(['positive', 'negative', 'all']))
+    filter: 'positive' | 'negative' | 'all',
+    @Query('sort', new UnionTypeValidationPipe(['newest', 'oldest'])) sort: 'newest' | 'oldest',
+    @Query('offset', ParseIntPipe) offset: number,
+    @Query('limit', ParseIntPipe) limit: number,
   ) {
     const result = await this.dataService.getGameReviews(gameId, filter, sort, {
-      offset: parseInt(offset, 10),
-      limit: parseInt(limit, 10),
+      offset,
+      limit,
     });
 
     // Send the response

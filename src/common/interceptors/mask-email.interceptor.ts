@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class MaskEmailInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(map((data) => this.maskEmailsRecursive(data)));
   }
 

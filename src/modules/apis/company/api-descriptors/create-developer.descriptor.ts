@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { CreateDeveloperDto } from '@apis/company/dtos/create-developer.dto';
 
 // Types

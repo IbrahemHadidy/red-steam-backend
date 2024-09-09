@@ -31,7 +31,7 @@ import { VerifiedUserGuard } from '@guards/verified-user.guard';
 // Services
 import { ManagementService } from '@apis/user/management/management.service';
 
-// DTOs
+// Body DTOs
 import { ChangeCountryDto } from '@apis/user/management/dtos/change-country.dto';
 import { ChangeEmailDto } from '@apis/user/management/dtos/change-email.dto';
 import { ChangePasswordDto } from '@apis/user/management/dtos/change-password.dto';
@@ -90,7 +90,7 @@ export class ManagementController {
   @Patch('username')
   @HttpCode(200)
   public async changeUsername(@Req() request: Request, @Body() bodyData: ChangeUsernameDto) {
-    const data = {
+    const data: ChangeUsernameDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };
@@ -106,7 +106,7 @@ export class ManagementController {
   @Patch('email')
   @HttpCode(200)
   public async changeEmail(@Req() request: Request, @Body() bodyData: ChangeEmailDto) {
-    const data = {
+    const data: ChangeEmailDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };
@@ -121,7 +121,7 @@ export class ManagementController {
   @UseGuards(JwtAccessAuthGuard, VerifiedUserGuard)
   @Patch('country')
   public async changeCountry(@Req() request: Request, @Body() bodyData: ChangeCountryDto) {
-    const data = {
+    const data: ChangeCountryDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };
@@ -138,7 +138,7 @@ export class ManagementController {
   @UseInterceptors(FileInterceptor('avatar'))
   @HttpCode(200)
   async uploadAvatar(@Req() request: Request, @UploadedFile() avatar: File) {
-    const data = {
+    const data: { avatar: File; userId: string } = {
       avatar,
       userId: request['userId'],
     };
@@ -154,7 +154,7 @@ export class ManagementController {
   @Delete('avatar')
   @HttpCode(204)
   async deleteAvatar(@Req() request: Request) {
-    const data = {
+    const data: { userId: string } = {
       userId: request['userId'],
     };
 
@@ -169,7 +169,7 @@ export class ManagementController {
   @Patch('password/change')
   @HttpCode(200)
   public async changePassword(@Req() request: Request, @Body() bodyData: ChangePasswordDto) {
-    const data = {
+    const data: ChangePasswordDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };
@@ -205,7 +205,7 @@ export class ManagementController {
   @Delete('account')
   @HttpCode(204)
   public async deleteAccount(@Req() request: Request, @Body() bodyData: DeleteAccountDto) {
-    const data = {
+    const data: DeleteAccountDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };

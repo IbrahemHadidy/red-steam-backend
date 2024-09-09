@@ -14,7 +14,7 @@ import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 // Services
 import { InteractionService } from '@apis/user/interaction/interaction.service';
 
-// DTOs
+// Body DTOs
 import { AddToCartDto } from '@apis/user/interaction/dtos/add-to-cart.dto';
 import { AddToLibraryDto } from '@apis/user/interaction/dtos/add-to-library.dto';
 import { AddToWishlistDto } from '@apis/user/interaction/dtos/add-to-wishlist.dto';
@@ -49,7 +49,7 @@ export class InteractionController {
   @Put('tags')
   @HttpCode(200)
   public async changeTags(@Req() request: Request, @Body() bodyData: ChangeTagsDto) {
-    const data = {
+    const data: ChangeTagsDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };
@@ -65,7 +65,7 @@ export class InteractionController {
   @Get('tags')
   @HttpCode(200)
   public async getTags(@Req() request: Request) {
-    const data = { userId: request['userId'] };
+    const data: { userId: string } = { userId: request['userId'] };
     const result = await this.interactionService.getTags(data);
 
     // Send the response
@@ -77,7 +77,7 @@ export class InteractionController {
   @Post('library')
   @HttpCode(201)
   public async addToLibrary(@Req() request: Request, @Body() bodyData: AddToLibraryDto) {
-    const data = {
+    const data: AddToLibraryDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };
@@ -93,7 +93,7 @@ export class InteractionController {
   @Delete('library')
   @HttpCode(204)
   public async removeFromLibrary(@Req() request: Request, @Body() bodyData?: RemoveFromLibraryDto) {
-    const userId = request['userId'];
+    const userId: string = request['userId'];
 
     let result: { success: boolean; message: string };
     if (bodyData && bodyData.itemsIds) {
@@ -113,7 +113,7 @@ export class InteractionController {
   @Post('wishlist')
   @HttpCode(201)
   public async addToWishlist(@Req() request: Request, @Body() bodyData: AddToWishlistDto) {
-    const data = {
+    const data: AddToWishlistDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };
@@ -129,7 +129,7 @@ export class InteractionController {
   @Delete('wishlist')
   @HttpCode(204)
   public async removeFromWishlist(@Req() request: Request, @Body() bodyData?: RemoveFromWishlistDto) {
-    const userId = request['userId'];
+    const userId: string = request['userId'];
 
     let result: { success: boolean; message: string };
     if (bodyData && bodyData.itemsIds) {
@@ -149,7 +149,7 @@ export class InteractionController {
   @Post('cart')
   @HttpCode(201)
   public async addToCart(@Req() request: Request, @Body() bodyData: AddToCartDto) {
-    const data = {
+    const data: AddToCartDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };
@@ -165,7 +165,7 @@ export class InteractionController {
   @Delete('cart')
   @HttpCode(204)
   public async removeFromCart(@Req() request: Request, @Body() bodyData?: RemoveFromCartDto) {
-    const userId = request['userId'];
+    const userId: string = request['userId'];
 
     let result: { success: boolean; message: string };
     if (bodyData && bodyData.itemsIds) {
@@ -185,7 +185,7 @@ export class InteractionController {
   @Get('library')
   @HttpCode(200)
   public async getLibrary(@Req() request: Request) {
-    const data = { userId: request['userId'] };
+    const data: { userId: string } = { userId: request['userId'] };
 
     const result = await this.interactionService.getLibrary(data);
 
@@ -198,7 +198,7 @@ export class InteractionController {
   @Get('cart')
   @HttpCode(200)
   public async getCart(@Req() request: Request) {
-    const data = { userId: request['userId'] };
+    const data: { userId: string } = { userId: request['userId'] };
 
     const result = await this.interactionService.getCart(data);
 
@@ -211,7 +211,7 @@ export class InteractionController {
   @Get('wishlist')
   @HttpCode(200)
   public async getWishlist(@Req() request: Request) {
-    const data = { userId: request['userId'] };
+    const data: { userId: string } = { userId: request['userId'] };
 
     const result = await this.interactionService.getWishlist(data);
 
@@ -224,7 +224,7 @@ export class InteractionController {
   @Post('review')
   @HttpCode(201)
   public async reviewGame(@Req() request: Request, @Body() bodyData: ReviewGameDto) {
-    const data = {
+    const data: ReviewGameDto & { userId: string } = {
       ...bodyData,
       userId: request['userId'],
     };
@@ -240,7 +240,7 @@ export class InteractionController {
   @Get('reviews')
   @HttpCode(200)
   public async getReviews(@Req() request: Request) {
-    const data = { userId: request['userId'] };
+    const data: { userId: string } = { userId: request['userId'] };
     const result = await this.interactionService.getReviews(data);
 
     // Send the response

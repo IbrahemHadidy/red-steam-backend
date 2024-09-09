@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { UpdateTagDto } from '@apis/tag/dtos/update-tag.dto';
 
 // Types

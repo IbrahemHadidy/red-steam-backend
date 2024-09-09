@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { RemoveFromWishlistDto } from '@apis/user/interaction/dtos/remove-from-wishlist.dto';
 
 // Types

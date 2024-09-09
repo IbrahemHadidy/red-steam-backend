@@ -1,7 +1,7 @@
 // Class-transformer
 import { Expose, Type } from 'class-transformer';
 
-// DTOs
+// Body DTOs
 import { ReviewDto } from '@apis/review/serializer-dtos/review.dto';
 import { TagDto } from '@apis/tag/serializer-dtos/tag.dto';
 

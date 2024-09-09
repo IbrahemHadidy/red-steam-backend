@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { VerifyEmailDto } from '@apis/user/auth/dtos/verify-email.dto';
 
 // Types

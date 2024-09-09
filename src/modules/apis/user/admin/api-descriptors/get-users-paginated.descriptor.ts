@@ -44,13 +44,7 @@ export const getUsersPaginatedDescriptor: ApiDescriptorOptions = {
       description: 'The order direction',
     },
     {
-      name: 'searchBy',
-      type: String,
-      required: false,
-      description: 'The search by field',
-    },
-    {
-      name: 'search',
+      name: 'searchQuery',
       type: String,
       required: false,
       description: 'The search query',

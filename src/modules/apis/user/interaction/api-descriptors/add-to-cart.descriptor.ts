@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { AddToCartDto } from '@apis/user/interaction/dtos/add-to-cart.dto';
 
 // Types

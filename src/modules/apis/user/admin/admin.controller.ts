@@ -1,9 +1,16 @@
 // NestJS
-import { Body, Controller, Delete, Get, HttpCode, Param, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Put, Query, UseGuards } from '@nestjs/common';
+
+// Serializer decorator
+import { Serialize } from '@decorators/serialize.decorator';
 
 // Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
+
+// Pipes
+import { ParseJsonPipe } from '@pipes/parse-json.pipe';
+import { UnionTypeValidationPipe } from '@pipes/union-type-validation.pipe';
 
 // Guards
 import { AdminGuard } from '@guards/admin.guard';
@@ -12,8 +19,14 @@ import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 // Services
 import { AdminService } from '@apis/user/admin/admin.service';
 
-// DTOs
+// Body DTOs
 import { UpdateUserDto } from '@apis/user/admin/dtos/update-user.dto';
+
+// Query DTOs
+import { UserQueryDto } from '@apis/user/admin/dtos/user-search-query.dto';
+
+// Serializer DTOs
+import { PaginatedUsersDataDto } from '@apis/user/serializer-dtos/paginated-users-data.dto';
 
 // Swagger descriptors
 import { deleteUserDescriptor } from '@apis/user/admin/api-descriptors/delete-user.descriptor';
@@ -26,22 +39,21 @@ export class AdminController {
   constructor(private readonly admin: AdminService) {}
 
   @ApiDescriptor(getUsersPaginatedDescriptor)
+  @Serialize(PaginatedUsersDataDto)
   @Get('paginated')
   @HttpCode(200)
   async getUsersPaginated(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
-    @Query('orderBy') orderBy: 'username' | 'email' | 'country' | 'isVerified' | 'isAdmin' | 'createdAt',
-    @Query('order') order: 'ASC' | 'DESC',
-    @Query('searchQuery') searchQuery?: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query(
+      'orderBy',
+      new UnionTypeValidationPipe(['username', 'email', 'country', 'isVerified', 'isAdmin', 'createdAt']),
+    )
+    orderBy: 'username' | 'email' | 'country' | 'isVerified' | 'isAdmin' | 'createdAt',
+    @Query('order', new UnionTypeValidationPipe(['ASC', 'DESC'])) order: 'ASC' | 'DESC',
+    @Query('searchQuery', new ParseJsonPipe(UserQueryDto, { optional: true })) searchQuery: UserQueryDto = {},
   ) {
-    const result = await this.admin.getUsersPaginated(
-      Number(page),
-      Number(limit),
-      orderBy,
-      order,
-      searchQuery ? JSON.parse(decodeURIComponent(searchQuery)) : {},
-    );
+    const result = await this.admin.getUsersPaginated(page, limit, orderBy, order, searchQuery);
 
     // Send the response
     return result;

@@ -1,5 +1,18 @@
 // NestJS
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseArrayPipe,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 
 // Serializer decorator
 import { Serialize } from '@decorators/serialize.decorator';
@@ -8,6 +21,10 @@ import { Serialize } from '@decorators/serialize.decorator';
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
 
+// Pipes
+import { ParseJsonPipe } from '@pipes/parse-json.pipe';
+import { UnionTypeValidationPipe } from '@pipes/union-type-validation.pipe';
+
 // Guards
 import { AdminGuard } from '@guards/admin.guard';
 import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
@@ -15,11 +32,15 @@ import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 // Services
 import { TagService } from '@apis/tag/tag.service';
 
-// DTOs
+// Body DTOs
 import { CreateTagDto } from '@apis/tag/dtos/create-tag.dto';
 import { UpdateTagDto } from '@apis/tag/dtos/update-tag.dto';
 
+// Query DTOs
+import { TagQueryDto } from '@apis/tag/dtos/tag-search-query.dto';
+
 // Serializer DTOs
+import { PaginatedTagsDataDto } from '@apis/tag/serializer-dtos/paginated-tags-data.dto';
 import { TagDto } from '@apis/tag/serializer-dtos/tag.dto';
 
 // Swagger descriptors
@@ -51,8 +72,8 @@ export class TagController {
   @Serialize(TagDto)
   @Get(':id')
   @HttpCode(200)
-  async getTag(@Param('id') id: string) {
-    const result = await this.tagService.getTag(Number(id));
+  async getTag(@Param('id', ParseIntPipe) id: number) {
+    const result = await this.tagService.getTag(id);
 
     // Send the response
     return result;
@@ -62,8 +83,8 @@ export class TagController {
   @Serialize(TagDto)
   @Get('bulk/:ids')
   @HttpCode(200)
-  async getTags(@Param('ids') ids: string) {
-    const result = await this.tagService.getTags(ids.split(',').map(Number));
+  async getTags(@Param('ids', new ParseArrayPipe({ items: Number })) ids: number[]) {
+    const result = await this.tagService.getTags(ids);
 
     // Send the response
     return result;
@@ -81,23 +102,17 @@ export class TagController {
   }
 
   @ApiDescriptor(getTagsPaginatedDescriptor)
-  @Serialize(TagDto)
+  @Serialize(PaginatedTagsDataDto)
   @Get('paginated')
   @HttpCode(200)
   async getTagsPaginated(
-    @Query('page') page: string,
-    @Query('limit') limit: string,
-    @Query('orderBy') orderBy: 'id' | 'name',
-    @Query('order') order: 'ASC' | 'DESC',
-    @Query('searchQuery') searchQuery?: string,
+    @Query('page', ParseIntPipe) page: number,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('orderBy', new UnionTypeValidationPipe(['id', 'name'])) orderBy: 'id' | 'name',
+    @Query('order', new UnionTypeValidationPipe(['ASC', 'DESC'])) order: 'ASC' | 'DESC',
+    @Query('searchQuery', new ParseJsonPipe(TagQueryDto, { optional: true })) searchQuery: TagQueryDto = {},
   ) {
-    const result = await this.tagService.getTagsPaginated(
-      Number(page),
-      Number(limit),
-      orderBy,
-      order,
-      searchQuery ? JSON.parse(decodeURIComponent(searchQuery)) : {},
-    );
+    const result = await this.tagService.getTagsPaginated(page, limit, orderBy, order, searchQuery);
 
     // Send the response
     return result;
@@ -107,8 +122,8 @@ export class TagController {
   @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Put(':id')
   @HttpCode(200)
-  async updateTag(@Param('id') id: string, @Body() body: UpdateTagDto) {
-    const result = await this.tagService.updateTag(Number(id), body);
+  async updateTag(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateTagDto) {
+    const result = await this.tagService.updateTag(id, body);
 
     // Send the response
     return result;
@@ -118,8 +133,8 @@ export class TagController {
   @UseGuards(JwtAccessAuthGuard, AdminGuard)
   @Delete(':id')
   @HttpCode(200)
-  async deleteTag(@Param('id') id: string) {
-    const result = await this.tagService.deleteTag(Number(id));
+  async deleteTag(@Param('id', ParseIntPipe) id: number) {
+    const result = await this.tagService.deleteTag(id);
 
     // Send the response
     return result;

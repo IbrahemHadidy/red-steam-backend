@@ -16,6 +16,7 @@
     "^@decorators/(.*)$": "<rootDir>/src/common/decorators/$1",
     "^@middlewares/(.*)$": "<rootDir>/src/common/middlewares/$1",
     "^@guards/(.*)$": "<rootDir>/src/common/guards/$1",
+    "^@pipes/(.*)$": "<rootDir>/src/common/pipes/$1",
     "^@models/(.*)$": "<rootDir>/src/models/$1",
     "^@exceptions/(.*)$": "<rootDir>/src/common/exceptions/$1",
     "^@configs/(.*)$": "<rootDir>/src/common/configs/$1",

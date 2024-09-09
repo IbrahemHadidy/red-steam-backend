@@ -1,4 +1,4 @@
-// DTOs
+// Body DTOs
 import { CreateGameDto } from '@apis/game/admin/dtos/create-game.dto';
 
 // Types
