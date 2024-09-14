@@ -1,12 +1,17 @@
 // NestJS
-import { CallHandler, ExecutionContext, HttpException, Injectable, Logger, NestInterceptor } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 
 // RxJS
-import { Observable, throwError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+
+// Types
+import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
+import type { Observable } from 'rxjs';
 
 /**
  * Interceptor to handle common HTTP exceptions and customize error responses.
+ * @returns Customized error response
  */
 @Injectable()
 export class ExceptionInterceptor implements NestInterceptor {

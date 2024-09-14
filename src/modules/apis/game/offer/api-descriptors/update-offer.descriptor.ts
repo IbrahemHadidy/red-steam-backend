@@ -24,5 +24,5 @@ export const updateOfferDescriptor: ApiDescriptorOptions = {
   body: {
     type: UpdateOfferDto,
   },
-  security: ['access-token'],
+  security: ['accessToken'],
 };

@@ -1,15 +1,11 @@
 // NestJS
-import {
-  BadRequestException,
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 // Services
 import { UsersService } from '@repositories/sql/users/users.service';
+
+// Types
+import type { CanActivate, ExecutionContext } from '@nestjs/common';
 
 @Injectable()
 export class AdminGuard implements CanActivate {

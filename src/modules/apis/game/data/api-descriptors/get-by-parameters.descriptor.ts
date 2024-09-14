@@ -20,7 +20,7 @@ export const getByParametersDescriptor: ApiDescriptorOptions = {
   ],
   queries: [
     {
-      name: 'sortBy',
+      name: 'sort',
       type: String,
       enum: ['relevance', 'name', 'lowestPrice', 'highestPrice', 'releaseDate', 'reviews'],
       required: false,
@@ -40,15 +40,15 @@ export const getByParametersDescriptor: ApiDescriptorOptions = {
     },
     {
       name: 'tags',
-      type: String,
+      type: [Number],
       required: false,
-      description: 'Tags of the games comma separated',
+      description: 'Tags of the games',
     },
     {
       name: 'excludeTags',
-      type: String,
+      type: [Number],
       required: false,
-      description: 'Excluded tags of the games comma separated',
+      description: 'Excluded tags of the games',
     },
     {
       name: 'paid',
@@ -64,28 +64,34 @@ export const getByParametersDescriptor: ApiDescriptorOptions = {
     },
     {
       name: 'platforms',
-      type: String,
+      type: [String],
       enum: ['win', 'mac'],
       required: false,
-      description: 'Platforms of the games comma separated',
+      description: 'Platforms of the games',
     },
     {
       name: 'publishers',
-      type: String,
+      type: [Number],
       required: false,
-      description: 'Publishers of the games comma separated',
+      description: 'Publishers of the games',
     },
     {
       name: 'developers',
-      type: String,
+      type: [Number],
       required: false,
-      description: 'Developers of the games comma separated',
+      description: 'Developers of the games',
+    },
+    {
+      name: 'languages',
+      type: [Number],
+      required: false,
+      description: 'Languages of the games',
     },
     {
       name: 'features',
-      type: String,
+      type: [Number],
       required: false,
-      description: 'Features of the games comma separated',
+      description: 'Features of the games',
     },
     {
       name: 'featured',
@@ -101,9 +107,9 @@ export const getByParametersDescriptor: ApiDescriptorOptions = {
     },
     {
       name: 'excludedGames',
-      type: String,
+      type: [Number],
       required: false,
-      description: 'Excluded games comma separated',
+      description: 'Excluded games',
     },
     {
       name: 'upcomingMode',

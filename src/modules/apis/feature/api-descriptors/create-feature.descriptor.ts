@@ -28,5 +28,5 @@ export const createFeatureDescriptor: ApiDescriptorOptions = {
   body: {
     type: CreateFeatureDto,
   },
-  security: ['access-token'],
+  security: ['accessToken'],
 };

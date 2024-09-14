@@ -6,7 +6,7 @@ export const deleteUserDescriptor: ApiDescriptorOptions = {
   description: 'Deletes a user',
   responses: [
     {
-      status: 204,
+      status: 200,
       description: 'User deleted successfully',
     },
     {
@@ -22,5 +22,5 @@ export const deleteUserDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['access-token'],
+  security: ['accessToken'],
 };

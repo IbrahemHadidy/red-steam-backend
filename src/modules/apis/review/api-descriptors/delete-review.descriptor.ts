@@ -6,7 +6,7 @@ export const deleteReviewDescriptor: ApiDescriptorOptions = {
   description: 'Deletes a review',
   responses: [
     {
-      status: 204,
+      status: 200,
       description: 'Review deleted successfully',
     },
     {
@@ -22,5 +22,5 @@ export const deleteReviewDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['access-token'],
+  security: ['accessToken'],
 };

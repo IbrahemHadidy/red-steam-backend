@@ -36,7 +36,7 @@ export class ParseJsonPipe<T extends object> implements PipeTransform<string, T>
     }
 
     const jsonValue = JSON.parse(value);
-    const dtoObject = plainToClass(this.dto, jsonValue);
+    const dtoObject = plainToClass(this.dto, jsonValue, { excludeExtraneousValues: true });
 
     const errors = validateSync(dtoObject);
     if (errors.length > 0) {

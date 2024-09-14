@@ -6,7 +6,7 @@ export const deleteTagDescriptor: ApiDescriptorOptions = {
   description: 'Deletes a tag',
   responses: [
     {
-      status: 204,
+      status: 200,
       description: 'Tag deleted successfully',
     },
     {
@@ -22,5 +22,5 @@ export const deleteTagDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['access-token'],
+  security: ['accessToken'],
 };

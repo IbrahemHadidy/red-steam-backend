@@ -28,5 +28,5 @@ export const createTagDescriptor: ApiDescriptorOptions = {
   body: {
     type: CreateTagDto,
   },
-  security: ['access-token'],
+  security: ['accessToken'],
 };

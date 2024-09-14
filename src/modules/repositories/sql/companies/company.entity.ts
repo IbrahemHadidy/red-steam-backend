@@ -21,11 +21,11 @@ export class Company extends BaseEntity {
 @Entity({ name: 'publishers' })
 export class Publisher extends Company {
   @ManyToMany(() => Game, (game: GameType) => game.publishers)
-  games: GameType[];
+  games?: GameType[];
 }
 
 @Entity({ name: 'developers' })
 export class Developer extends Company {
   @ManyToMany(() => Game, (game: GameType) => game.developers)
-  games: GameType[];
+  games?: GameType[];
 }

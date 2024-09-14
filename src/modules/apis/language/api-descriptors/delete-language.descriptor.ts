@@ -6,7 +6,7 @@ export const deleteLanguageDescriptor: ApiDescriptorOptions = {
   description: 'Deletes a language',
   responses: [
     {
-      status: 204,
+      status: 200,
       description: 'Language deleted successfully',
     },
     {
@@ -22,5 +22,5 @@ export const deleteLanguageDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['access-token'],
+  security: ['accessToken'],
 };

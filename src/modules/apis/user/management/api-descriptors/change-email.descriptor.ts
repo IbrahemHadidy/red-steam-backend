@@ -25,7 +25,7 @@ export const changeEmailDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['access-token'],
+  security: ['accessToken'],
   body: {
     type: ChangeEmailDto,
   },

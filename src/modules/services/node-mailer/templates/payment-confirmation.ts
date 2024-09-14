@@ -785,8 +785,7 @@ export const paymentConfirmation = `
 </div>
 `;
 
-export const gameCard = 
-`
+export const gameCard = `
 <table
   width="100%"
   border="0"

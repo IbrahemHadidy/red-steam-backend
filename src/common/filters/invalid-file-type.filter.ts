@@ -1,11 +1,12 @@
 // NestJS
-import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
-
-// Fastify
-import { FastifyReply } from 'fastify';
+import { Catch, HttpStatus } from '@nestjs/common';
 
 // Exceptions
 import { InvalidFileException } from '@exceptions/invalid-file.exception';
+
+// Types
+import type { ArgumentsHost, ExceptionFilter } from '@nestjs/common';
+import type { FastifyReply } from 'fastify';
 
 @Catch(InvalidFileException)
 export class InvalidFileTypeFilter implements ExceptionFilter {

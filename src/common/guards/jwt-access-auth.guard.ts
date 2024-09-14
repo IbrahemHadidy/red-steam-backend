@@ -1,10 +1,22 @@
 // NestJS
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 // Services
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
+
+// Types
+import type { CanActivate, ExecutionContext } from '@nestjs/common';
+import type { FastifyRequest } from 'fastify';
+
+interface JwtPayload {
+  id: string;
+  email: string;
+  username: string;
+  admin: boolean;
+  verified: boolean;
+}
 
 @Injectable()
 export class JwtAccessAuthGuard implements CanActivate {
@@ -19,26 +31,31 @@ export class JwtAccessAuthGuard implements CanActivate {
   }
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = await context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request.headers);
+    // Get context and request
+    const ctx = context.switchToHttp();
+    const request = ctx.getRequest<FastifyRequest>();
 
+    // Check if there is an access token
+    const token = this.extractTokenFromCookies(request.cookies);
     if (!token) throw new UnauthorizedException('Access token not found');
 
     try {
       // Verify token
-      const payload = this.jwtService.verify(token, { secret: this.accessTokenSecret });
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token, { secret: this.accessTokenSecret });
 
-      // Check if the refresh token is blacklisted
+      // Check if the token is blacklisted
       const isBlacklisted = await this.tokenBlacklist.isBlacklisted(token);
       if (isBlacklisted) throw new UnauthorizedException('Token is blacklisted');
 
       // Add payload to request
-      request.userId = payload.id;
-      request.email = payload.email;
-      request.username = payload.username;
-      request.admin = payload.admin;
-      request.isVerified = payload.verified;
-      request.accessToken = token;
+      Object.assign(request, {
+        userId: payload.id,
+        email: payload.email,
+        username: payload.username,
+        admin: payload.admin,
+        isVerified: payload.verified,
+        accessToken: token,
+      });
 
       return true;
     } catch (err) {
@@ -46,12 +63,12 @@ export class JwtAccessAuthGuard implements CanActivate {
     }
   }
 
-  private extractTokenFromHeader(headers: Record<string, string>): string {
-    const authHeader = headers['authorization'];
+  private extractTokenFromCookies(cookies: Record<string, string | undefined>): string | null {
+    const accessTokenHeader = cookies['accessToken'];
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+    if (!accessTokenHeader || !accessTokenHeader.startsWith('Bearer ')) return null;
 
-    const token = authHeader.split(' ')[1];
+    const token = accessTokenHeader.split(' ')[1];
     return token;
   }
 }

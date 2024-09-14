@@ -25,6 +25,6 @@ export const removeFromLibraryDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['access-token'],
+  security: ['accessToken'],
   body: { type: RemoveFromLibraryDto, required: false },
 };

@@ -135,7 +135,7 @@ export class UsersService {
    * Retrieves a user by their phone number.
    * @param phoneNumber - The phone number of the user to retrieve.
    * @return A Promise that resolves to the user entity.
-   * @throws {NotFoundException} if the user with the specified phone number is not found.
+   * @throws `NotFoundException` if the user with the specified phone number is not found.
    */
   public async getByPhoneNumber(phoneNumber: string): Promise<UserType> {
     this.logger.log(`Retrieving user with phone number ${phoneNumber} from the database`);
@@ -214,8 +214,8 @@ export class UsersService {
    * Creates a new user.
    * @param user - The user entity to be created.
    * @return A Promise that resolves to the created user entity.
-   * @throws {ConflictException} if the user already exists.
-   * @throws {InternalServerErrorException} if the creation fails.
+   * @throws `ConflictException` if the user already exists.
+   * @throws `InternalServerErrorException` if the creation fails.
    */
   public async create(user: { email: string; username: string; country: string; password: string }): Promise<UserType> {
     this.logger.log(`Creating user with email ${user.email} in the database`);
@@ -249,8 +249,8 @@ export class UsersService {
    * @param id - The ID of the user entity to update.
    * @param attrs - The partial attributes to update the user entity with.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user with the specified ID is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user with the specified ID is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async update(id: string, attrs: Partial<UserType>): Promise<UserType> {
     this.logger.log(`Updating user with ID ${id} in the database`);
@@ -279,8 +279,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param loggedIn - The login status to set.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async setLoginStatus(id: string, loggedIn: boolean): Promise<UserType> {
     this.logger.log(`Updating login status of user with ID ${id} in the database`);
@@ -307,8 +307,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param name - The new name to set.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async updateUsername(id: string, name: string): Promise<UserType> {
     this.logger.log(`Updating username of user with ID ${id} in the database`);
@@ -335,8 +335,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param password - The new password to set.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async updatePassword(id: string, password: string): Promise<UserType> {
     this.logger.log(`Updating password of user with ID ${id} in the database`);
@@ -363,8 +363,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param email - The new email to set.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async updateEmail(id: string, email: string): Promise<UserType> {
     this.logger.log(`Updating email of user with ID ${id} in the database`);
@@ -391,8 +391,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param country - The new country to set.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` Throws an InternalServerErrorException if the update fails.
    */
   public async updateCountry(id: string, country: string): Promise<UserType> {
     this.logger.log(`Updating country of user with ID ${id} in the database`);
@@ -419,8 +419,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param token - The new verification token to set.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async updateVerificationToken(id: string, token: string): Promise<UserType> {
     this.logger.log(`Updating verification token of user with ID ${id} in the database`);
@@ -447,8 +447,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param tagsIds - The IDs of the new tags to set.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async updateUserTags(id: string, tagsIds: number[]): Promise<UserType> {
     this.logger.log(`Updating tags of user with ID ${id} in the database`);
@@ -478,8 +478,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param itemsIds - An array of item IDs to add to the library.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async addItemsToLibrary(id: string, itemsIds: number[]): Promise<UserType> {
     this.logger.log(`Adding items to library of user with ID ${id} in the database`);
@@ -518,8 +518,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param itemsIds - An array of item IDs to remove from the library.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} Throws a NotFoundException if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` Throws a NotFoundException if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async removeItemsFromLibrary(id: string, itemsIds: number[]): Promise<UserType> {
     this.logger.log(`Removing items from library of user with ID ${id} in the database`);
@@ -557,8 +557,8 @@ export class UsersService {
    * Clears the user's library.
    * @param id - The ID of the user.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async clearLibrary(id: string): Promise<UserType> {
     this.logger.log(`Clearing library of user with ID ${id} in the database`);
@@ -587,8 +587,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param itemsIds - An array of item IDs to add to the wishlist.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async addItemsToWishlist(id: string, itemsIds: number[]): Promise<UserType> {
     this.logger.log(`Adding items to wishlist of user with ID ${id} in the database`);
@@ -620,8 +620,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param itemsIds - An array of item IDs to remove from the wishlist.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async removeItemsFromWishlist(id: string, itemsIds: number[]): Promise<UserType> {
     this.logger.log(`Removing items from wishlist of user with ID ${id} in the database`);
@@ -656,8 +656,8 @@ export class UsersService {
    * Clears the user's wishlist.
    * @param id - The ID of the user.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async clearWishlist(id: string): Promise<UserType> {
     this.logger.log(`Clearing wishlist of user with ID ${id} in the database`);
@@ -686,8 +686,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param itemsIds - An array of item IDs to add to the cart.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async addItemsToCart(id: string, itemsIds: number[]): Promise<UserType> {
     this.logger.log(`Adding items to cart of user with ID ${id} in the database`);
@@ -719,8 +719,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param itemsIds - An array of item IDs to remove from the cart.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async removeItemsFromCart(id: string, itemsIds: number[]): Promise<UserType> {
     this.logger.log(`Removing items from cart of user with ID ${id} in the database`);
@@ -758,8 +758,8 @@ export class UsersService {
    * Clears the user's cart.
    * @param id - The ID of the user.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async clearCart(id: string): Promise<UserType> {
     this.logger.log(`Clearing cart of user with ID ${id} in the database`);
@@ -788,8 +788,8 @@ export class UsersService {
    * @param id - The ID of the user.
    * @param avatarId - The new avatar ID to set.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async updateAvatar(id: string, avatarId: string): Promise<UserType> {
     this.logger.log(`Updating avatar of user with ID ${id} in the database`);
@@ -815,8 +815,8 @@ export class UsersService {
    * Removes the avatar of a user.
    * @param id - The ID of the user.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async removeAvatar(id: string): Promise<UserType> {
     this.logger.log(`Removing avatar of user with ID ${id} in the database`);
@@ -842,9 +842,9 @@ export class UsersService {
    * Updates the isVerified status of a user.
    * @param id - The ID of the user.
    * @return A Promise that resolves to the updated user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {BadRequestException} if the user is already verified.
-   * @throws {InternalServerErrorException} if the update fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `BadRequestException` if the user is already verified.
+   * @throws `InternalServerErrorException` if the update fails.
    */
   public async verify(id: string): Promise<UserType> {
     this.logger.log(`Verifying user with ID ${id} in the database`);
@@ -874,8 +874,8 @@ export class UsersService {
    * Removes a user by their ID.
    * @param id - The ID of the user to be removed.
    * @return A Promise that resolves to the removed user entity.
-   * @throws {NotFoundException} if the user is not found.
-   * @throws {InternalServerErrorException} if the removal fails.
+   * @throws `NotFoundException` if the user is not found.
+   * @throws `InternalServerErrorException` if the removal fails.
    */
   public async remove(id: string): Promise<UserType> {
     this.logger.log(`Removing user with ID ${id} from the database`);
@@ -899,7 +899,7 @@ export class UsersService {
   /**
    * Removes all users from the database.
    * @return {Promise<void>} A Promise that resolves when the removal is successful.
-   * @throws {InternalServerErrorException} if the removal fails.
+   * @throws `InternalServerErrorException` if the removal fails.
    */
   public async removeAll(): Promise<void> {
     this.logger.log('Removing all users from the database');

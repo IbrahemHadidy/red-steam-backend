@@ -1,6 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Logger, NotFoundException } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
 
@@ -10,24 +10,24 @@ import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
 import { UsersModule } from '@repositories/sql/users/users.module';
 
 // Services
-import { DropboxService } from '@services/dropbox/dropbox.service';
-import { SearchService } from '@repositories/sql/games/search.service';
-import { GamesService } from '@repositories/sql/games/games.service';
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
+import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
 import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
+import { GamesService } from '@repositories/sql/games/games.service';
+import { SearchService } from '@repositories/sql/games/search.service';
 import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
 import { UsersService } from '@repositories/sql/users/users.service';
-import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
+import { DropboxService } from '@services/dropbox/dropbox.service';
 
 // Entities
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
+import { Developer, Publisher } from '@repositories/sql/companies/company.entity';
 import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
-import { User } from '@repositories/sql/users/user.entity';
-import { Game } from '@repositories/sql/games/game.entity';
 import { GameLanguage } from '@repositories/sql/games-languages/game-language.entity';
+import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
+import { Game } from '@repositories/sql/games/game.entity';
+import { User } from '@repositories/sql/users/user.entity';
 
 describe('GameService', () => {
   let searchService: SearchService;
@@ -299,7 +299,7 @@ describe('GameService', () => {
     feature4 = await gamesFeaturesService.create({
       name: 'Test Feature 4',
       icon: Buffer.from('test icon 4', 'utf-8'),
-      });
+    });
 
     feature5 = await gamesFeaturesService.create({
       name: 'Test Feature 5',
@@ -581,6 +581,7 @@ describe('GameService', () => {
       category: 'Test Category',
       description: 'Test Description',
       releaseDate: new Date('2024-05-22'),
+      featured: false,
       publishers: [pub1.id, pub2.id],
       developers: [dev1.id, dev2.id],
       thumbnailEntries: {
@@ -598,12 +599,6 @@ describe('GameService', () => {
       tags: [tag1.id, tag2.id, tag3.id, tag4.id, tag9.id],
       pricing: {
         free: true,
-        discount: false,
-        basePrice: 80,
-        discountPrice: 35,
-        discountStartDate: new Date(),
-        discountEndDate: new Date('2024-11-30'),
-        offerType: 'SPECIAL PROMOTION',
       },
       gamesFeatures: [feature2.id, feature3.id, feature4.id],
       languages: [{ name: language1.name, interface: true, fullAudio: true, subtitles: true }],
@@ -915,12 +910,6 @@ describe('GameService', () => {
               game.publishers.some((pub) => pub.name === 'Test Publisher 1'),
           ),
         ).toBe(true);
-      });
-
-      it('should throw NotFoundException when no games found', async () => {
-        await expect(
-          searchService.getByParameters({ tags: [Number((Math.random() * 1000).toFixed(0))] }),
-        ).rejects.toThrow(NotFoundException);
       });
     });
 

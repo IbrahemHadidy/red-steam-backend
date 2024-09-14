@@ -28,5 +28,5 @@ export const updateTagDescriptor: ApiDescriptorOptions = {
   body: {
     type: UpdateTagDto,
   },
-  security: ['access-token'],
+  security: ['accessToken'],
 };

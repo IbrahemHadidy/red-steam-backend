@@ -6,7 +6,7 @@ export const deletePublisherDescriptor: ApiDescriptorOptions = {
   description: 'Deletes a publisher',
   responses: [
     {
-      status: 204,
+      status: 200,
       description: 'Publisher deleted successfully',
     },
     {
@@ -22,5 +22,5 @@ export const deletePublisherDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['access-token'],
+  security: ['accessToken'],
 };

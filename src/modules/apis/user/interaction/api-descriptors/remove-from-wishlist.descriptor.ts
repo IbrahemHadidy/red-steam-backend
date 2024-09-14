@@ -25,6 +25,6 @@ export const removeFromWishlistDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['access-token'],
+  security: ['accessToken'],
   body: { type: RemoveFromWishlistDto, required: false },
 };

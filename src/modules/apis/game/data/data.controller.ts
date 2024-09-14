@@ -5,7 +5,7 @@ import { Controller, Get, HttpCode, Param, ParseArrayPipe, ParseIntPipe, Query }
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
 
-// Serializer decorator
+// Decorators
 import { Serialize } from '@decorators/serialize.decorator';
 
 // Pipes

@@ -24,5 +24,5 @@ export const createGameDescriptor: ApiDescriptorOptions = {
   body: {
     type: CreateGameDto,
   },
-  security: ['access-token'],
+  security: ['accessToken'],
 };

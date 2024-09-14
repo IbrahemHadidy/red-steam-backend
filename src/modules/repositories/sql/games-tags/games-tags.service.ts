@@ -144,8 +144,8 @@ export class GamesTagsService {
    * Creates a new game tag.
    * @param name - The name of the new game tag.
    * @return A Promise that resolves to the created game tag.
-   * @throws {ConflictException} if the game tag already exists.
-   * @throws {InternalServerErrorException} if the creation fails.
+   * @throws `ConflictException` if the game tag already exists.
+   * @throws `InternalServerErrorException` if the creation fails.
    */
   public async create(name: string): Promise<GameTagType> {
     this.logger.log(`Creating new game tag: ${name}`);
@@ -169,9 +169,9 @@ export class GamesTagsService {
    * @param id - The ID of the game tag to update.
    * @param name - The new name of the game tag.
    * @return A Promise that resolves to the updated game tag.
-   * @throws {NotFoundException} Throws a NotFoundException if the game tag with the specified ID is not found.
-   * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the update fails.
-   * @throws {ConflictException} Throws a ConflictException if the new name conflicts with an existing game tag.
+   * @throws `NotFoundException` Throws a NotFoundException if the game tag with the specified ID is not found.
+   * @throws `InternalServerErrorException` Throws an InternalServerErrorException if the update fails.
+   * @throws `ConflictException` Throws a ConflictException if the new name conflicts with an existing game tag.
    */
   public async update(id: number, name: string): Promise<GameTagType> {
     this.logger.log(`Updating game tag with ID ${id}`);
@@ -196,7 +196,7 @@ export class GamesTagsService {
    * Removes a game tag by its ID.
    * @param id - The ID of the game tag to remove.
    * @return A Promise that resolves to the removed game tag.
-   * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the removal fails.
+   * @throws `InternalServerErrorException` Throws an InternalServerErrorException if the removal fails.
    */
   public async removeById(id: number): Promise<GameTagType> {
     this.logger.log(`Removing game tag with ID ${id}`);
@@ -219,7 +219,7 @@ export class GamesTagsService {
    * Removes multiple game tags by their IDs.
    * @param ids - The IDs of the game tags to remove.
    * @return A Promise that resolves to an array of removed game tags.
-   * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the removal fails.
+   * @throws `InternalServerErrorException` Throws an InternalServerErrorException if the removal fails.
    */
   public async removeByIds(ids: number[]): Promise<GameTagType[]> {
     this.logger.log(`Removing game tags with IDs ${ids}`);
@@ -242,7 +242,7 @@ export class GamesTagsService {
    * Removes a game tag by its name.
    * @param name - The name of the game tag to remove.
    * @return A Promise that resolves to the removed game tag.
-   * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the removal fails.
+   * @throws `InternalServerErrorException` Throws an InternalServerErrorException if the removal fails.
    */
   public async removeByName(name: string): Promise<GameTagType> {
     this.logger.log(`Removing game tag with name ${name}`);
@@ -264,7 +264,7 @@ export class GamesTagsService {
    * Removes multiple game tags by their names.
    * @param names - The names of the game tags to remove.
    * @return A Promise that resolves to an array of removed game tags.
-   * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the removal fails.
+   * @throws `InternalServerErrorException` Throws an InternalServerErrorException if the removal fails.
    */
   public async removeByNameList(names: string[]): Promise<GameTagType[]> {
     this.logger.log(`Removing game tags with names ${names}`);
@@ -286,7 +286,7 @@ export class GamesTagsService {
   /**
    * Deletes all game tags from the database.
    * @return {Promise<void>} A Promise that resolves when the deletion is complete.
-   * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the deletion fails.
+   * @throws `InternalServerErrorException` Throws an InternalServerErrorException if the deletion fails.
    */
   public async removeAll(): Promise<void> {
     this.logger.log('Deleting all game tags');

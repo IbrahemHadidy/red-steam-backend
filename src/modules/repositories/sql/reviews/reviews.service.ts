@@ -399,8 +399,8 @@ export class ReviewsService {
   /**
    * Delete all user reviews.
    * @param userId - The ID of the user to delete reviews for.
-   * @throws {NotFoundException} if the user does not exist.
-   * @throws {InternalServerErrorException} if the deletion fails.
+   * @throws `NotFoundException` if the user does not exist.
+   * @throws `InternalServerErrorException` if the deletion fails.
    */
   public async removeAllUserReviews(userId: string): Promise<void> {
     this.logger.log(`Deleting all reviews for user with ID ${userId}`);
@@ -421,7 +421,7 @@ export class ReviewsService {
   /**
    * Delete all game reviews.
    * @param gameId - The ID of the game to delete reviews for.
-   * @throws {InternalServerErrorException} if the deletion fails.
+   * @throws `InternalServerErrorException` if the deletion fails.
    */
   public async removeAllGameReviews(gameId: number): Promise<void> {
     this.logger.log(`Deleting all reviews for game with ID ${gameId}`);
@@ -438,7 +438,7 @@ export class ReviewsService {
 
   /**
    * Delete all reviews.
-   * @throws {InternalServerErrorException} if the deletion fails.
+   * @throws `InternalServerErrorException` if the deletion fails.
    */
   public async removeAll(): Promise<void> {
     this.logger.log('Deleting all reviews');

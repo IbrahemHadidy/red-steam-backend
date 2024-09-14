@@ -1,23 +1,20 @@
 // NestJS
-import {
-  BadRequestException,
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
-//Services
+// Services
 import { UsersService } from '@repositories/sql/users/users.service';
+
+// Types
+import type { CanActivate, ExecutionContext } from '@nestjs/common';
+import type { FastifyRequest } from 'fastify';
 
 @Injectable()
 export class VerifiedUserGuard implements CanActivate {
   constructor(private readonly usersService: UsersService) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const userId = request['userId'];
+    const request: FastifyRequest = context.switchToHttp().getRequest<FastifyRequest>();
+    const userId: string = request['userId'];
 
     // Verify if user exists
     if (!userId) throw new BadRequestException('User ID is missing');

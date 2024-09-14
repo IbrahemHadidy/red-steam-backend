@@ -1,15 +1,15 @@
-import fs from 'fs';
-import path from 'path';
-import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DataSource } from 'typeorm';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { Test, TestingModule } from '@nestjs/testing';
+import fs from 'fs';
+import path from 'path';
 import request from 'supertest';
+import { DataSource } from 'typeorm';
 import { cleanAllEntities } from '../e2e-setup';
 
-import { User } from '@repositories/sql/users/user.entity';
 import { AppModule } from '@modules/app.module';
+import { User } from '@repositories/sql/users/user.entity';
 import { DatabaseService } from '@services/database/database.service';
 
 describe('ManagementController (e2e)', () => {
@@ -20,7 +20,6 @@ describe('ManagementController (e2e)', () => {
   let accessToken: string;
   let currentTestEmail: string = 'testuser@me.com';
   let currentTestPassword: string = 'Testpassword123!';
-
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -234,7 +233,7 @@ describe('ManagementController (e2e)', () => {
       await request(app.getHttpServer())
         .delete('/api/users/management/avatar')
         .set('authorization', accessToken)
-        .expect(204);
+        .expect(200);
     });
   });
 
@@ -302,7 +301,7 @@ describe('ManagementController (e2e)', () => {
         .delete('/api/users/management/account')
         .send({ password: currentTestPassword })
         .set('authorization', accessToken)
-        .expect(204);
+        .expect(200);
     });
   });
 });

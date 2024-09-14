@@ -1,13 +1,16 @@
 // NestJS
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 // RxJS
-import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
+// Types
+import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
+import type { Observable } from 'rxjs';
 
 @Injectable()
 export class MaskEmailInterceptor implements NestInterceptor {
-  public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  public intercept(_context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(map((data) => this.maskEmailsRecursive(data)));
   }
 

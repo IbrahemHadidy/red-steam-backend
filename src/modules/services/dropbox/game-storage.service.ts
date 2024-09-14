@@ -30,8 +30,8 @@ export class GameStorageService extends DropboxService {
    * Uploads a media file to Dropbox
    * @param {File} file - The media file to upload
    * @returns {Promise<Partial<UploadResponse>>} The upload response data
-   * @throws {InvalidFileTypeException} - If the file type is not allowed
-   * @throws {InternalServerErrorException} - If there was an error uploading the media file
+   * @throws `InvalidFileException` - If the file type is not allowed
+   * @throws `InternalServerErrorException` - If there was an error uploading the media file
    */
   public async uploadFile(file: File, gameName: string, fileName: string): Promise<Partial<UploadResponse>> {
     // Ensure valid access token

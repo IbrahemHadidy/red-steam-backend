@@ -15,11 +15,12 @@ import type { DropboxToken as DropboxTokenType } from '@repositories/mongo/dropb
 export class DropboxTokensService {
   constructor(
     @InjectRepository(DropboxToken, 'mongo')
-    private readonly dropboxTokenRepository: Repository<Partial<DropboxTokenType>>,
+    private readonly dropboxTokenRepository: Repository<DropboxTokenType>,
   ) {}
 
-  async getToken(): Promise<Partial<DropboxToken>> {
-    return await this.dropboxTokenRepository.findOne({});
+  async getToken(): Promise<DropboxToken> {
+    const token = await this.dropboxTokenRepository.findOne({});
+    return token;
   }
 
   async saveToken(token: Partial<DropboxToken>): Promise<Partial<DropboxTokenType>> {

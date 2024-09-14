@@ -24,6 +24,9 @@ import { FileInterceptor } from '@nest-lab/fastify-multer';
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
 
+// Decorators
+import { RemoveResponseCookies } from '@decorators/remove-response-cookies.decorator';
+
 // Guards
 import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
 import { VerifiedUserGuard } from '@guards/verified-user.guard';
@@ -152,7 +155,7 @@ export class ManagementController {
   @ApiDescriptor(deleteAvatarDescriptor)
   @UseGuards(JwtAccessAuthGuard, VerifiedUserGuard)
   @Delete('avatar')
-  @HttpCode(204)
+  @HttpCode(200)
   async deleteAvatar(@Req() request: Request) {
     const data: { userId: string } = {
       userId: request['userId'],
@@ -202,8 +205,9 @@ export class ManagementController {
 
   @ApiDescriptor(deleteAccountDescriptor)
   @UseGuards(JwtAccessAuthGuard, VerifiedUserGuard)
+  @RemoveResponseCookies()
   @Delete('account')
-  @HttpCode(204)
+  @HttpCode(200)
   public async deleteAccount(@Req() request: Request, @Body() bodyData: DeleteAccountDto) {
     const data: DeleteAccountDto & { userId: string } = {
       ...bodyData,

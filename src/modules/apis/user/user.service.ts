@@ -111,7 +111,7 @@ export class UserService {
   /**
    * Check if user is verified
    * @param user The user object
-   * @throws {UnauthorizedException} If user is not verified
+   * @throws `UnauthorizedException` If user is not verified
    */
   protected async checkVerified(user: User) {
     if (!user.isVerified) {

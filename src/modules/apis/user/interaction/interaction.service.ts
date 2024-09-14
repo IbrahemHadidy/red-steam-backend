@@ -1,5 +1,5 @@
 // NestJS
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 
 // Services
 import { GamesService } from '@repositories/sql/games/games.service';
@@ -22,7 +22,7 @@ export class InteractionService extends UserService {
   /**
    * Changes the user's tags
    * @param data - An object containing the user's ID and the new tags
-   * @returns The result of the change
+   * @returns A message indicating the success of the operation
    */
   public async changeTags(data: { userId: string; tags: number[] }) {
     const { userId, tags } = data;
@@ -37,7 +37,7 @@ export class InteractionService extends UserService {
 
     // Return the result
     this.logger.log(`Tags changed successfully for user with ID: ${userId}`);
-    return { success: true, message: 'Tags changed successfully' };
+    return { message: 'Tags changed successfully' };
   }
 
   /**
@@ -55,13 +55,14 @@ export class InteractionService extends UserService {
 
     // Return the user's tags
     this.logger.log(`Tags fetched successfully for user with ID: ${userId}`);
-    return { success: true, tags: user.tags };
+    return { tags: user.tags };
   }
 
   /**
    * Adds items to the user's library.
    * @param data - An object containing the user's ID and a list of item IDs to add to the library.
-   * @returns The result of the operation.
+   * @returns A message indicating the success of the operation.
+   * @throws `BadRequestException` If any of the items are already in the user's library.
    */
   public async addToLibrary(data: { itemsIds: number[]; userId: string }) {
     const { itemsIds, userId } = data;
@@ -76,7 +77,9 @@ export class InteractionService extends UserService {
     const duplicates = itemsIds.filter((itemId) => existingitemsIds.includes(itemId));
     if (duplicates.length > 0) {
       this.logger.warn(`Games with IDs ${duplicates} are already in the library for user with ID: ${userId}`);
-      return { success: false, message: 'Some games are already in the library', duplicates };
+      throw new BadRequestException(
+        `Games with IDs ${duplicates} are already in the library for user with ID: ${userId}`,
+      );
     }
 
     // Check if any of the items does not exist
@@ -87,13 +90,13 @@ export class InteractionService extends UserService {
 
     // Return the result
     this.logger.log(`Games added to library successfully for user with ID: ${userId}`);
-    return { success: true, message: 'Games added to library successfully' };
+    return { message: 'Games added to library successfully' };
   }
 
   /**
    * Removes items from the user's library.
    * @param data - An object containing the user's ID and a list of item IDs to remove from the library.
-   * @returns The result of the operation.
+   * @returns A message indicating the success of the operation.
    */
   public async removeFromLibrary(data: { itemsIds: number[]; userId: string }) {
     const { itemsIds, userId } = data;
@@ -108,13 +111,13 @@ export class InteractionService extends UserService {
 
     // Return the result
     this.logger.log(`Games removed from library successfully for user with ID: ${userId}`);
-    return { success: true, message: 'Games removed from library successfully' };
+    return { message: 'Games removed from library successfully' };
   }
 
   /**
    * Clears the user's library.
    * @param data - An object containing the user's ID.
-   * @returns The result of the operation.
+   * @returns A message indicating the success of the operation.
    */
   public async clearLibrary(data: { userId: string }) {
     const { userId } = data;
@@ -129,13 +132,14 @@ export class InteractionService extends UserService {
 
     // Return the result
     this.logger.log(`Library cleared successfully for user with ID: ${userId}`);
-    return { success: true, message: 'Library cleared successfully' };
+    return { message: 'Library cleared successfully' };
   }
 
   /**
    * Adds items to the user's wishlist.
    * @param data - An object containing the user's ID and a list of item IDs to add to the wishlist.
-   * @returns The result of the operation.
+   * @returns A message indicating the success of the operation.
+   * @throws `BadRequestException` If any of the items are already in the user's wishlist.
    */
   public async addToWishlist(data: { itemsIds: number[]; userId: string }) {
     const { itemsIds, userId } = data;
@@ -150,7 +154,9 @@ export class InteractionService extends UserService {
     const duplicates = itemsIds.filter((itemId) => existingitemsIds.includes(itemId));
     if (duplicates.length > 0) {
       this.logger.warn(`Games with IDs ${duplicates} are already in the wishlist`);
-      return { success: false, message: 'Some games are already in the wishlist', duplicates };
+      throw new BadRequestException(
+        `Games with IDs ${duplicates} are already in the wishlist for user with ID: ${userId}`,
+      );
     }
 
     // Check if any of the items does not exist
@@ -161,13 +167,13 @@ export class InteractionService extends UserService {
 
     // Return the result
     this.logger.log(`Games added to wishlist successfully for user with ID: ${userId}`);
-    return { success: true, message: 'Games added to wishlist successfully' };
+    return { message: 'Games added to wishlist successfully' };
   }
 
   /**
    * Removes items from the user's wishlist.
    * @param data - An object containing the user's ID and a list of item IDs to remove from the wishlist.
-   * @returns The result of the operation.
+   * @returns A message indicating the success of the operation.
    */
   public async removeFromWishlist(data: { itemsIds: number[]; userId: string }) {
     const { itemsIds, userId } = data;
@@ -182,13 +188,13 @@ export class InteractionService extends UserService {
 
     // Return the result
     this.logger.log(`Games removed from wishlist successfully for user with ID: ${userId}`);
-    return { success: true, message: 'Games removed from wishlist successfully' };
+    return { message: 'Games removed from wishlist successfully' };
   }
 
   /**
    * Clears user's wishlist.
    * @param data - An object containing the user's ID
-   * @returns The result of the operation
+   * @returns A message indicating the success of the operation.
    */
   public async clearWishlist(data: { userId: string }) {
     const { userId } = data;
@@ -203,13 +209,14 @@ export class InteractionService extends UserService {
 
     // Return the result
     this.logger.log(`Wishlist cleared successfully for user with ID: ${userId}`);
-    return { success: true, message: 'Wishlist cleared successfully' };
+    return { message: 'Wishlist cleared successfully' };
   }
 
   /**
    * Adds items to the user's cart.
    * @param data - An object containing the user's ID and a list of item IDs to add to the cart.
-   * @returns The result of the operation.
+   * @returns A message indicating the success of the operation.
+   * @throws `BadRequestException` If any of the items are already in the user's cart.
    */
   public async addToCart(data: { itemsIds: number[]; userId: string }) {
     const { itemsIds, userId } = data;
@@ -224,7 +231,7 @@ export class InteractionService extends UserService {
     const duplicates = itemsIds.filter((itemId) => existingitemsIds.includes(itemId));
     if (duplicates.length > 0) {
       this.logger.warn(`Games with IDs ${duplicates} are already in the cart`);
-      return { success: false, message: 'Some games are already in the cart', duplicates };
+      throw new BadRequestException(`Games with IDs ${duplicates} are already in the cart for user with ID: ${userId}`);
     }
 
     // Check if any of the items does not exist
@@ -235,13 +242,13 @@ export class InteractionService extends UserService {
 
     // Return the result
     this.logger.log(`Games added to cart successfully for user with ID: ${userId}`);
-    return { success: true, message: `Games added to cart successfully` };
+    return { message: `Games added to cart successfully` };
   }
 
   /**
    * Removes items from the user's cart.
    * @param data - An object containing the user's ID and a list of item IDs to remove from the cart.
-   * @returns The result of the operation.
+   * @returns A message indicating the success of the operation.
    */
   public async removeFromCart(data: { itemsIds: number[]; userId: string }) {
     const { itemsIds, userId } = data;
@@ -256,13 +263,13 @@ export class InteractionService extends UserService {
 
     // Return the result
     this.logger.log(`Games removed from cart successfully for user with ID: ${userId}`);
-    return { success: true, message: 'Games removed from cart successfully' };
+    return { message: 'Games removed from cart successfully' };
   }
 
   /**
    * Clears user's cart.
    * @param data - An object containing the user's ID
-   * @returns The result of the operation
+   * @returns A message indicating the success of the operation.
    */
   public async clearCart(data: { userId: string }) {
     const { userId } = data;
@@ -277,7 +284,7 @@ export class InteractionService extends UserService {
 
     // Return the result
     this.logger.log(`Cart cleared successfully for user with ID: ${userId}`);
-    return { success: true, message: 'Cart cleared successfully' };
+    return { message: 'Cart cleared successfully' };
   }
 
   /**
@@ -292,10 +299,6 @@ export class InteractionService extends UserService {
 
     // Check and get user
     const user = await this.findUser(userId, 'id');
-    if (user.library.length === 0) {
-      this.logger.warn(`Library is empty for user with ID: ${userId}`);
-      return { success: false, message: 'Library is empty' };
-    }
 
     // Return the user's library
     this.logger.log(`Library retrieved successfully for user with ID: ${userId}`);
@@ -314,10 +317,6 @@ export class InteractionService extends UserService {
 
     // Check and get user
     const user = await this.findUser(userId, 'id');
-    if (user.wishlist.length === 0) {
-      this.logger.warn(`Wishlist is empty for user with ID: ${userId}`);
-      return { success: false, message: 'Wishlist is empty' };
-    }
 
     // Return the user's wishlist
     this.logger.log(`Wishlist retrieved successfully for user with ID: ${userId}`);
@@ -336,10 +335,6 @@ export class InteractionService extends UserService {
 
     // Check and get user
     const user = await this.findUser(userId, 'id');
-    if (user.cart.length === 0) {
-      this.logger.warn(`Cart is empty for user with ID: ${userId}`);
-      return { success: false, message: 'Cart is empty' };
-    }
 
     // Return the user's cart
     this.logger.log(`Cart retrieved successfully for user with ID: ${userId}`);
@@ -377,10 +372,6 @@ export class InteractionService extends UserService {
 
     // Check and get user
     const user = await this.findUser(userId, 'id');
-    if (user.reviews.length === 0) {
-      this.logger.warn(`No reviews found for user with ID: ${userId}`);
-      return { success: false, message: 'No reviews found' };
-    }
 
     // Return the user's reviews
     this.logger.log(`Reviews retrieved successfully for user with ID: ${userId}`);

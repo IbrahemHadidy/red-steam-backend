@@ -70,7 +70,7 @@ export class GamesService {
    * Retrieves a game by its ID.
    * @param {number} id - The ID of the game to retrieve.
    * @return {Promise<GameType>} A Promise that resolves to the game entity.
-   * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
+   * @throws `NotFoundException` Throws a NotFoundException if the game with the specified ID is not found.
    */
   public async getById(id: number): Promise<GameType> {
     this.logger.log(`Retrieving game with ID ${id} from the database`);
@@ -89,7 +89,7 @@ export class GamesService {
    * Retrieves games by their IDs.
    * @param {number[]} ids - The IDs of the games to retrieve.
    * @return {Promise<GameType[]>} A Promise that resolves to an array of game entities.
-   * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
+   * @throws `NotFoundException` Throws a NotFoundException if the game with the specified ID is not found.
    */
   public async getByIds(ids: number[]): Promise<GameType[]> {
     this.logger.log(`Retrieving games with IDs ${ids} from the database`);
@@ -129,8 +129,8 @@ export class GamesService {
    * Creates a new game.
    * @param {Game} game - The game entity to be created.
    * @return {Promise<GameType>} A Promise that resolves to the created game entity.
-   * @throws {ConflictException} Throws a ConflictException if the game already exists.
-   * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the creation fails.
+   * @throws `ConflictException` Throws a ConflictException if the game already exists.
+   * @throws `InternalServerErrorException` Throws an InternalServerErrorException if the creation fails.
    */
   public async create(game: {
     name: string;
@@ -226,8 +226,8 @@ export class GamesService {
    * @param {number} id - The ID of the game to be updated.
    * @param {Game} game - The updated game entity.
    * @return {Promise<GameType>} A Promise that resolves to the updated game entity.
-   * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
-   * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the update fails.
+   * @throws `NotFoundException` Throws a NotFoundException if the game with the specified ID is not found.
+   * @throws `InternalServerErrorException` Throws an InternalServerErrorException if the update fails.
    */
   public async update(
     id: number,
@@ -329,11 +329,33 @@ export class GamesService {
   }
 
   /**
+   * Updates games total sales by 1
+   * @param {number} ids - The IDs of the games to be updated.
+   * @return {Promise<Game[]>} A Promise that resolves to an array of updated games.
+   */
+  public async updateSales(ids: number[]): Promise<GameType[]> {
+    this.logger.log(`Updating games sales`);
+
+    // Update games sales
+    const games = await this.getByIds(ids);
+
+    // Update games sales
+    games.forEach((game) => {
+      game.totalSales += 1;
+    });
+
+    // Save the updated games to the database
+    const result = await this.gameRepository.save(games);
+    if (!result) throw new InternalServerErrorException(`Failed to update games sales`);
+    return result;
+  }
+
+  /**
    * Removes a game by its ID.
    * @param {number} id - The ID of the game to be removed.
    * @return {Promise<Game>} A Promise that resolves to the removed game entity.
-   * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
-   * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the removal fails.
+   * @throws `NotFoundException` Throws a NotFoundException if the game with the specified ID is not found.
+   * @throws `InternalServerErrorException` Throws an InternalServerErrorException if the removal fails.
    */
   public async remove(id: number): Promise<GameType> {
     this.logger.log(`Removing game with ID ${id} from the database`);
@@ -362,7 +384,7 @@ export class GamesService {
   /**
    * Removes all games from the database.
    * @return {Promise<void>} A Promise that resolves when the removal is complete.
-   * @throws {InternalServerErrorException} Throws an InternalServerErrorException if the removal fails.
+   * @throws `InternalServerErrorException` Throws an InternalServerErrorException if the removal fails.
    */
   public async removeAll(): Promise<void> {
     this.logger.log('Removing all games from the database');

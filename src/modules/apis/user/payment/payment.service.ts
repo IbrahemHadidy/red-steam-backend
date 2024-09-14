@@ -28,7 +28,7 @@ export class PaymentService extends UserService {
    * Calculate the total price of the cart items
    * @param cartItems An array of cart items ids
    * @param totalPrice The total price of the cart
-   * @throws {BadRequestException} If total price does not match calculated price
+   * @throws `BadRequestException` If total price does not match calculated price
    */
   private async calculatePrice(cartItems: number[], totalPrice: number) {
     this.logger.log(`Calculating total price of cart items`);
@@ -51,8 +51,8 @@ export class PaymentService extends UserService {
    * Create a new order.
    * @param data An object containing the userId, totalPrice, and cartItems
    * @returns An object containing the orderId and orderData (userId, totalPrice, and cartItems)
-   * @throws {BadRequestException} If any of the cart items are already in the user's library
-   * @throws {UnauthorizedException} If user is not verified
+   * @throws `BadRequestException` If any of the cart items are already in the user's library
+   * @throws `UnauthorizedException` If user is not verified
    */
   public async createOrder(data: { userId: string; totalPrice: number; cartItems: number[] }) {
     const { userId, totalPrice, cartItems } = data;
@@ -116,6 +116,9 @@ export class PaymentService extends UserService {
 
     // Update user library
     await this.user.addItemsToLibrary(userId, cartItems);
+
+    // Update game sales
+    await this.game.updateSales(cartItems);
 
     // Send email
     await this.mailer.sendPaymentConfirmationEmail(user.email, {

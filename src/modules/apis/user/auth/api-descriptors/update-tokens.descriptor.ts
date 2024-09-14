@@ -14,5 +14,5 @@ export const updateTokensDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['refresh-token', 'access-token'],
+  security: ['refreshToken', 'accessToken'],
 };

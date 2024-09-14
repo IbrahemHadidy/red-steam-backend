@@ -35,7 +35,7 @@ export class NodeMailerService {
    * @param subject The subject of the email
    * @param html The HTML content of the email
    * @returns void
-   * @throws {InternalServerErrorException} If there is an error sending the email
+   * @throws `InternalServerErrorException` If there is an error sending the email
    */
   private async sendEmail(to: string, subject: string, html: string): Promise<void> {
     await this.mailer.sendMail({

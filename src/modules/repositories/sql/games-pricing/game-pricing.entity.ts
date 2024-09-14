@@ -43,7 +43,7 @@ export class GamePricing extends BaseEntity {
   price: number;
 
   @OneToOne(() => Game, (game: GameType) => game.pricing)
-  game: GameType;
+  game?: GameType;
 
   // Final calculations
   @BeforeInsert()

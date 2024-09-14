@@ -28,5 +28,5 @@ export const createPublisherDescriptor: ApiDescriptorOptions = {
   body: {
     type: CreatePublisherDto,
   },
-  security: ['access-token'],
+  security: ['accessToken'],
 };

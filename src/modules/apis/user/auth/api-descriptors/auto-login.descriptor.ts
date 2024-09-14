@@ -22,5 +22,5 @@ export const autoLoginDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['refresh-token'],
+  security: ['refreshToken'],
 };

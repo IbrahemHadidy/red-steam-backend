@@ -53,7 +53,7 @@ export class GamesPricingService {
    * Validate pricing
    * @param pricing Pricing entity
    * @returns Promise that resolves when validation is successful
-   * @throws {BadRequestException} If validation fails
+   * @throws `BadRequestException` If validation fails
    */
   private async validatePricing(pricing: {
     free: boolean;
@@ -100,7 +100,7 @@ export class GamesPricingService {
    * @param discountPrice Discount price
    * @param basePrice Base price
    * @returns Promise that resolves to discount percentage
-   * @throws {BadRequestException} If base price is less than or equal to 0
+   * @throws `BadRequestException` If base price is less than or equal to 0
    */
   private async calculateDiscountPercentage(discountPrice: number, basePrice: number): Promise<number> {
     // If base price is less than or equal to 0, throw a bad request exception with a message
@@ -147,7 +147,7 @@ export class GamesPricingService {
    * Get pricing by ID
    * @param id Pricing ID
    * @returns Promise that resolves to a pricing
-   * @throws {NotFoundException} If pricing not found
+   * @throws `NotFoundException` If pricing not found
    */
   public async getById(id: number): Promise<GamePricing> {
     this.logger.log(`Retrieving pricing with ID ${id}`);
@@ -167,7 +167,7 @@ export class GamesPricingService {
    * Get pricing by game ID
    * @param id Game ID
    * @returns Promise that resolves to a pricing
-   * @throws {NotFoundException} If pricing not found
+   * @throws `NotFoundException` If pricing not found
    */
   public async getByGameId(id: number): Promise<GamePricing> {
     this.logger.log(`Retrieving pricing for game with ID ${id}`);
@@ -325,7 +325,7 @@ export class GamesPricingService {
    * @param id Pricing ID
    * @param pricing Pricing
    * @returns Promise that resolves when the update is successful
-   * @throws {NotFoundException} If pricing not found
+   * @throws `NotFoundException` If pricing not found
    */
   public async update(
     id: number,
@@ -387,8 +387,8 @@ export class GamesPricingService {
    * Delete pricing
    * @param id Pricing ID
    * @returns Promise that resolves when the deletion is successful
-   * @throws {NotFoundException} If pricing not found
-   * @throws {InternalServerErrorException} If failed to delete
+   * @throws `NotFoundException` If pricing not found
+   * @throws `InternalServerErrorException` If failed to delete
    */
   public async remove(id: number): Promise<GamePricingType> {
     this.logger.log(`Deleting pricing with ID ${id}`);
@@ -412,7 +412,7 @@ export class GamesPricingService {
   /**
    * Delete all pricings
    * @returns Promise that resolves when the deletion is successful
-   * @throws {InternalServerErrorException} If failed to delete
+   * @throws `InternalServerErrorException` If failed to delete
    */
   public async removeAll(): Promise<void> {
     this.logger.log('Deleting all pricings');

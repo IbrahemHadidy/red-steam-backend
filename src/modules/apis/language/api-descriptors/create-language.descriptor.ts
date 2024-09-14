@@ -28,5 +28,5 @@ export const createLanguageDescriptor: ApiDescriptorOptions = {
   body: {
     type: CreateLanguageDto,
   },
-  security: ['access-token'],
+  security: ['accessToken'],
 };

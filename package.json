@@ -21,7 +21,11 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
   },
   "dependencies": {
+    "@fastify/cookie": "^9.4.0",
+    "@fastify/csrf-protection": "^6.4.1",
+    "@fastify/helmet": "^11.1.1",
     "@fastify/multipart": "^8.3.0",
+    "@fastify/redis": "^6.2.0",
     "@fastify/static": "^7.0.4",
     "@fastify/swagger": "^8.15.0",
     "@nest-lab/fastify-multer": "^1.2.0",

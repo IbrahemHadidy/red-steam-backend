@@ -28,5 +28,5 @@ export const updateDeveloperDescriptor: ApiDescriptorOptions = {
   body: {
     type: UpdateDeveloperDto,
   },
-  security: ['access-token'],
+  security: ['accessToken'],
 };

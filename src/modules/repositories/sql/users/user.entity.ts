@@ -73,7 +73,7 @@ export class User extends BaseEntity {
   library: LibraryItem[];
 
   @OneToMany(() => Review, (review: ReviewType) => review.user)
-  reviews: ReviewType[];
+  reviews?: ReviewType[];
 }
 
 export class BaseItem {

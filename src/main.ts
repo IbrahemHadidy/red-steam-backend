@@ -25,7 +25,7 @@ class AppBootstrapper {
   }
 
   public async bootstrap() {
-    // Create Nest application instance
+    // Create Nest application instance (Fastify adapter)
     const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { snapshot: true });
 
     // Register configurations and middleware to the application instance
@@ -36,8 +36,16 @@ class AppBootstrapper {
       .setTitle('Red Steam API')
       .setDescription('A backend API for Red Steam')
       .setVersion('1.0')
-      .addApiKey({ type: 'apiKey', name: 'authorization' }, 'access-token')
-      .addApiKey({ type: 'apiKey', name: 'x-refresh-token' }, 'refresh-token')
+      .addCookieAuth('accessToken', {
+        type: 'apiKey',
+        name: 'accessToken',
+        in: 'cookie',
+      })
+      .addCookieAuth('refreshToken', {
+        type: 'apiKey',
+        name: 'refreshToken',
+        in: 'cookie',
+      })
       .build();
 
     // Configure custom Swagger theme
@@ -56,7 +64,7 @@ class AppBootstrapper {
     await app.listen(this.port);
 
     // Enable hot module replacement (HMR) support for development
-    if (module.hot) {
+    if (process.env.NODE_ENV === 'development' && module.hot) {
       module.hot.accept();
       module.hot.dispose(() => app.close());
     }

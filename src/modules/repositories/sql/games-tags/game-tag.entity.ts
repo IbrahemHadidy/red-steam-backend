@@ -18,8 +18,8 @@ export class GameTag extends BaseEntity {
   name: string;
 
   @ManyToMany(() => Game, (game: GameType) => game.tags)
-  games: GameType[];
+  games?: GameType[];
 
   @ManyToMany(() => User, (user: UserType) => user.tags)
-  users: UserType[];
+  users?: UserType[];
 }

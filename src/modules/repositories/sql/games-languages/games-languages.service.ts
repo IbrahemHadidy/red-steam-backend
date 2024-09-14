@@ -44,7 +44,7 @@ export class GamesLanguagesService {
    * Get language by ID
    * @param id Language ID
    * @returns Promise that resolves to a language
-   * @throws {NotFoundException} If language not found
+   * @throws `NotFoundException` If language not found
    */
   public async getById(id: number): Promise<GameLanguageType> {
     this.logger.log(`Retrieving language with ID ${id}`);
@@ -63,7 +63,7 @@ export class GamesLanguagesService {
    * Get languages by IDs
    * @param ids Language IDs
    * @returns Promise that resolves to an array of languages
-   * @throws {NotFoundException} If language not found
+   * @throws `NotFoundException` If language not found
    */
   public async getByIds(ids: number[]): Promise<GameLanguageType[]> {
     this.logger.log(`Retrieving languages with IDs ${ids}`);
@@ -85,7 +85,7 @@ export class GamesLanguagesService {
    * Get language by name
    * @param name Language name
    * @returns Promise that resolves to a language
-   * @throws {NotFoundException} If language not found
+   * @throws `NotFoundException` If language not found
    */
   public async getByName(name: string): Promise<GameLanguageType> {
     this.logger.log(`Retrieving language with name ${name}`);
@@ -104,7 +104,7 @@ export class GamesLanguagesService {
    * Get languages by names
    * @param names Language names
    * @returns Promise that resolves to an array of languages
-   * @throws {NotFoundException} If language not found
+   * @throws `NotFoundException` If language not found
    */
   public async getByNameList(names: string[]): Promise<GameLanguageType[]> {
     this.logger.log(`Retrieving languages with names ${names}`);
@@ -167,7 +167,7 @@ export class GamesLanguagesService {
    * Create language
    * @param name Language name
    * @returns Promise that resolves when the creation is successful
-   * @throws {ConflictException} If language already exists
+   * @throws `ConflictException` If language already exists
    */
   public async create(name: string): Promise<GameLanguageType> {
     this.logger.log(`Creating language with name ${name}`);
@@ -196,7 +196,7 @@ export class GamesLanguagesService {
    * @param id Language ID
    * @param name Language name
    * @returns Promise that resolves when the update is successful
-   * @throws {NotFoundException} If language not found
+   * @throws `NotFoundException` If language not found
    */
   public async update(id: number, name: string): Promise<GameLanguageType> {
     this.logger.log(`Updating language with ID ${id}`);
@@ -222,8 +222,8 @@ export class GamesLanguagesService {
    * Delete language
    * @param id Language ID
    * @returns Promise that resolves to the deleted language
-   * @throws {NotFoundException} If language not found
-   * @throws {InternalServerErrorException} If failed to delete
+   * @throws `NotFoundException` If language not found
+   * @throws `InternalServerErrorException` If failed to delete
    */
   public async remove(id: number): Promise<GameLanguageType> {
     this.logger.log(`Deleting language with ID ${id}`);
@@ -260,7 +260,7 @@ export class GamesLanguagesService {
   /**
    * Delete all languages
    * @returns Promise that resolves when the deletion is successful
-   * @throws {InternalServerErrorException} If failed to delete
+   * @throws `InternalServerErrorException` If failed to delete
    */
   public async removeAll(): Promise<void> {
     this.logger.log('Deleting all languages');

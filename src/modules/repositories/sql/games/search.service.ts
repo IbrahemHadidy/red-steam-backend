@@ -50,8 +50,7 @@ export class SearchService {
    * Get games by parameters
    * @param searchData An object containing the parameters (partialName, price, tags, offers, platforms, sortBy, publishers, developers, features, featured)
    * @param pagination An object containing the pagination offset and limit
-   * @returns {Promise<Game[]>} An array of games
-   * @throws {NotFoundException} Throws a NotFoundException if no games are found
+   * @returns {Promise<Game[]>} An array of games or empty array if no games are found
    */
   public async getByParameters(
     searchData: {
@@ -172,7 +171,7 @@ export class SearchService {
     });
 
     // Throw a NotFoundException if no games are found
-    if (!games || games.length === 0) throw new NotFoundException('No games found with the given parameters.');
+    if (!games || games.length === 0) return [];
 
     // Return the games
     return games;
@@ -183,7 +182,7 @@ export class SearchService {
    * @param {number[]} tags - The IDs of the tags to retrieve.
    * @param {number} limit - The maximum number of games to retrieve.
    * @return {Promise<Game[]>} A Promise that resolves to an array of game entities.
-   * @throws {NotFoundException} Throws a NotFoundException if the game with the specified ID is not found.
+   * @throws `NotFoundException` Throws a NotFoundException if the game with the specified ID is not found.
    */
   public async getByUserTags(tags: number[], limit: number = 12): Promise<Game[]> {
     this.logger.log(`Retrieving games with tag ids ${tags} from the database`);

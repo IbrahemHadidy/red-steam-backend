@@ -125,7 +125,7 @@ export class AuthService extends UserService {
   public async login(data: { identifier: string; password: string; rememberMe: boolean }) {
     const { identifier, password, rememberMe } = data;
 
-    this.logger.log(`Logging in user with username/email: ${identifier}`);
+    this.logger.log(`Logging in user with username/email: ${identifier}, rememberMe: ${rememberMe}`);
 
     // Find the user by email or username
     const user = await this.findUser(identifier, 'identifier');
@@ -135,7 +135,7 @@ export class AuthService extends UserService {
 
     // Create and sign JWT tokens
     const accessToken = await this.createJwtToken(user, '1d', 'access');
-    const refreshToken = await this.createJwtToken(user, rememberMe ? '30d' : '1h', 'refresh');
+    const refreshToken = await this.createJwtToken(user, '30d', 'refresh');
 
     // SignIn User in database
     await this.user.setLoginStatus(user.id, true);
@@ -144,8 +144,9 @@ export class AuthService extends UserService {
     this.logger.log(`Logged in user with username/email: ${identifier}`);
     return {
       message: 'Login successful',
-      accessToken,
-      refreshToken,
+      loggingIn: true, // Used for setting cookies interceptor
+      accessToken, // Used for setting cookies interceptor
+      refreshToken, // Used for setting cookies interceptor
       userData: user,
     };
   }
@@ -172,7 +173,11 @@ export class AuthService extends UserService {
 
     // Send successful auto login response
     this.logger.log(`Auto logged in user with id: ${userId}`);
-    return { message: 'Auto login successful', userData: user, accessToken: newAccessToken };
+    return {
+      message: 'Auto login successful',
+      userData: user,
+      accessToken: newAccessToken, // Used for setting cookies interceptor
+    };
   }
 
   /**
@@ -219,7 +224,10 @@ export class AuthService extends UserService {
 
     // Return success message and new access token
     this.logger.log(`Refreshed access token for user with id: ${userId}`);
-    return { message: 'Refresh token successful', accessToken: newAccessToken };
+    return {
+      message: 'Refresh token successful',
+      accessToken: newAccessToken, // Used for setting cookies interceptor
+    };
   }
 
   /**
@@ -346,11 +354,14 @@ export class AuthService extends UserService {
 
     // Create and sign new access and refresh token
     const newAccessToken = await this.createJwtToken(user, '1h', 'access');
-    const newRefreshToken = await this.createJwtToken(user, '7d', 'refresh');
+    const newRefreshToken = await this.createJwtToken(user, '30d', 'refresh');
 
     // Return access and refresh token
     this.logger.log(`Updated access and refresh token`);
-    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+    return {
+      accessToken: newAccessToken, // Used for setting cookies interceptor
+      refreshToken: newRefreshToken, // Used for setting cookies interceptor
+    };
   }
 
   /**

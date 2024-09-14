@@ -10,8 +10,5 @@ export class DropboxToken extends BaseEntity {
   accessToken: string;
 
   @Column()
-  refreshToken: string;
-
-  @Column()
-  tokenExpirationTime: number;
+  expirationTime: number;
 }

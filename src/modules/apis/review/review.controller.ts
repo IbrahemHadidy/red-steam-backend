@@ -1,7 +1,7 @@
 // NestJS
 import { Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 
-// Serializer decorator
+// Decorators
 import { Serialize } from '@decorators/serialize.decorator';
 
 // Swagger

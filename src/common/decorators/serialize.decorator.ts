@@ -1,11 +1,11 @@
 // NestJS
 import { UseInterceptors } from '@nestjs/common';
 
-// Class-transformer
-import { ClassConstructor } from 'class-transformer';
-
 // Interceptors
 import { SerializeInterceptor } from '@interceptors/serialize.interceptor';
+
+// Types
+import type { ClassConstructor } from 'class-transformer';
 
 /**
  * Decorator to serialize the response data using class-transformer

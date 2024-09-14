@@ -52,11 +52,11 @@ export class Game extends BaseEntity {
 
   @ManyToMany(() => Publisher, (company: PublisherType) => company.games)
   @JoinTable({ name: 'games_publishers' })
-  publishers: PublisherType[];
+  publishers?: PublisherType[];
 
   @ManyToMany(() => Developer, (company: DeveloperType) => company.games)
   @JoinTable({ name: 'games_developers' })
-  developers: DeveloperType[];
+  developers?: DeveloperType[];
 
   @Column({ type: 'jsonb' })
   thumbnailEntries: ThumbnailsEntry;
@@ -69,21 +69,21 @@ export class Game extends BaseEntity {
 
   @ManyToMany(() => GameTag, (tag: GameTagType) => tag.games)
   @JoinTable({ name: 'games_tags' })
-  tags: GameTagType[];
+  tags?: GameTagType[];
 
   @OneToOne(() => GamePricing, (pricing: GamePricingType) => pricing.game, {
     cascade: true,
   })
   @JoinColumn({ name: 'pricing_id' })
-  pricing: GamePricingType;
+  pricing?: GamePricingType;
 
   @ManyToMany(() => GameFeature, (feature: GameFeatureType) => feature.games)
   @JoinTable({ name: 'games_features' })
-  gamesFeatures: GameFeatureType[];
+  gamesFeatures?: GameFeatureType[];
 
   @ManyToMany(() => GameLanguage, (language: GameLanguageType) => language.games)
   @JoinTable({ name: 'games_languages' })
-  languages: GameLanguageType[];
+  languages?: GameLanguageType[];
 
   @Column({ type: 'jsonb', nullable: true })
   languageSupport: LanguageSupportEntry[];
@@ -110,7 +110,7 @@ export class Game extends BaseEntity {
   legal: string;
 
   @OneToMany(() => Review, (review: ReviewType) => review.game)
-  reviews: ReviewType[];
+  reviews?: ReviewType[];
 
   @Column({ type: 'int', default: 0 })
   totalSales: number;

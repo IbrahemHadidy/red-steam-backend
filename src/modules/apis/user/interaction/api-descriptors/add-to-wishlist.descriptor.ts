@@ -25,7 +25,7 @@ export const addToWishlistDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['access-token'],
+  security: ['accessToken'],
   body: {
     type: AddToWishlistDto,
   },

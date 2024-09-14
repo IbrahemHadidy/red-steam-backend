@@ -28,5 +28,5 @@ export const createDeveloperDescriptor: ApiDescriptorOptions = {
   body: {
     type: CreateDeveloperDto,
   },
-  security: ['access-token'],
+  security: ['accessToken'],
 };

@@ -91,11 +91,11 @@ export class InteractionController {
   @ApiDescriptor(removeFromLibraryDescriptor)
   @UseGuards(JwtAccessAuthGuard)
   @Delete('library')
-  @HttpCode(204)
+  @HttpCode(200)
   public async removeFromLibrary(@Req() request: Request, @Body() bodyData?: RemoveFromLibraryDto) {
     const userId: string = request['userId'];
 
-    let result: { success: boolean; message: string };
+    let result: { message: string };
     if (bodyData && bodyData.itemsIds) {
       const data = { userId, itemsIds: bodyData.itemsIds };
       result = await this.interactionService.removeFromLibrary(data);
@@ -127,11 +127,11 @@ export class InteractionController {
   @ApiDescriptor(removeFromWishlistDescriptor)
   @UseGuards(JwtAccessAuthGuard)
   @Delete('wishlist')
-  @HttpCode(204)
+  @HttpCode(200)
   public async removeFromWishlist(@Req() request: Request, @Body() bodyData?: RemoveFromWishlistDto) {
     const userId: string = request['userId'];
 
-    let result: { success: boolean; message: string };
+    let result: { message: string };
     if (bodyData && bodyData.itemsIds) {
       const data = { userId, itemsIds: bodyData.itemsIds };
       result = await this.interactionService.removeFromWishlist(data);
@@ -163,11 +163,11 @@ export class InteractionController {
   @ApiDescriptor(removeFromCartDescriptor)
   @UseGuards(JwtAccessAuthGuard)
   @Delete('cart')
-  @HttpCode(204)
+  @HttpCode(200)
   public async removeFromCart(@Req() request: Request, @Body() bodyData?: RemoveFromCartDto) {
     const userId: string = request['userId'];
 
-    let result: { success: boolean; message: string };
+    let result: { message: string };
     if (bodyData && bodyData.itemsIds) {
       const data = { userId, itemsIds: bodyData.itemsIds };
       result = await this.interactionService.removeFromCart(data);

@@ -6,7 +6,7 @@ export const deleteFeatureDescriptor: ApiDescriptorOptions = {
   description: 'Deletes a feature',
   responses: [
     {
-      status: 204,
+      status: 200,
       description: 'Feature deleted successfully',
     },
     {
@@ -22,5 +22,5 @@ export const deleteFeatureDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['access-token'],
+  security: ['accessToken'],
 };

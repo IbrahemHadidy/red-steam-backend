@@ -28,5 +28,5 @@ export const updatePublisherDescriptor: ApiDescriptorOptions = {
   body: {
     type: UpdatePublisherDto,
   },
-  security: ['access-token'],
+  security: ['accessToken'],
 };

@@ -30,8 +30,8 @@ export class AvatarStorageService extends DropboxService {
    * Uploads an avatar to Dropbox
    * @param {File} avatar - The avatar file to upload
    * @returns {Promise<Partial<UploadResponse>>} The upload response data
-   * @throws {InvalidFileException} - If the file type is not allowed
-   * @throws {InternalServerErrorException} - If there was an error uploading the avatar
+   * @throws `InvalidFileException` - If the file type is not allowed
+   * @throws `InternalServerErrorException` - If there was an error uploading the avatar
    */
   public async uploadAvatar(avatar: File): Promise<Partial<UploadResponse>> {
     // Ensure valid access token

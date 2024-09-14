@@ -4,15 +4,15 @@ import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/c
 // Fastify
 import { FastifyRequest as Request } from 'fastify';
 
-// Serializer decorator
-import { Serialize } from '@decorators/serialize.decorator';
-
-// Mask Email decorator
-import { MaskEmail } from '@decorators/mask-email.decorator';
-
 // Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
+
+// Decorators
+import { MaskEmail } from '@decorators/mask-email.decorator';
+import { RemoveResponseCookies } from '@decorators/remove-response-cookies.decorator';
+import { Serialize } from '@decorators/serialize.decorator';
+import { SetResponseCookies } from '@decorators/set-response-cookies.decorator';
 
 // Guards
 import { JwtAccessAuthGuard } from '@guards/jwt-access-auth.guard';
@@ -61,6 +61,7 @@ export class AuthController {
 
   @ApiDescriptor(loginDescriptor)
   @MaskEmail()
+  @SetResponseCookies()
   @Serialize(NestedDataDto)
   @Post('login')
   @HttpCode(200)
@@ -72,8 +73,9 @@ export class AuthController {
   }
 
   @ApiDescriptor(autoLoginDescriptor)
-  @Serialize(NestedDataDto)
   @UseGuards(JwtRefreshAuthGuard)
+  @SetResponseCookies()
+  @Serialize(NestedDataDto)
   @MaskEmail()
   @Post('auto-login')
   @HttpCode(200)
@@ -90,6 +92,7 @@ export class AuthController {
 
   @ApiDescriptor(logoutDescriptor)
   @UseGuards(JwtAccessAuthGuard, JwtRefreshAuthGuard)
+  @RemoveResponseCookies()
   @Post('logout')
   @HttpCode(200)
   async logout(@Req() request: Request) {
@@ -107,6 +110,7 @@ export class AuthController {
 
   @ApiDescriptor(refreshTokenDescriptor)
   @UseGuards(JwtRefreshAuthGuard)
+  @SetResponseCookies()
   @Serialize(NestedDataDto)
   @Post('refresh-token')
   @HttpCode(200)
@@ -122,8 +126,8 @@ export class AuthController {
   }
 
   @ApiDescriptor(userDataDescriptor)
-  @Serialize(NestedDataDto)
   @UseGuards(JwtAccessAuthGuard)
+  @Serialize(NestedDataDto)
   @Get('user-data')
   @HttpCode(200)
   public async getUserData(@Req() request: Request) {
@@ -178,8 +182,9 @@ export class AuthController {
   }
 
   @ApiDescriptor(updateTokensDescriptor)
-  @Serialize(NestedDataDto)
   @UseGuards(JwtAccessAuthGuard, JwtRefreshAuthGuard)
+  @SetResponseCookies()
+  @Serialize(NestedDataDto)
   @Post('update-tokens')
   @HttpCode(200)
   public async updateTokens(@Req() request: Request) {

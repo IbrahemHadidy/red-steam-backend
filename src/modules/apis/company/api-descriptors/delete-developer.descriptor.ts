@@ -6,7 +6,7 @@ export const deleteDeveloperDescriptor: ApiDescriptorOptions = {
   description: 'Deletes a developer',
   responses: [
     {
-      status: 204,
+      status: 200,
       description: 'Developer deleted successfully',
     },
     {
@@ -22,5 +22,5 @@ export const deleteDeveloperDescriptor: ApiDescriptorOptions = {
       description: 'Internal server error',
     },
   ],
-  security: ['access-token'],
+  security: ['accessToken'],
 };

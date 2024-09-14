@@ -35,7 +35,7 @@ export class CompaniesService {
    * @param checkBy - The property to check (id, name, or website).
    * @param checkValue - The value to check.
    * @param type - The type of the company (publisher or developer).
-   * @throws {NotFoundException} If the company is not found.
+   * @throws `NotFoundException` If the company is not found.
    */
   private async checkCompanyExists(
     checkBy: 'id' | 'name' | 'website',
@@ -57,7 +57,7 @@ export class CompaniesService {
    * @param updateType - The type of the update (name or website).
    * @param value - The value to check.
    * @param type - The type of the company (publisher or developer).
-   * @throws {ConflictException} If the value is not unique.
+   * @throws `ConflictException` If the value is not unique.
    */
   private async checkValueIsUnique(
     updateType: 'name' | 'website',
@@ -78,7 +78,7 @@ export class CompaniesService {
   /**
    * Checks if the website is valid.
    * @param website - The website to check.
-   * @throws {BadRequestException} If the website is not valid.
+   * @throws `BadRequestException` If the website is not valid.
    */
   private async checkValidWebsite(website: string): Promise<void> {
     // Regular expression to match a valid website URL
@@ -115,7 +115,7 @@ export class CompaniesService {
    * @param id - The ID of the company.
    * @param type - The type of the company (publisher or developer).
    * @returns The retrieved company.
-   * @throws {NotFoundException} If the company is not found.
+   * @throws `NotFoundException` If the company is not found.
    */
   public async getById(id: number, type: 'publisher' | 'developer'): Promise<DeveloperType | PublisherType> {
     this.logger.log(`Retrieving ${type.charAt(0).toUpperCase() + type.slice(1)} with ID ${id} from the database`);
@@ -138,7 +138,7 @@ export class CompaniesService {
    * @param ids - The IDs of the companies.
    * @param type - The type of the companies (publisher or developer).
    * @returns The retrieved companies.
-   * @throws {NotFoundException} If any of the companies are not found.
+   * @throws `NotFoundException` If any of the companies are not found.
    */
   public async getByIds(ids: number[], type: 'publisher' | 'developer'): Promise<(PublisherType | DeveloperType)[]> {
     this.logger.log(`Retrieving ${type.charAt(0).toUpperCase() + type.slice(1)} with IDs ${ids} from the database`);
@@ -166,7 +166,7 @@ export class CompaniesService {
    * @param name - The name of the company.
    * @param type - The type of the company (publisher or developer).
    * @returns The retrieved company.
-   * @throws {NotFoundException} If the company is not found.
+   * @throws `NotFoundException` If the company is not found.
    */
   public async getByName(name: string, type: 'publisher' | 'developer'): Promise<DeveloperType | PublisherType> {
     this.logger.log(`Retrieving ${type.charAt(0).toUpperCase() + type.slice(1)} with name ${name} from the database`);
@@ -237,7 +237,7 @@ export class CompaniesService {
    * @param website - The website of the company.
    * @param type - The type of the company (publisher or developer).
    * @returns The created company.
-   * @throws {ConflictException} If the company name or website already exists.
+   * @throws `ConflictException` If the company name or website already exists.
    */
   public async create(
     company: { name: string; website: string },
@@ -272,9 +272,9 @@ export class CompaniesService {
    * @param value - The new value of the update.
    * @param type - The type of the company (publisher or developer).
    * @returns The updated company.
-   * @throws {NotFoundException} If the company is not found.
-   * @throws {ConflictException} If the update value already exists.
-   * @throws {BadRequestException} If the update value is invalid.
+   * @throws `NotFoundException` If the company is not found.
+   * @throws `ConflictException` If the update value already exists.
+   * @throws `BadRequestException` If the update value is invalid.
    */
   public async update(
     id: number,
@@ -316,7 +316,7 @@ export class CompaniesService {
    * Deletes a company.
    * @param id - The ID of the company.
    * @param type - The type of the company (publisher or developer).
-   * @throws {NotFoundException} If the company is not found.
+   * @throws `NotFoundException` If the company is not found.
    */
   public async remove(id: number, type: 'publisher' | 'developer'): Promise<void> {
     this.logger.log(`Removing ${type.charAt(0).toUpperCase() + type.slice(1)} from the database`);
@@ -337,7 +337,7 @@ export class CompaniesService {
   /**
    * Removes all companies from the database.
    * @param type - The type of the companies (publishers or developers).
-   * @throws {InternalServerErrorException} If the removal fails.
+   * @throws `InternalServerErrorException` If the removal fails.
    */
   public async removeAll(type: 'publishers' | 'developers'): Promise<void> {
     this.logger.log(`Removing all ${type.charAt(0).toUpperCase() + type.slice(1)} from the database`);

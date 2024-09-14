@@ -37,7 +37,7 @@ export class GamesFeaturesService {
    * Gets a feature by its ID.
    * @param id - The ID of the feature to retrieve.
    * @returns A promise that resolves to the retrieved feature.
-   * @throws {NotFoundException} If the feature is not found.
+   * @throws `NotFoundException` If the feature is not found.
    */
   public async getById(id: number): Promise<GameFeatureType> {
     this.logger.log(`Getting feature with ID ${id}`);
@@ -72,7 +72,7 @@ export class GamesFeaturesService {
    * Gets a feature by its name.
    * @param name - The name of the feature to retrieve.
    * @returns A promise that resolves to the retrieved feature.
-   * @throws {NotFoundException} If the feature is not found.
+   * @throws `NotFoundException` If the feature is not found.
    */
   public async getByName(name: string): Promise<GameFeatureType> {
     this.logger.log(`Getting feature with name ${name}`);
@@ -130,7 +130,7 @@ export class GamesFeaturesService {
    * Creates a new feature.
    * @param feature - An object containing the name and icon of the feature.
    * @returns A promise that resolves to the created feature.
-   * @throws {InternalServerErrorException} If the feature could not be created.
+   * @throws `InternalServerErrorException` If the feature could not be created.
    */
   public async create(feature: { name: string; icon: Buffer }): Promise<GameFeatureType> {
     this.logger.log(`Creating feature with name ${feature.name}`);
@@ -160,8 +160,8 @@ export class GamesFeaturesService {
    * @param id - The ID of the feature to update.
    * @param feature - The updated feature data.
    * @returns A promise that resolves to the updated feature.
-   * @throws {NotFoundException} If the feature is not found.
-   * @throws {InternalServerErrorException} If no data is provided to update.
+   * @throws `NotFoundException` If the feature is not found.
+   * @throws `InternalServerErrorException` If no data is provided to update.
    */
   public async update(id: number, feature: { name?: string; icon?: Buffer }): Promise<GameFeatureType> {
     this.logger.log(`Updating feature with ID ${id}`);
@@ -191,8 +191,8 @@ export class GamesFeaturesService {
    * Removes a feature by its ID.
    * @param {number} id - The ID of the feature to remove.
    * @returns A promise that resolves to the removed feature.
-   * @throws {NotFoundException} If the feature is not found.
-   * @throws {InternalServerErrorException} If the feature could not be removed.
+   * @throws `NotFoundException` If the feature is not found.
+   * @throws `InternalServerErrorException` If the feature could not be removed.
    */
   public async remove(id: number): Promise<GameFeatureType> {
     this.logger.log(`Removing feature with ID ${id}`);
@@ -215,7 +215,7 @@ export class GamesFeaturesService {
 
   /**
    * Removes all features.
-   * @throws {InternalServerErrorException} If the features could not be removed.
+   * @throws `InternalServerErrorException` If the features could not be removed.
    */
   public async removeAll(): Promise<void> {
     this.logger.log('Removing all features');
