@@ -8,20 +8,20 @@ export class UpdateOfferDto {
   @ApiProperty({ example: 10, description: 'discount price', required: false })
   @IsOptional()
   @IsNumber({ allowNaN: false }, { message: 'discount price must be a number' })
-  discountPrice?: number;
+  readonly discountPrice?: number;
 
   @ApiProperty({ example: '2022-01-01', description: 'discount start date', required: false })
   @IsOptional()
   @IsDate({ message: 'discount start date must be a date' })
-  discountStartDate?: Date;
+  readonly discountStartDate?: Date;
 
   @ApiProperty({ example: '2022-01-01', description: 'discount end date', required: false })
   @IsOptional()
   @IsDate({ message: 'discount end date must be a date' })
-  discountEndDate?: Date;
+  readonly discountEndDate?: Date;
 
   @ApiProperty({ example: 'SPECIAL PROMOTION', description: 'offer type', required: false })
   @IsOptional()
   @IsString({ message: 'offer type must be a string' })
-  offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
+  readonly offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
 }

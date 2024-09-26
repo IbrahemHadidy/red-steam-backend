@@ -43,7 +43,7 @@ export class DataService {
    */
   public async getByParameters(
     searchData: {
-      sort?: 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews';
+      sort?: 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews' | 'totalSales';
       partialName?: string;
       maxPrice?: number;
       tags?: number[];
@@ -72,8 +72,8 @@ export class DataService {
       tags: searchData.tags && searchData.tags.length > 0 && searchData.tags.map((tag) => tag),
       excludeTags:
         searchData.excludeTags && searchData.excludeTags.length > 0 && searchData.excludeTags.map((tag) => tag),
-      paid: searchData.paid !== undefined && searchData.paid,
-      offers: searchData.offers !== undefined && searchData.offers,
+      paid: searchData.paid !== undefined ? searchData.paid : undefined,
+      offers: searchData.offers !== undefined ? searchData.offers : undefined,
       platforms: searchData.platforms && searchData.platforms.length > 0 && searchData.platforms,
       publishers:
         searchData.publishers &&
@@ -86,8 +86,8 @@ export class DataService {
       features: searchData.features && searchData.features.length > 0 && searchData.features.map((feature) => feature),
       languages:
         searchData.languages && searchData.languages.length > 0 && searchData.languages.map((language) => language),
-      featured: searchData.featured !== undefined && searchData.featured,
-      excludeMature: searchData.excludeMature !== undefined && searchData.excludeMature,
+      featured: searchData.featured !== undefined ? searchData.featured : undefined,
+      excludeMature: searchData.excludeMature !== undefined ? searchData.excludeMature : undefined,
       excludedGames:
         searchData.excludedGames && searchData.excludedGames.length > 0 && searchData.excludedGames.map((game) => game),
       upcomingMode: searchData.upcomingMode,
@@ -109,11 +109,14 @@ export class DataService {
    * @param limit The maximum number of games to return
    * @returns An array of featured games
    */
-  public async getFeaturedGames(limit: number): Promise<Game[]> {
+  public async getFeaturedGames(excludedGames: number[], limit: number): Promise<Game[]> {
     this.logger.log(`Finding featured games`);
 
     // Find featured games
-    const games = await this.search.getByParameters({ featured: true }, { limit: limit, offset: 0 });
+    const games = await this.search.getByParameters(
+      { featured: true, excludedGames: excludedGames.length > 0 ? excludedGames : undefined },
+      { limit: limit, offset: 0 },
+    );
     this.logger.log(`Found ${games.length} featured games`);
 
     // Return featured games
@@ -126,14 +129,11 @@ export class DataService {
    * @param limit The maximum number of games to return
    * @returns An array of games
    */
-  public async getByUserTags(tags: number[], limit: number): Promise<Game[]> {
+  public async getByUserTags(tags?: number[], excludedGames?: number[], limit?: number): Promise<Game[]> {
     this.logger.log(`Finding games by tags`);
 
     // Find games by tags
-    const games = await this.search.getByUserTags(
-      tags.map((tag) => tag),
-      limit,
-    );
+    const games = await this.search.getByUserTags(tags, excludedGames.length > 0 ? excludedGames : undefined, limit);
     this.logger.log(`Found ${games.length} games`);
 
     // Return user games
@@ -160,11 +160,11 @@ export class DataService {
    * @param ids The IDs of the games
    * @returns An array of games
    */
-  public async getByIds(ids: number[]): Promise<Game[]> {
+  public async getByIds(ids?: number[]): Promise<Game[]> {
     this.logger.log(`Finding games with IDs: ${ids}`);
 
     // Find games by IDs
-    const games = await this.game.getByIds(ids.map((id) => id));
+    const games = await this.game.getByIds(ids ? ids.map((id) => id) : []);
 
     // Return games
     return games;
@@ -174,11 +174,14 @@ export class DataService {
    * Get games with offers
    * @returns An array of games
    */
-  public async getByOffers(): Promise<Game[]> {
+  public async getByOffers(excludedGames: number[]): Promise<Game[]> {
     this.logger.log(`Finding games with offers`);
 
     // Find games with offers
-    const games = await this.search.getByParameters({ offers: true, sort: 'relevance' }, { limit: 24, offset: 0 });
+    const games = await this.search.getByParameters(
+      { offers: true, excludedGames: excludedGames.length > 0 ? excludedGames : undefined, sort: 'relevance' },
+      { limit: 24, offset: 0 },
+    );
 
     // Return games
     return games;
@@ -188,12 +191,16 @@ export class DataService {
    * Get games with new releases
    * @returns An array of games
    */
-  public async getByNewest(): Promise<Game[]> {
+  public async getByNewest(excludedGames: number[]): Promise<Game[]> {
     this.logger.log(`Finding games with newest`);
 
     // Find games with new releases
     const games = await this.search.getByParameters(
-      { upcomingMode: 'exclude', sort: 'releaseDate' },
+      {
+        upcomingMode: 'exclude',
+        excludedGames: excludedGames.length > 0 ? excludedGames : undefined,
+        sort: 'releaseDate',
+      },
       { limit: 10, offset: 0 },
     );
 
@@ -205,11 +212,14 @@ export class DataService {
    * Get games with top sales
    * @returns An array of games
    */
-  public async getByTopSales(): Promise<Game[]> {
+  public async getByTopSales(excludedGames: number[]): Promise<Game[]> {
     this.logger.log(`Finding games with top sales`);
 
     // Find games with top sales
-    const games = await this.search.getByParameters({ sort: 'totalSales' }, { limit: 10, offset: 0 });
+    const games = await this.search.getByParameters(
+      { sort: 'totalSales', excludedGames: excludedGames.length > 0 ? excludedGames : undefined },
+      { limit: 10, offset: 0 },
+    );
 
     // Return games
     return games;
@@ -219,26 +229,33 @@ export class DataService {
    * Get games with specials
    * @returns An array of games
    */
-  public async getBySpecials(): Promise<Game[]> {
+  public async getBySpecials(excludedGames: number[]): Promise<Game[]> {
     this.logger.log(`Finding games with specials`);
 
     // Find games with specials
-    const games = await this.search.getByParameters({ featured: true, sort: 'relevance' }, { limit: 10, offset: 0 });
+    const games = await this.search.getByParameters(
+      { featured: true, excludedGames: excludedGames.length > 0 ? excludedGames : undefined, sort: 'relevance' },
+      { limit: 10, offset: 0 },
+    );
 
     // Return games
     return games;
   }
 
   /**
-   * Get upcomming games
+   * Get upcoming games
    * @returns An array of games
    */
-  public async getByUpcomming(): Promise<Game[]> {
-    this.logger.log(`Finding games with upcomming`);
+  public async getByUpcoming(excludedGames: number[]): Promise<Game[]> {
+    this.logger.log(`Finding games with upcoming`);
 
-    // Find games with upcomming
+    // Find games with upcoming
     const games = await this.search.getByParameters(
-      { upcomingMode: 'onlyUpcoming', sort: 'releaseDate' },
+      {
+        upcomingMode: 'onlyUpcoming',
+        excludedGames: excludedGames.length > 0 ? excludedGames : undefined,
+        sort: 'releaseDate',
+      },
       { limit: 10, offset: 0 },
     );
 

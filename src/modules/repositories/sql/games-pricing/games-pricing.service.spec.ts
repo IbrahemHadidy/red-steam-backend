@@ -1,24 +1,24 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
 
 // Modules
-import { GamesModule } from '@repositories/sql/games/games.module';
-import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
 import { CompaniesModule } from '@repositories/sql/companies/companies.module';
 import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
-import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
 import { GamesLanguagesModule } from '@repositories/sql/games-languages/games-languages.module';
+import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
+import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
+import { GamesModule } from '@repositories/sql/games/games.module';
 
 // Services
-import { GamesService } from '@repositories/sql/games/games.service';
-import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
-import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
 import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
+import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
+import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
+import { GamesService } from '@repositories/sql/games/games.service';
 
 // Entities
 import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
@@ -91,7 +91,7 @@ describe('gamePricingService', () => {
         discountEndDate: new Date('2024-10-30'),
         offerType: 'SPECIAL PROMOTION',
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,
@@ -137,7 +137,7 @@ describe('gamePricingService', () => {
         discountEndDate: new Date('2024-11-30'),
         offerType: 'WEEKEND DEAL',
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,

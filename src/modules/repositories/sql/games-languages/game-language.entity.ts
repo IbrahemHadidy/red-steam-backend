@@ -9,7 +9,7 @@ import type { Game as GameType } from '@repositories/sql/games/game.entity';
 
 @Entity({ name: 'languages' })
 export class GameLanguage extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment', { name: 'language_id' })
   id: number;
 
   @Column()

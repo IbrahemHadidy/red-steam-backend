@@ -5,16 +5,16 @@ import { Expose, Type } from 'class-transformer';
 import { LanguageDto } from '@apis/language/serializer-dtos/language.dto';
 
 // Types
-import type { LanguageDto as LanguageDtoType } from '@apis/language/serializer-dtos/language.dto';
+import type { LanguageDto as LanguageType } from '@apis/language/serializer-dtos/language.dto';
 
 export class PaginatedLanguagesDataDto {
   @Expose()
   @Type(() => LanguageDto)
-  items: LanguageDtoType;
+  readonly items: LanguageType;
 
   @Expose()
-  total: number;
+  readonly total: number;
 
   @Expose()
-  totalPages: number;
+  readonly totalPages: number;
 }

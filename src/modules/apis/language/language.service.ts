@@ -1,6 +1,11 @@
+// NestJS
 import { Injectable, Logger } from '@nestjs/common';
-import type { GameLanguage } from '@repositories/sql/games-languages/game-language.entity';
+
+// Services
 import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
+
+// Types
+import type { GameLanguage } from '@repositories/sql/games-languages/game-language.entity';
 
 @Injectable()
 export class LanguageService {
@@ -12,6 +17,7 @@ export class LanguageService {
   /**
    * Create a new language
    * @param data - The name and website of the language
+   * @returns A message indicating the success of the creation
    */
   public async createLanguage(data: { name: string }): Promise<{ message: string }> {
     const { name } = data;
@@ -50,7 +56,7 @@ export class LanguageService {
 
   /**
    * Get all languages
-   * @returns An array of all languages
+   * @return An array of all languages
    */
   public async getAllLanguages() {
     this.logger.log(`Retrieving all languages`);
@@ -67,7 +73,6 @@ export class LanguageService {
    * @param order - The order direction
    * @param searchQuery - The search query
    * @returns The paginated languages
-   * @returns The total number of languages
    */
   public async getLanguagesPaginated(
     page: number,
@@ -102,7 +107,7 @@ export class LanguageService {
   /**
    * Delete language
    * @param id - The ID of the language
-   * @returns A message indicating the success of the delete
+   * @returns `Promise<{ message: string }>` A message indicating the success of the delete
    */
   public async deleteLanguage(id: number): Promise<{ message: string }> {
     this.logger.log(`Deleting language with ID ${id}`);

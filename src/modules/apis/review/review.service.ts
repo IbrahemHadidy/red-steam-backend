@@ -21,8 +21,7 @@ export class ReviewService {
    * @param orderBy - The column to order by
    * @param order - The order direction
    * @param searchQuery - The search query
-   * @returns The paginated reviews
-   * @returns The total number of reviews
+   * @returns The paginated reviews and the total number of reviews
    */
   public async getReviewsPaginated(
     page: number,

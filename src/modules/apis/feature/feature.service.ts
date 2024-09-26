@@ -75,8 +75,7 @@ export class FeatureService {
    * @param orderBy - The column to order by
    * @param order - The order direction
    * @param searchQuery - The search query
-   * @returns The paginated features
-   * @returns The total number of features
+   * @returns An object containing the paginated features and the total number of features
    */
   public async getFeaturesPaginated(
     page: number,
@@ -97,7 +96,7 @@ export class FeatureService {
    * Update feature
    * @param id - The ID of the feature
    * @param data - The new data for the feature
-   * @returns The updated feature
+   * @returns A success message
    */
   public async updateFeature(id: number, data: { name?: string; icon?: string }): Promise<{ message: string }> {
     const { name, icon } = data;

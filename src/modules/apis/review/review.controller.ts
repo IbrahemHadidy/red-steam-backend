@@ -45,7 +45,8 @@ export class ReviewController {
     @Query('orderBy', new UnionTypeValidationPipe(['id', 'username', 'gameName', 'content', 'rating']))
     orderBy: 'id' | 'username' | 'gameName' | 'content' | 'rating',
     @Query('order', new UnionTypeValidationPipe(['ASC', 'DESC'])) order: 'ASC' | 'DESC',
-    @Query('searchQuery', new ParseJsonPipe(ReviewQueryDto, { optional: true })) searchQuery: ReviewQueryDto = {},
+    @Query('searchQuery', new ParseJsonPipe(ReviewQueryDto, { optional: true, validate: true }))
+    searchQuery: ReviewQueryDto = {},
   ) {
     const result = await this.reviewService.getReviewsPaginated(page, limit, orderBy, order, searchQuery);
 

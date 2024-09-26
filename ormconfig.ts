@@ -1,11 +1,11 @@
-import 'dotenv/config';
 import { BlacklistedToken } from '@repositories/mongo/token-blacklist/blacklisted-token.entity';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
+import { Developer, Publisher } from '@repositories/sql/companies/company.entity';
 import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
 import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
 import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
 import { Review } from '@repositories/sql/reviews/review.entity';
 import { User } from '@repositories/sql/users/user.entity';
+import 'dotenv/config';
 
 export default {
   mongo: {
@@ -18,6 +18,7 @@ export default {
     },
     synchronize: false,
     autoLoadEntities: false,
+    migrationsTableName: 'mongo_migrations',
   },
 
   sql: {
@@ -31,5 +32,6 @@ export default {
     },
     synchronize: false,
     autoLoadEntities: false,
+    migrationsTableName: 'sql_migrations',
   },
 };

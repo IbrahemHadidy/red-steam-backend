@@ -5,5 +5,6 @@
     "source.fixAll": "always",
     "source.organizeImports": "always"
   },
-  "workbench.iconTheme": "vscode-icons"
+  "workbench.iconTheme": "material-icon-theme",
+  "material-icon-theme.activeIconPack": "nest"
 }

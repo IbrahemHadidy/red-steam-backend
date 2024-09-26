@@ -110,7 +110,8 @@ export class TagController {
     @Query('limit', ParseIntPipe) limit: number,
     @Query('orderBy', new UnionTypeValidationPipe(['id', 'name'])) orderBy: 'id' | 'name',
     @Query('order', new UnionTypeValidationPipe(['ASC', 'DESC'])) order: 'ASC' | 'DESC',
-    @Query('searchQuery', new ParseJsonPipe(TagQueryDto, { optional: true })) searchQuery: TagQueryDto = {},
+    @Query('searchQuery', new ParseJsonPipe(TagQueryDto, { optional: true, validate: true }))
+    searchQuery: TagQueryDto = {},
   ) {
     const result = await this.tagService.getTagsPaginated(page, limit, orderBy, order, searchQuery);
 

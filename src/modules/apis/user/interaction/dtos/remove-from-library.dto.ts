@@ -13,5 +13,5 @@ export class RemoveFromLibraryDto {
   @IsOptional()
   @IsArray({ message: 'itemsIds must be an array' })
   @IsNumber({}, { each: true, message: 'itemIds must be an array of numbers' })
-  itemsIds?: number[];
+  readonly itemsIds?: number[];
 }

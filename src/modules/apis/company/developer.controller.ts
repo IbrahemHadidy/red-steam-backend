@@ -111,7 +111,8 @@ export class DeveloperController {
     @Query('orderBy', new UnionTypeValidationPipe(['id', 'name', 'website']))
     orderBy: 'id' | 'name' | 'website',
     @Query('order', new UnionTypeValidationPipe(['ASC', 'DESC'])) order: 'ASC' | 'DESC',
-    @Query('searchQuery', new ParseJsonPipe(DeveloperQueryDto, { optional: true })) searchQuery: DeveloperQueryDto = {},
+    @Query('searchQuery', new ParseJsonPipe(DeveloperQueryDto, { optional: true, validate: true }))
+    searchQuery: DeveloperQueryDto = {},
   ) {
     const result = await this.companyService.getDevelopersPaginated(page, limit, orderBy, order, searchQuery);
 

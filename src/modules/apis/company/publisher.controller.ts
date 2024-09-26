@@ -110,7 +110,8 @@ export class PublisherController {
     @Query('orderBy', new UnionTypeValidationPipe(['id', 'name', 'website']))
     orderBy: 'id' | 'name' | 'website',
     @Query('order', new UnionTypeValidationPipe(['ASC', 'DESC'])) order: 'ASC' | 'DESC',
-    @Query('searchQuery', new ParseJsonPipe(PublisherQueryDto, { optional: true })) searchQuery: PublisherQueryDto = {},
+    @Query('searchQuery', new ParseJsonPipe(PublisherQueryDto, { optional: true, validate: true }))
+    searchQuery: PublisherQueryDto = {},
   ) {
     const result = await this.companyService.getPublishersPaginated(page, limit, orderBy, order, searchQuery);
 

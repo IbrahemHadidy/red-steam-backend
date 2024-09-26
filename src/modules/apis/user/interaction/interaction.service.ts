@@ -9,15 +9,14 @@ import { UserService } from '@apis/user/user.service'; // Api service (The Exten
 import { UsersService } from '@repositories/sql/users/users.service'; // Repository service (The Injected Service)
 
 @Injectable()
-export class InteractionService extends UserService {
+export class InteractionService {
   constructor(
-    protected readonly user: UsersService,
-    protected readonly game: GamesService,
-    protected readonly review: ReviewsService,
-    protected readonly logger: Logger,
-  ) {
-    super();
-  }
+    private readonly userTools: UserService,
+    private readonly user: UsersService,
+    private readonly game: GamesService,
+    private readonly review: ReviewsService,
+    private readonly logger: Logger,
+  ) {}
 
   /**
    * Changes the user's tags
@@ -30,7 +29,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Changing tags for user with id: ${userId} to: ${tags}`);
 
     // Check if user exists
-    await this.findUser(userId, 'id');
+    await this.userTools.findUser(userId, 'id');
 
     // Update the user's tags
     await this.user.updateUserTags(userId, tags);
@@ -51,7 +50,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Getting tags for user with id: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Return the user's tags
     this.logger.log(`Tags fetched successfully for user with ID: ${userId}`);
@@ -70,7 +69,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Adding games with IDs ${itemsIds} to library for user with ID: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Check if all the games are already in the user's library
     const existingitemsIds = user.library.map((libraryItem) => libraryItem.id);
@@ -104,7 +103,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Removing games with IDs ${itemsIds} from library for user with ID: ${userId}`);
 
     // Check if user exists
-    await this.findUser(userId, 'id');
+    await this.userTools.findUser(userId, 'id');
 
     // Remove the games from the user's library
     await this.user.removeItemsFromLibrary(userId, itemsIds);
@@ -125,7 +124,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Clearing library for user with ID: ${userId}`);
 
     // Check if user exists
-    await this.findUser(userId, 'id');
+    await this.userTools.findUser(userId, 'id');
 
     // Clear the user's library
     await this.user.clearLibrary(userId);
@@ -147,7 +146,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Adding games with IDs ${itemsIds} to wishlist for user with ID: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Check if all the games are already in the user's wishlist
     const existingitemsIds = user.wishlist.map((wishlistItem) => wishlistItem.id);
@@ -181,7 +180,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Removing games with IDs ${itemsIds} from wishlist for user with ID: ${userId}`);
 
     // Check if user exists
-    await this.findUser(userId, 'id');
+    await this.userTools.findUser(userId, 'id');
 
     // Remove the games from the user's wishlist
     await this.user.removeItemsFromWishlist(userId, itemsIds);
@@ -202,7 +201,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Clearing wishlist for user with ID: ${userId}`);
 
     // Check if user exists
-    await this.findUser(userId, 'id');
+    await this.userTools.findUser(userId, 'id');
 
     // Clear the user's wishlist
     await this.user.clearWishlist(userId);
@@ -224,7 +223,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Adding games with IDs ${itemsIds} to cart for user with ID: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Check if all the games are already in the user's wishlist
     const existingitemsIds = user.cart.map((cartItem) => cartItem.id);
@@ -236,6 +235,11 @@ export class InteractionService extends UserService {
 
     // Check if any of the items does not exist
     await this.game.getByIds(itemsIds);
+
+    // Remove items from the user's wishlist if they exist in the wishlist
+    const currentWishlist = user.wishlist.map((item) => item.id);
+    const existingWishlistItems = itemsIds.filter((itemId) => currentWishlist.includes(itemId));
+    await this.user.removeItemsFromWishlist(userId, existingWishlistItems);
 
     // Add the games to the user's cart
     await this.user.addItemsToCart(userId, itemsIds);
@@ -256,7 +260,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Removing games with IDs ${itemsIds} from cart for user with ID: ${userId}`);
 
     // Check if user exists
-    await this.findUser(userId, 'id');
+    await this.userTools.findUser(userId, 'id');
 
     // Remove the games from the user's cart
     await this.user.removeItemsFromCart(userId, itemsIds);
@@ -277,7 +281,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Clearing cart for user with ID: ${userId}`);
 
     // Check if user exists
-    await this.findUser(userId, 'id');
+    await this.userTools.findUser(userId, 'id');
 
     // Clear the user's cart
     await this.user.clearCart(userId);
@@ -298,7 +302,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Getting library for user with ID: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Return the user's library
     this.logger.log(`Library retrieved successfully for user with ID: ${userId}`);
@@ -316,7 +320,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Getting wishlist for user with ID: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Return the user's wishlist
     this.logger.log(`Wishlist retrieved successfully for user with ID: ${userId}`);
@@ -334,7 +338,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Getting cart for user with ID: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Return the user's cart
     this.logger.log(`Cart retrieved successfully for user with ID: ${userId}`);
@@ -371,7 +375,7 @@ export class InteractionService extends UserService {
     this.logger.log(`Getting reviews for user with ID: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Return the user's reviews
     this.logger.log(`Reviews retrieved successfully for user with ID: ${userId}`);

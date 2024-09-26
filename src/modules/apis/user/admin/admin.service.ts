@@ -2,20 +2,17 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 // Services
-import { UserService } from '@apis/user/user.service'; // Api service (The Extended Service)
-import { UsersService } from '@repositories/sql/users/users.service'; // Repository service (The Injected Service)
+import { UsersService } from '@repositories/sql/users/users.service';
 
 // Types
 import type { User } from '@repositories/sql/users/user.entity';
 
 @Injectable()
-export class AdminService extends UserService {
+export class AdminService {
   constructor(
-    protected readonly user: UsersService,
-    protected readonly logger: Logger,
-  ) {
-    super();
-  }
+    private readonly user: UsersService,
+    private readonly logger: Logger,
+  ) {}
 
   /**
    * Get paginated users
@@ -24,8 +21,7 @@ export class AdminService extends UserService {
    * @param orderBy - The column to order by
    * @param order - The order direction
    * @param searchQuery - The search query
-   * @returns The paginated users
-   * @returns The total number of users
+   * @returns The paginated users and the total number of users
    */
   public async getUsersPaginated(
     page: number,

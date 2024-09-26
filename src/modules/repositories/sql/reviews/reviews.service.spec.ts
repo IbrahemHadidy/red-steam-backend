@@ -104,7 +104,7 @@ describe('gamesService', () => {
         free: false,
         price: 10,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,
@@ -146,7 +146,7 @@ describe('gamesService', () => {
         free: false,
         price: 10,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,
@@ -188,7 +188,7 @@ describe('gamesService', () => {
         free: false,
         price: 10,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,

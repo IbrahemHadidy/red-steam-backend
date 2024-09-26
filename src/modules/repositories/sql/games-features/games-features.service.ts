@@ -52,6 +52,12 @@ export class GamesFeaturesService {
     return feature;
   }
 
+  /**
+   * Gets features by their IDs.
+   * @param ids - The IDs of the features to retrieve.
+   * @returns A promise that resolves to an array of features.
+   * @throws `NotFoundException` If any of the features are not found.
+   */
   public async getByIds(ids: number[]): Promise<GameFeatureType[]> {
     this.logger.log(`Getting features with IDs ${ids}`);
 

@@ -9,5 +9,5 @@ export class ChangeTagsDto {
   @IsNotEmpty({ message: 'Tags are required' })
   @IsArray({ message: 'Tags must be an array of numbers' })
   @IsNumber({}, { each: true, message: 'Tags must be an array of numbers' })
-  tags: number[];
+  readonly tags: number[];
 }

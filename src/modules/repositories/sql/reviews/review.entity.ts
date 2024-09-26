@@ -20,7 +20,7 @@ import type { User as UserType } from '@repositories/sql/users/user.entity';
 
 @Entity({ name: 'reviews' })
 export class Review extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment', { name: 'review_id' })
   id: number;
 
   @ManyToOne(() => User, (user: UserType) => user.reviews)

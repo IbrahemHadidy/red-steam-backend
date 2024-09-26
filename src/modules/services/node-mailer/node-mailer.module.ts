@@ -17,10 +17,11 @@ import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
         transport: {
           service: 'gmail',
           host: 'smtp.gmail.com',
-          secure: false, // Set to true if using SSL/TLS
+          // secure: configService.get<string>('NODE_ENV') === 'production', // Set to true if using SSL/TLS
+          secure: false,
           auth: {
-            user: configService.get<string>('EMAIL_USER'),
-            pass: configService.get<string>('EMAIL_PASSWORD'),
+            user: configService.get<string>('SMTP_USER'),
+            pass: configService.get<string>('SMTP_PASSWORD'),
           },
         },
       }),

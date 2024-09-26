@@ -9,251 +9,251 @@ import { ReviewDto } from '@apis/review/serializer-dtos/review.dto';
 import { TagDto } from '@apis/tag/serializer-dtos/tag.dto';
 
 // Types
-import type { CompanyDto as CompanyDtoType } from '@apis/company/serializer-dtos/company.dto';
-import type { FeatureDto as FeatureDtoType } from '@apis/feature/serializer-dtos/feature.dto';
-import type { LanguageDto as LanguageDtoType } from '@apis/language/serializer-dtos/language.dto';
-import type { ReviewDto as ReviewDtoType } from '@apis/review/serializer-dtos/review.dto';
-import type { TagDto as TagDtoType } from '@apis/tag/serializer-dtos/tag.dto';
-
-export class GameDto {
-  @Expose()
-  id: string;
-
-  @Expose()
-  name: string;
-
-  @Expose()
-  category: string;
-
-  @Expose()
-  description: string;
-
-  @Expose()
-  releaseDate: Date;
-
-  @Expose()
-  featured: boolean;
-
-  @Expose()
-  @Type(() => CompanyDto)
-  publishers: CompanyDtoType[];
-
-  @Expose()
-  @Type(() => CompanyDto)
-  developers: CompanyDtoType[];
-
-  @Expose()
-  @Type(() => ThumbnailEntriesDto)
-  thumbnailEntries: ThumbnailEntriesDto[];
-
-  @Expose()
-  @Type(() => ImageEntriesDto)
-  imageEntries: ImageEntriesDto[];
-
-  @Expose()
-  @Type(() => VideoEntriesDto)
-  videoEntries: VideoEntriesDto[];
-
-  @Expose()
-  @Type(() => TagDto)
-  tags: TagDtoType[];
-
-  @Expose()
-  @Type(() => PricingDto)
-  pricing: PricingDto[];
-
-  @Expose()
-  @Type(() => FeatureDto)
-  gamesFeatures: FeatureDtoType[];
-
-  @Expose()
-  @Type(() => PlatformEntryDto)
-  platformEntries: PlatformEntryDto[];
-
-  @Expose()
-  @Type(() => LanguageDto)
-  languages: LanguageDtoType[];
-
-  @Expose()
-  @Type(() => languageSupportDto)
-  languageSupport: languageSupportDto[];
-
-  @Expose()
-  link: string;
-
-  @Expose()
-  about: string;
-
-  @Expose()
-  mature: boolean;
-
-  @Expose()
-  matureDescription: string;
-
-  @Expose()
-  @Type(() => SystemRequirementEntryDto)
-  systemRequirements: SystemRequirementEntryDto[];
-
-  @Expose()
-  legal: string;
-
-  @Expose()
-  @Type(() => ReviewDto)
-  reviews: ReviewDtoType[];
-
-  @Expose()
-  totalSales: number;
-
-  @Expose()
-  averageRating: number;
-
-  @Expose()
-  reviewsCount: number;
-}
+import type { CompanyDto as CompanyType } from '@apis/company/serializer-dtos/company.dto';
+import type { FeatureDto as FeatureType } from '@apis/feature/serializer-dtos/feature.dto';
+import type { LanguageDto as LanguageType } from '@apis/language/serializer-dtos/language.dto';
+import type { ReviewDto as ReviewType } from '@apis/review/serializer-dtos/review.dto';
+import type { TagDto as TagType } from '@apis/tag/serializer-dtos/tag.dto';
 
 class ThumbnailEntriesDto {
   @Expose()
-  mainImage: string;
+  readonly mainImage: string;
 
   @Expose()
-  backgroundImage: string;
+  readonly backgroundImage: string;
 
   @Expose()
-  menuImg: string;
+  readonly menuImg: string;
 
   @Expose()
-  horizontalHeaderImage: string;
+  readonly horizontalHeaderImage: string;
 
   @Expose()
-  verticalHeaderImage: string;
+  readonly verticalHeaderImage: string;
 
   @Expose()
-  smallHeaderImage: string;
+  readonly smallHeaderImage: string;
 
   @Expose()
-  searchImage: string;
+  readonly searchImage: string;
 
   @Expose()
-  tabImage: string;
+  readonly tabImage: string;
 }
 
 class ImageEntriesDto {
   @Expose()
-  link: string;
+  readonly link: string;
 
   @Expose()
-  featured?: boolean;
+  readonly featured?: boolean;
 
   @Expose()
-  order: number;
+  readonly order: number;
 }
 
 class VideoEntriesDto {
   @Expose()
-  link: string;
+  readonly link: string;
 
   @Expose()
-  posterLink: boolean;
+  readonly posterLink: boolean;
 
   @Expose()
-  order: number;
+  readonly order: number;
 }
 
 class PlatformEntryDto {
   @Expose()
-  win: boolean;
+  readonly win: boolean;
 
   @Expose()
-  mac: boolean;
+  readonly mac: boolean;
 }
 
 class languageSupportDto {
   @Expose()
-  name: string;
+  readonly name: string;
 
   @Expose()
-  interface: boolean;
+  readonly interface: boolean;
 
   @Expose()
-  fullAudio: boolean;
+  readonly fullAudio: boolean;
 
   @Expose()
-  subtitles: boolean;
+  readonly subtitles: boolean;
 }
 
 class SystemRequirementEntryDto {
   @Expose()
-  req64?: boolean;
+  readonly req64?: boolean;
 
   @Expose()
   @Type(() => SystemRequirementsDetailsDto)
-  mini: SystemRequirementsDetailsDto[];
+  readonly mini: SystemRequirementsDetailsDto[];
 
   @Expose()
   @Type(() => SystemRequirementsDetailsDto)
-  recommended: SystemRequirementsDetailsDto[];
+  readonly recommended: SystemRequirementsDetailsDto[];
 }
 
 class SystemRequirementsDetailsDto {
   @Expose()
-  os?: string;
+  readonly os?: string;
 
   @Expose()
-  cpu?: string;
+  readonly cpu?: string;
 
   @Expose()
-  ram?: string;
+  readonly ram?: string;
 
   @Expose()
-  gpu?: string;
+  readonly gpu?: string;
 
   @Expose()
-  dx?: string;
+  readonly dx?: string;
 
   @Expose()
-  network?: string;
+  readonly network?: string;
 
   @Expose()
-  storage?: string;
+  readonly storage?: string;
 
   @Expose()
-  additionalNotes?: string;
+  readonly additionalNotes?: string;
 
   @Expose()
-  soundCard?: string;
+  readonly soundCard?: string;
 
   @Expose()
-  vrSupport?: string;
+  readonly vrSupport?: string;
 }
 
 class PricingDto {
   @Expose()
-  id: number;
+  readonly id: number;
 
   @Expose()
-  free: boolean;
+  readonly free: boolean;
 
   @Expose()
-  basePrice: number;
+  readonly basePrice: number;
 
   @Expose()
-  discount?: boolean;
+  readonly discount?: boolean;
 
   @Expose()
-  discountPercentage?: number;
+  readonly discountPercentage?: number;
 
   @Expose()
-  discountPrice?: number;
+  readonly discountPrice?: number;
 
   @Expose()
-  discountStartDate?: Date;
+  readonly discountStartDate?: Date;
 
   @Expose()
-  discountEndDate?: Date;
+  readonly discountEndDate?: Date;
 
   @Expose()
-  offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
+  readonly offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
 
   @Expose()
-  price: number;
+  readonly price: number;
+}
+
+export class GameDto {
+  @Expose()
+  readonly id: string;
+
+  @Expose()
+  readonly name: string;
+
+  @Expose()
+  readonly category: string;
+
+  @Expose()
+  readonly description: string;
+
+  @Expose()
+  readonly releaseDate: Date;
+
+  @Expose()
+  readonly featured: boolean;
+
+  @Expose()
+  @Type(() => CompanyDto)
+  readonly publishers: CompanyType[];
+
+  @Expose()
+  @Type(() => CompanyDto)
+  readonly developers: CompanyType[];
+
+  @Expose()
+  @Type(() => ThumbnailEntriesDto)
+  readonly thumbnailEntries: ThumbnailEntriesDto[];
+
+  @Expose()
+  @Type(() => ImageEntriesDto)
+  readonly imageEntries: ImageEntriesDto[];
+
+  @Expose()
+  @Type(() => VideoEntriesDto)
+  readonly videoEntries: VideoEntriesDto[];
+
+  @Expose()
+  @Type(() => TagDto)
+  readonly tags: TagType[];
+
+  @Expose()
+  @Type(() => PricingDto)
+  readonly pricing: PricingDto[];
+
+  @Expose()
+  @Type(() => FeatureDto)
+  readonly features: FeatureType[];
+
+  @Expose()
+  @Type(() => PlatformEntryDto)
+  readonly platformEntries: PlatformEntryDto[];
+
+  @Expose()
+  @Type(() => LanguageDto)
+  readonly languages: LanguageType[];
+
+  @Expose()
+  @Type(() => languageSupportDto)
+  readonly languageSupport: languageSupportDto[];
+
+  @Expose()
+  readonly link: string;
+
+  @Expose()
+  readonly about: string;
+
+  @Expose()
+  readonly mature: boolean;
+
+  @Expose()
+  readonly matureDescription: string;
+
+  @Expose()
+  @Type(() => SystemRequirementEntryDto)
+  readonly systemRequirements: SystemRequirementEntryDto[];
+
+  @Expose()
+  readonly legal: string;
+
+  @Expose()
+  @Type(() => ReviewDto)
+  readonly reviews: ReviewType[];
+
+  @Expose()
+  readonly totalSales: number;
+
+  @Expose()
+  readonly averageRating: number;
+
+  @Expose()
+  readonly reviewsCount: number;
 }

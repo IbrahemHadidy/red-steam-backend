@@ -15,11 +15,4 @@ import { GameStorageService } from '@services/dropbox/game-storage.service';
   providers: [DropboxService, AvatarStorageService, GameStorageService, Logger, ConfigService],
   exports: [DropboxService, AvatarStorageService, GameStorageService],
 })
-export class DropboxModule {
-  constructor(private readonly dropboxService: DropboxService) {}
-
-  // Initialize the Dropbox client using onModuleInit hook
-  public async onModuleInit() {
-    await this.dropboxService.initializeDropboxClient();
-  }
-}
+export class DropboxModule {}

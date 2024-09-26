@@ -12,7 +12,7 @@ export class LoginDto {
   })
   @IsNotEmpty({ message: 'Identifier is required.' })
   @IsString({ message: 'Identifier must be a string.' })
-  identifier: string;
+  readonly identifier: string;
 
   @ApiProperty({ description: 'The password of the user account.', example: 'enter password here', required: true })
   @IsNotEmpty({ message: 'Password is required.' })
@@ -20,10 +20,10 @@ export class LoginDto {
     { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 },
     { message: 'Invalid password.' },
   )
-  password: string;
+  readonly password: string;
 
   @ApiProperty({ description: 'Whether to remember the user on this device.', required: true })
   @IsNotEmpty({ message: 'Remember me is required.' })
   @IsBoolean()
-  rememberMe: boolean;
+  readonly rememberMe: boolean;
 }

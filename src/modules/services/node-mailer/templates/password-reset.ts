@@ -1,5 +1,11 @@
-export const passwordReset = `
-  <div
+/**
+ * Password reset template
+ * @param resetToken
+ * @param username
+ * @returns The HTML content of the password reset template
+ */
+export const passwordReset = (resetToken: string, username: string): string => `
+<div
   style="
     padding: 0 !important;
     margin: 0 auto !important;
@@ -115,7 +121,7 @@ export const passwordReset = `
                                               font-weight: bold;
                                             "
                                           >
-                                            Your username is <strong>{userName}</strong>,
+                                            Your username is <strong>${username}</strong>,
                                           </td>
                                         </tr>
                                       </tbody>
@@ -207,7 +213,7 @@ export const passwordReset = `
                                                             "
                                                           >
                                                             <a
-                                                              href="{FRONT_URL}/reset-password/{resetToken}"
+                                                              href="{FRONT_URL}/reset-password/${resetToken}"
                                                               style="
                                                                 display: block;
                                                                 padding: 13px

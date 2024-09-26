@@ -32,6 +32,17 @@ export class DatabaseService {
       entities: [Publisher, Developer, GameFeature, GameLanguage, GamePricing, GameTag, Review, Game, User],
       migrations: ['dist/migrations/sql/**/*.js'],
       synchronize: true,
+      // TODO: Add cache
+      // cache: {
+      //   type: 'redis',
+      //   options: {
+      //     socket: {
+      //       host: this.configService.get<string>('REDIS_HOST'),
+      //       port: this.configService.get<number>('REDIS_PORT'),
+      //       password: this.configService.get<string>('REDIS_PASSWORD'),
+      //     },
+      //   },
+      // },
     };
 
     this.logger.log('PostgreSQL TypeORM config initialized');
@@ -46,6 +57,17 @@ export class DatabaseService {
       entities: [BlacklistedToken, DropboxToken],
       migrations: ['dist/migrations/mongo/**/*.js'],
       synchronize: true,
+      // TODO: Add cache
+      // cache: {
+      //   type: 'redis',
+      //   options: {
+      //     socket: {
+      //       host: this.configService.get<string>('REDIS_HOST'),
+      //       port: this.configService.get<number>('REDIS_PORT'),
+      //       password: this.configService.get<string>('REDIS_PASSWORD'),
+      //     },
+      //   },
+      // },
     };
 
     this.logger.log('MongoDB TypeORM config initialized');

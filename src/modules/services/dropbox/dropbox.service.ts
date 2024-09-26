@@ -1,5 +1,5 @@
 // NestJS
-import { HttpException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { HttpException, Injectable, InternalServerErrorException, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 // Axios (for making requests to the Dropbox API)
@@ -16,22 +16,22 @@ import type { DropboxToken } from '@repositories/mongo/dropbox-tokens/dropbox-to
 import type { Dropbox as DropboxType } from 'dropbox';
 
 @Injectable()
-export class DropboxService {
-  protected dropbox: DropboxType;
-  private clientId: string;
-  private clientSecret: string;
-  private refreshToken: string;
+export class DropboxService implements OnModuleInit {
   private token: DropboxToken;
   private lastTokenCheck: number = 0; // Timestamp of the last token check
   private retryUpdateCount: number = 0; // Number of retries for updating the access token
   private readonly MAX_UPDATE_RETRIES: number = 3; // Maximum number of retries for updating the access token
   private readonly TOKEN_CHECK_INTERVAL: number = 10 * 60 * 1000; // 10 minutes
   private readonly NEAR_EXPIRATION_THRESHOLD: number = 15 * 60 * 1000; // 15 minutes
+  private readonly clientId: string;
+  private readonly clientSecret: string;
+  private readonly refreshToken: string;
+  public dropboxClient: DropboxType;
 
   constructor(
-    protected readonly config?: ConfigService,
-    protected readonly logger?: Logger,
-    private readonly tokenService?: DropboxTokensService,
+    private readonly config: ConfigService,
+    private readonly logger: Logger,
+    private readonly tokenService: DropboxTokensService,
   ) {
     this.clientId = this.config.get<string>('DROPBOX_CLIENT_ID');
     this.clientSecret = this.config.get<string>('DROPBOX_CLIENT_SECRET');
@@ -39,9 +39,70 @@ export class DropboxService {
   }
 
   /**
+   * Called when the module is initialized.
+   */
+  public async onModuleInit(): Promise<void> {
+    await this.initializeDropboxClient();
+  }
+
+  /**
+   * Checks if the mime type is valid based on allowed mime types.
+   * @param mimeType The mime type of the file
+   * @param allowedMimeTypes The allowed mime types
+   * @returns True if the mime type is valid, else false
+   */
+  public isValidMimeType(mimeType: string, allowedMimeTypes: string[]): boolean {
+    return allowedMimeTypes.some((pattern) => {
+      // Handle exact matches
+      if (pattern === mimeType) return true;
+
+      // Handle wildcard patterns
+      const regex = new RegExp('^' + pattern.replace('*', '.*') + '$');
+      return regex.test(mimeType);
+    });
+  }
+
+  /**
+   * Ensures that the access token is valid and refreshes it if needed.
+   */
+  public async ensureValidAccessToken(): Promise<void> {
+    // Get the current timestamp
+    const now = Date.now();
+
+    // Skip token validation if within the interval
+    if (now - this.lastTokenCheck < this.TOKEN_CHECK_INTERVAL) return;
+
+    this.logger.log('Ensuring access token is valid...');
+
+    // Get the tokens from the database
+    const token = await this.tokenService.getToken();
+
+    if (token !== null) {
+      // Check if the access token is near expiration
+      const isTokenNearExpiration = Date.now() >= token.expirationTime - this.NEAR_EXPIRATION_THRESHOLD;
+      if (isTokenNearExpiration) {
+        // If the access token is near expiration or expired, refresh it
+        this.logger.warn('Access token is either near expiration or has expired. Refreshing...');
+        await this.updateTokens();
+        this.logger.log('Access token refreshed.');
+      } else {
+        // If the access token is valid, do nothing
+        this.logger.log('Access token is valid.');
+      }
+    } else {
+      // If no tokens are found, attempt to refresh the token
+      this.logger.warn('No access token found. Attempting to refresh token...');
+      await this.updateTokens();
+    }
+
+    // Update the timestamp after checking
+    this.lastTokenCheck = Date.now();
+  }
+
+  /**
    * Initializes the Dropbox client and checks if the access token is valid.
    */
-  public async initializeDropboxClient(): Promise<void> {
+  private async initializeDropboxClient(): Promise<void> {
     this.logger.log('Initializing Dropbox client...');
 
     // Get the tokens from the database
@@ -52,11 +113,15 @@ export class DropboxService {
       await this.ensureValidAccessToken();
 
       // Create the Dropbox client with the access token
-      this.dropbox = new Dropbox({ accessToken: this.token.accessToken });
+      this.dropboxClient = new Dropbox({
+        accessToken: this.token.accessToken,
+      });
+
+      this.logger.log('Dropbox client initialized');
     } else {
-      // If no access token is found, attempt to refresh it
       this.logger.warn('No access token found. Attempting to refresh token...');
 
+      // If no access token is found, attempt to refresh it
       while (this.retryUpdateCount < this.MAX_UPDATE_RETRIES) {
         await this.updateTokens();
 
@@ -94,7 +159,7 @@ export class DropboxService {
       const { access_token, expires_in } = response.data;
 
       // Create a new Dropbox client with the new access token
-      this.dropbox = new Dropbox({ accessToken: access_token });
+      this.dropboxClient = new Dropbox({ accessToken: access_token });
 
       // Update the refresh token if a new one is provided
       const newTokenExpirationTime = Date.now() + expires_in * 1000;
@@ -114,63 +179,5 @@ export class DropboxService {
         throw new InternalServerErrorException('Failed to refresh Dropbox token', error);
       }
     }
-  }
-
-  /**
-   * Ensures that the access token is valid and refreshes it if needed.
-   */
-  protected async ensureValidAccessToken(): Promise<void> {
-    this.logger.log('Ensuring access token is valid...');
-
-    // Get the current timestamp
-    const now = Date.now();
-
-    // Skip token validation if within the interval
-    if (now - this.lastTokenCheck < this.TOKEN_CHECK_INTERVAL) {
-      this.logger.log('Access token check skipped due to interval');
-      return;
-    }
-
-    // Get the tokens from the database
-    const token = await this.tokenService.getToken();
-
-    if (token !== null) {
-      // Check if the access token is near expiration
-      const isTokenNearExpiration = Date.now() >= token.expirationTime - this.NEAR_EXPIRATION_THRESHOLD;
-      if (isTokenNearExpiration) {
-        // If the access token is near expiration or expired, refresh it
-        this.logger.warn('Access token is either near expiration or has expired. Refreshing...');
-        await this.updateTokens();
-        this.logger.log('Access token refreshed.');
-      } else {
-        // If the access token is valid, do nothing
-        this.logger.log('Access token is valid.');
-      }
-    } else {
-      // If no tokens are found, attempt to refresh the token
-      this.logger.warn('No access token found. Attempting to refresh token...');
-      await this.updateTokens();
-    }
-
-    // Update the timestamp after checking
-    this.lastTokenCheck = Date.now();
-  }
-
-  /**
-   * Checks if the mime type is valid based on allowed mime types.
-   * @param mimeType The mime type of the file
-   * @param allowedMimeTypes The allowed mime types
-   * @returns True if the mime type is valid, else false
-   */
-  protected isValidMimeType(mimeType: string, allowedMimeTypes: string[]): boolean {
-    return allowedMimeTypes.some((pattern) => {
-      // Handle exact matches
-      if (pattern === mimeType) {
-        return true;
-      }
-      // Handle wildcard patterns
-      const regex = new RegExp('^' + pattern.replace('*', '.*') + '$');
-      return regex.test(mimeType);
-    });
   }
 }

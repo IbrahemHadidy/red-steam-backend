@@ -9,7 +9,7 @@ import type { Game as GameType } from '@repositories/sql/games/game.entity';
 
 @Entity({ name: 'features' })
 export class GameFeature extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment', { name: 'feature_id' })
   id: number;
 
   @Column()
@@ -18,6 +18,6 @@ export class GameFeature extends BaseEntity {
   @Column({ type: 'bytea' })
   icon: Buffer;
 
-  @ManyToMany(() => Game, (game: GameType) => game.gamesFeatures)
+  @ManyToMany(() => Game, (game: GameType) => game.features)
   games?: GameType[];
 }

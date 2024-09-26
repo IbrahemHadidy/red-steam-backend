@@ -13,39 +13,15 @@ import { UsersService } from '@repositories/sql/users/users.service'; // Reposit
 import type { Game } from '@repositories/sql/games/game.entity';
 
 @Injectable()
-export class PaymentService extends UserService {
+export class PaymentService {
   constructor(
-    protected readonly user: UsersService,
-    protected readonly mailer: NodeMailerService,
-    protected readonly logger: Logger,
+    private readonly userTools: UserService,
+    private readonly user: UsersService,
+    private readonly mailer: NodeMailerService,
+    private readonly logger: Logger,
     private readonly game: GamesService,
     private readonly payment: PaypalService,
-  ) {
-    super();
-  }
-
-  /**
-   * Calculate the total price of the cart items
-   * @param cartItems An array of cart items ids
-   * @param totalPrice The total price of the cart
-   * @throws `BadRequestException` If total price does not match calculated price
-   */
-  private async calculatePrice(cartItems: number[], totalPrice: number) {
-    this.logger.log(`Calculating total price of cart items`);
-
-    // Recalculate total price
-    const calculatedPrice = (await this.game.getByIds(cartItems))
-      .reduce((total: number, game: Game) => {
-        return total + Number(game.pricing.discount ? game.pricing.discountPrice : game.pricing.basePrice);
-      }, 0)
-      .toFixed(2);
-
-    // Check if total price matches calculated price
-    if (totalPrice !== +calculatedPrice) {
-      this.logger.error(`Total price does not match calculated price`);
-      throw new BadRequestException('Total price does not match calculated price');
-    }
-  }
+  ) {}
 
   /**
    * Create a new order.
@@ -66,10 +42,10 @@ export class PaymentService extends UserService {
     await this.calculatePrice(cartItems, totalPrice);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Checks user verification status
-    await this.checkVerified(user);
+    await this.userTools.checkVerified(user);
 
     // Check if any of the cart items are already in the user's library
     if (user.library.some((game) => cartItems.includes(game.id))) {
@@ -100,13 +76,13 @@ export class PaymentService extends UserService {
     this.logger.log(`Capturing order with ID: ${orderId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Get games
     const games = await this.game.getByIds(cartItems);
 
     // Checks user verification status
-    await this.checkVerified(user);
+    await this.userTools.checkVerified(user);
 
     // Capture order
     const capturedOrder = await this.payment.captureOrder(orderId);
@@ -128,5 +104,28 @@ export class PaymentService extends UserService {
     });
 
     return capturedOrder;
+  }
+
+  /**
+   * Calculate the total price of the cart items
+   * @param cartItems An array of cart items ids
+   * @param totalPrice The total price of the cart
+   * @throws `BadRequestException` If total price does not match calculated price
+   */
+  private async calculatePrice(cartItems: number[], totalPrice: number) {
+    this.logger.log(`Calculating total price of cart items`);
+
+    // Recalculate total price
+    const calculatedPrice = (await this.game.getByIds(cartItems))
+      .reduce((total: number, game: Game) => {
+        return total + Number(game.pricing.discount ? game.pricing.discountPrice : game.pricing.basePrice);
+      }, 0)
+      .toFixed(2);
+
+    // Check if total price matches calculated price
+    if (totalPrice !== +calculatedPrice) {
+      this.logger.error(`Total price does not match calculated price`);
+      throw new BadRequestException('Total price does not match calculated price');
+    }
   }
 }

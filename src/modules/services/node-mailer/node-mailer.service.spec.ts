@@ -1,39 +1,40 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // Modules
 import { MailerModule } from '@nestjs-modules/mailer';
-import { NodeMailerModule } from '@services/node-mailer/node-mailer.module';
-import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
-import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
 import { CompaniesModule } from '@repositories/sql/companies/companies.module';
+import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
+import { GamesLanguagesModule } from '@repositories/sql/games-languages/games-languages.module';
+import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
 import { GamesModule } from '@repositories/sql/games/games.module';
+import { NodeMailerModule } from '@services/node-mailer/node-mailer.module';
 
 // Services
-import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
 import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
 import { GamesService } from '@repositories/sql/games/games.service';
+import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
 
 // Entities
+import { Developer, Publisher } from '@repositories/sql/companies/company.entity';
+import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
+import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
+import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
 import { Game } from '@repositories/sql/games/game.entity';
 import { Review } from '@repositories/sql/reviews/review.entity';
 import { User } from '@repositories/sql/users/user.entity';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
-import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
-import { Publisher, Developer } from '@repositories/sql/companies/company.entity';
-import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
 
 describe('NodeMailerService', () => {
   let mailer: NodeMailerService;
   let logger: Logger;
   let loggerSpy: jest.SpyInstance;
-  
+
   let game: Game;
   let game2: Game;
   let gamesService: GamesService;
@@ -57,8 +58,8 @@ describe('NodeMailerService', () => {
               host: 'smtp.gmail.com',
               secure: false, // Set to true if using SSL/TLS
               auth: {
-                user: configService.get<string>('EMAIL_USER'),
-                pass: configService.get<string>('EMAIL_PASSWORD'),
+                user: configService.get<string>('SMTP_USER'),
+                pass: configService.get<string>('SMTP_PASSWORD'),
               },
             },
           }),
@@ -80,9 +81,20 @@ describe('NodeMailerService', () => {
         CompaniesModule,
         GamesFeaturesModule,
         GamesTagsModule,
+        GamesLanguagesModule,
         NodeMailerModule,
       ],
-      providers: [NodeMailerService, Logger, ConfigService,GamesPricingService, GamesService, CompaniesService, GamesFeaturesService, GamesTagsService, Logger],
+      providers: [
+        NodeMailerService,
+        Logger,
+        ConfigService,
+        GamesPricingService,
+        GamesService,
+        CompaniesService,
+        GamesFeaturesService,
+        GamesTagsService,
+        Logger,
+      ],
     }).compile();
 
     gamesService = module.get<GamesService>(GamesService);
@@ -111,14 +123,8 @@ describe('NodeMailerService', () => {
       tags: [],
       pricing: {
         free: false,
-        discount: false,
-        basePrice: 10,
-        discountPrice: 5,
-        discountStartDate: new Date(),
-        discountEndDate: new Date('2024-10-30'),
-        offerType: 'SPECIAL PROMOTION',
       },
-      gamesFeatures: [],
+      features: [],
       platformEntries: {
         win: true,
         mac: false,
@@ -132,6 +138,8 @@ describe('NodeMailerService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
+      featured: false,
+      languages: [],
     });
 
     game2 = await gamesService.create({
@@ -156,14 +164,8 @@ describe('NodeMailerService', () => {
       tags: [],
       pricing: {
         free: false,
-        discount: false,
-        basePrice: 10,
-        discountPrice: 5,
-        discountStartDate: new Date(),
-        discountEndDate: new Date('2024-11-30'),
-        offerType: 'WEEKEND DEAL',
       },
-      gamesFeatures: [],
+      features: [],
       platformEntries: {
         win: true,
         mac: false,
@@ -177,6 +179,8 @@ describe('NodeMailerService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
+      languages: [],
+      featured: false,
     });
   });
 

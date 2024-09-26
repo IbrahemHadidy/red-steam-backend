@@ -6,65 +6,65 @@ import { ReviewDto } from '@apis/review/serializer-dtos/review.dto';
 import { TagDto } from '@apis/tag/serializer-dtos/tag.dto';
 
 // Types
-import { ReviewDto as ReviewDtoType } from '@apis/review/serializer-dtos/review.dto';
-import { TagDto as TagDtoType } from '@apis/tag/serializer-dtos/tag.dto';
+import { ReviewDto as ReviewType } from '@apis/review/serializer-dtos/review.dto';
+import { TagDto as TagType } from '@apis/tag/serializer-dtos/tag.dto';
 
 export class UserDto {
   @Expose()
-  id: string;
+  readonly id: string;
 
   @Expose()
-  username: string;
+  readonly username: string;
 
   @Expose()
-  email: string;
+  readonly email: string;
 
   @Expose()
-  country: string;
+  readonly country: string;
 
   @Expose()
-  phoneNumber: string;
+  readonly phoneNumber: string;
 
   @Expose()
-  profilePicture: string;
+  readonly profilePicture: string;
 
   @Expose()
   @Type(() => TagDto)
-  tags: TagDtoType[];
+  readonly tags: TagType[];
 
   @Expose()
-  isVerified: boolean;
+  readonly isVerified: boolean;
 
   @Expose()
-  isPhoneVerified: boolean;
+  readonly isPhoneVerified: boolean;
 
   @Expose()
-  isAdmin: boolean;
+  readonly isAdmin: boolean;
 
   @Expose()
-  isActive: boolean;
+  readonly isActive: boolean;
 
   @Expose()
-  createdAt: Date;
+  readonly createdAt: Date;
 
   @Expose()
-  wishlist: BaseItem[];
+  readonly wishlist: BaseItem[];
 
   @Expose()
-  cart: BaseItem[];
+  readonly cart: BaseItem[];
 
   @Expose()
-  library: BaseItem[];
+  readonly library: BaseItem[];
 
   @Expose()
   @Type(() => ReviewDto)
-  reviews: ReviewDtoType[];
+  readonly reviews: ReviewType[];
 }
 
 class BaseItem {
   @Expose()
-  id: number;
+  readonly id: number;
 
   @Expose()
-  addedOn: Date;
+  readonly addedOn: Date;
 }

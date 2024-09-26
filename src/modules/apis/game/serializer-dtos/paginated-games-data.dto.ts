@@ -5,16 +5,16 @@ import { Expose, Type } from 'class-transformer';
 import { GameDto } from '@apis/game/serializer-dtos/game.dto';
 
 // Types
-import type { GameDto as GameDtoType } from '@apis/game/serializer-dtos/game.dto';
+import type { GameDto as GameType } from '@apis/game/serializer-dtos/game.dto';
 
 export class PaginatedGamesDataDto {
   @Expose()
   @Type(() => GameDto)
-  items: GameDtoType;
+  readonly items: GameType;
 
   @Expose()
-  total: number;
+  readonly total: number;
 
   @Expose()
-  totalPages: number;
+  readonly totalPages: number;
 }

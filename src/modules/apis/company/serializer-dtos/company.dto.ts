@@ -5,19 +5,19 @@ import { Expose, Type } from 'class-transformer';
 import { GameDto } from '@apis/game/serializer-dtos/game.dto';
 
 // Types
-import type { GameDto as GameDtoType } from '@apis/game/serializer-dtos/game.dto';
+import type { GameDto as GameType } from '@apis/game/serializer-dtos/game.dto';
 
 export class CompanyDto {
   @Expose()
-  id: number;
+  readonly id: number;
 
   @Expose()
-  name: string;
+  readonly name: string;
 
   @Expose()
-  website: string;
+  readonly website: string;
 
   @Type(() => GameDto)
   @Expose()
-  games: GameDtoType[];
+  readonly games: GameType[];
 }

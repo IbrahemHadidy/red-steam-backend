@@ -1,5 +1,5 @@
 // NestJS
-import { Controller, Get, HttpCode, Param, ParseArrayPipe, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, HttpCode, Param, ParseIntPipe, Query } from '@nestjs/common';
 
 // Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
@@ -33,7 +33,7 @@ import { getByPartialNameDescriptor } from '@apis/game/data/api-descriptors/get-
 import { getBySpecialsDescriptor } from '@apis/game/data/api-descriptors/get-by-specials.descriptor';
 import { getByTagsDescriptor } from '@apis/game/data/api-descriptors/get-by-tags.descriptor';
 import { getByTopSalesDescriptor } from '@apis/game/data/api-descriptors/get-by-top-sales.descriptor';
-import { getByUpcommingDescriptor } from '@apis/game/data/api-descriptors/get-by-upcomming.descriptor';
+import { getByUpcomingDescriptor } from '@apis/game/data/api-descriptors/get-by-upcoming.descriptor';
 import { getFeaturedDescriptor } from '@apis/game/data/api-descriptors/get-featured.descriptor';
 import { getGameReviewsDescriptor } from '@apis/game/data/api-descriptors/get-game-reviews.descriptor';
 
@@ -60,11 +60,12 @@ export class DataController {
   async getByParameters(
     @Query(
       'sort',
-      new UnionTypeValidationPipe(['relevance', 'name', 'lowestPrice', 'highestPrice', 'releaseDate', 'reviews'], {
-        optional: true,
-      }),
+      new UnionTypeValidationPipe(
+        ['relevance', 'name', 'lowestPrice', 'highestPrice', 'releaseDate', 'reviews', 'totalSales'],
+        { optional: true },
+      ),
     )
-    sort?: 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews',
+    sort?: 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews' | 'totalSales',
     @Query('partialName') partialName?: string,
     @Query('maxPrice', new ParseQueryFloatPipe()) maxPrice?: number,
     @Query('tags', new ParseQueryArrayPipe({ items: Number })) tags?: number[],
@@ -119,8 +120,12 @@ export class DataController {
   @Serialize(GameDto)
   @Get('featured')
   @HttpCode(200)
-  async getFeatured(@Query('limit', ParseIntPipe) limit: number = 10) {
-    const result = await this.dataService.getFeaturedGames(limit);
+  async getFeatured(
+    @Query('excludedGames', new ParseQueryArrayPipe({ items: Number }))
+    excludedGames: number[] = [],
+    @Query('limit', ParseIntPipe) limit: number = 10,
+  ) {
+    const result = await this.dataService.getFeaturedGames(excludedGames, limit);
 
     // Send the response
     return result;
@@ -131,12 +136,14 @@ export class DataController {
   @Get('tags')
   @HttpCode(200)
   async getByUserTags(
-    @Query('tags', new ParseArrayPipe({ items: Number }))
-    tags: number[],
+    @Query('tags', new ParseQueryArrayPipe({ items: Number }))
+    tags: number[] = [],
+    @Query('excludedGames', new ParseQueryArrayPipe({ items: Number }))
+    excludedGames: number[] = [],
     @Query('limit', ParseIntPipe)
     limit: number,
   ) {
-    const result = await this.dataService.getByUserTags(tags, limit);
+    const result = await this.dataService.getByUserTags(tags, excludedGames, limit);
 
     // Send the response
     return result;
@@ -157,7 +164,7 @@ export class DataController {
   @Serialize(GameDto)
   @Get('bulk')
   @HttpCode(200)
-  async getByIds(@Query('ids', new ParseArrayPipe({ items: Number })) ids: number[]) {
+  async getByIds(@Query('ids', new ParseQueryArrayPipe({ items: Number })) ids?: number[]) {
     const result = await this.dataService.getByIds(ids);
 
     // Send the response
@@ -168,8 +175,11 @@ export class DataController {
   @Serialize(GameDto)
   @Get('offers')
   @HttpCode(200)
-  async getByOffers() {
-    const result = await this.dataService.getByOffers();
+  async getByOffers(
+    @Query('excludedGames', new ParseQueryArrayPipe({ items: Number }))
+    excludedGames: number[] = [],
+  ) {
+    const result = await this.dataService.getByOffers(excludedGames);
 
     // Send the response
     return result;
@@ -179,8 +189,11 @@ export class DataController {
   @Serialize(GameDto)
   @Get('newest')
   @HttpCode(200)
-  async getByNewest() {
-    const result = await this.dataService.getByNewest();
+  async getByNewest(
+    @Query('excludedGames', new ParseQueryArrayPipe({ items: Number }))
+    excludedGames: number[] = [],
+  ) {
+    const result = await this.dataService.getByNewest(excludedGames);
 
     // Send the response
     return result;
@@ -190,8 +203,11 @@ export class DataController {
   @Serialize(GameDto)
   @Get('top-sales')
   @HttpCode(200)
-  async getByTopSales() {
-    const result = await this.dataService.getByTopSales();
+  async getByTopSales(
+    @Query('excludedGames', new ParseQueryArrayPipe({ items: Number }))
+    excludedGames: number[] = [],
+  ) {
+    const result = await this.dataService.getByTopSales(excludedGames);
 
     // Send the response
     return result;
@@ -201,19 +217,25 @@ export class DataController {
   @Serialize(GameDto)
   @Get('specials')
   @HttpCode(200)
-  async getBySpecials() {
-    const result = await this.dataService.getBySpecials();
+  async getBySpecials(
+    @Query('excludedGames', new ParseQueryArrayPipe({ items: Number }))
+    excludedGames: number[] = [],
+  ) {
+    const result = await this.dataService.getBySpecials(excludedGames);
 
     // Send the response
     return result;
   }
 
-  @ApiDescriptor(getByUpcommingDescriptor)
+  @ApiDescriptor(getByUpcomingDescriptor)
   @Serialize(GameDto)
-  @Get('upcomming')
+  @Get('upcoming')
   @HttpCode(200)
-  async getByUpcomming() {
-    const result = await this.dataService.getByUpcomming();
+  async getByUpcoming(
+    @Query('excludedGames', new ParseQueryArrayPipe({ items: Number }))
+    excludedGames: number[] = [],
+  ) {
+    const result = await this.dataService.getByUpcoming(excludedGames);
 
     // Send the response
     return result;

@@ -41,12 +41,8 @@ export class GamesService {
     private readonly gamesTagsService: GamesTagsService,
   ) {
     this.relations = {
-      developers: true,
-      publishers: true,
       tags: true,
       pricing: true,
-      gamesFeatures: true,
-      languages: true,
     };
   }
 
@@ -76,7 +72,17 @@ export class GamesService {
     this.logger.log(`Retrieving game with ID ${id} from the database`);
 
     // Retrieve the game by ID
-    const game = await this.gameRepository.findOne({ where: { id }, relations: this.relations });
+    const game = await this.gameRepository.findOne({
+      where: { id },
+      relations: {
+        developers: true,
+        publishers: true,
+        tags: true,
+        pricing: true,
+        features: true,
+        languages: true,
+      },
+    });
 
     // Throw a NotFoundException if the game is not found
     if (!game) throw new NotFoundException(`Game with ID ${id} not found`);
@@ -92,10 +98,10 @@ export class GamesService {
    * @throws `NotFoundException` Throws a NotFoundException if the game with the specified ID is not found.
    */
   public async getByIds(ids: number[]): Promise<GameType[]> {
-    this.logger.log(`Retrieving games with IDs ${ids} from the database`);
+    this.logger.log(`Retrieving games with IDs ${ids.length > 0 ? ids : 'none'} from the database`);
 
     // Retrieve the games by IDs
-    const games = await this.gameRepository.find({ where: { id: In(ids) }, relations: { tags: true } });
+    const games = await this.gameRepository.find({ where: { id: In(ids) }, relations: this.relations });
 
     // Throw a NotFoundException if any of the games are not found
     if (games.length !== ids.length) {
@@ -116,7 +122,7 @@ export class GamesService {
     this.logger.log(`Retrieving game with name ${name} from the database`);
 
     // Retrieve the game by name
-    const games = await this.gameRepository.findOne({ where: { name }, relations: { tags: true } });
+    const games = await this.gameRepository.findOne({ where: { name }, relations: this.relations });
 
     // Throw a NotFoundException if the game is not found
     if (!games) throw new NotFoundException(`Game with name ${name} not found`);
@@ -148,7 +154,7 @@ export class GamesService {
       free: boolean;
       price?: number;
     };
-    gamesFeatures: number[];
+    features: number[];
     languages: {
       name: string;
       interface: boolean;
@@ -174,7 +180,7 @@ export class GamesService {
     const developers = await this.companiesService.getByIds(game.developers, 'developer');
 
     // Get game features
-    const gamesFeatures = await this.featuresService.getByIds(game.gamesFeatures);
+    const features = await this.featuresService.getByIds(game.features);
 
     // Get game languages
     const gameLanguages = await this.languagesService.getByNameList(game.languages.map((language) => language.name));
@@ -195,7 +201,7 @@ export class GamesService {
     newGame.imageEntries = game.imageEntries;
     newGame.videoEntries = game.videoEntries;
     newGame.tags = tags;
-    newGame.gamesFeatures = gamesFeatures;
+    newGame.features = features;
     newGame.languages = gameLanguages;
     newGame.languageSupport = game.languages;
     newGame.platformEntries = game.platformEntries;
@@ -238,20 +244,20 @@ export class GamesService {
       releaseDate?: Date;
       publishers?: number[];
       developers?: number[];
-      thumbnailEntries?: ThumbnailsEntry;
-      imageEntries?: ImageEntry[];
-      videoEntries?: VideoEntry[];
+      changedThumbnails?: ThumbnailsEntry;
+      deletedScreenshots?: number[];
+      deletedVideos?: number[];
+      renamedScreenshots?: { oldOrder: number; newOrder: number; link: string }[];
+      renamedVideos?: { oldOrder: number; newOrder: number; videoLink: string; posterLink: string }[];
+      addedScreenshots?: ImageEntry[];
+      addedVideos?: VideoEntry[];
+      featuredOrders?: number[];
       tags?: number[];
       pricing?: {
         free?: boolean;
         basePrice?: number;
-        discount?: boolean;
-        discountPrice?: number;
-        discountStartDate?: Date;
-        discountEndDate?: Date;
-        offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
       };
-      gamesFeatures?: number[];
+      features?: number[];
       featured?: boolean;
       platformEntries?: PlatformEntry;
       link?: string;
@@ -295,31 +301,60 @@ export class GamesService {
       const tags = await this.gamesTagsService.getByIds(game.tags);
       existingGame.tags = tags;
     }
-    if (game.gamesFeatures) {
-      const gamesFeatures = await this.featuresService.getByIds(game.gamesFeatures);
-      existingGame.gamesFeatures = gamesFeatures;
+    if (game.features) {
+      const features = await this.featuresService.getByIds(game.features);
+      existingGame.features = features;
     }
-    if (game.featured) existingGame.featured = game.featured;
-    if (game.thumbnailEntries) existingGame.thumbnailEntries = game.thumbnailEntries;
-    if (game.imageEntries) existingGame.imageEntries = game.imageEntries;
-    if (game.videoEntries) existingGame.videoEntries = game.videoEntries;
+    if (game.featured !== undefined) existingGame.featured = game.featured;
+    if (game.changedThumbnails) {
+      const filteredThumbnails = Object.fromEntries(
+        Object.entries(game.changedThumbnails).filter(([, value]) => value !== undefined),
+      );
+      existingGame.thumbnailEntries = { ...existingGame.thumbnailEntries, ...filteredThumbnails };
+    }
+    if (game.deletedScreenshots && game.deletedScreenshots.length > 0) {
+      existingGame.imageEntries = existingGame.imageEntries.filter(
+        (image) => !game.deletedScreenshots.includes(image.order),
+      );
+    }
+    if (game.deletedVideos && game.deletedVideos.length > 0) {
+      existingGame.videoEntries = existingGame.videoEntries.filter(
+        (video) => !game.deletedVideos.includes(video.order),
+      );
+    }
+    if (game.renamedScreenshots && game.renamedScreenshots.length > 0) {
+      existingGame.imageEntries = existingGame.imageEntries.map((entry) => {
+        const newEntry = game.renamedScreenshots.find((renamedEntry) => renamedEntry.oldOrder === entry.order);
+        if (!newEntry) return entry;
+        return { ...entry, order: newEntry.newOrder, link: newEntry.link };
+      });
+    }
+    if (game.renamedVideos && game.renamedVideos.length > 0) {
+      existingGame.videoEntries = existingGame.videoEntries.map((entry) => {
+        const newEntry = game.renamedVideos.find((renamedEntry) => renamedEntry.oldOrder === entry.order);
+        if (!newEntry) return entry;
+        return { ...entry, order: newEntry.newOrder, link: newEntry.videoLink, posterLink: newEntry.posterLink };
+      });
+    }
+    if (game.addedScreenshots && game.addedScreenshots.length > 0)
+      existingGame.imageEntries = [...existingGame.imageEntries, ...game.addedScreenshots];
+    if (game.addedVideos && game.addedVideos.length > 0)
+      existingGame.videoEntries = [...existingGame.videoEntries, ...game.addedVideos];
+    if (game.featuredOrders && game.featuredOrders.length > 0) {
+      existingGame.imageEntries = existingGame.imageEntries.map((image) => ({
+        ...image,
+        featured: game.featuredOrders.includes(image.order),
+      }));
+    }
     if (game.platformEntries) existingGame.platformEntries = game.platformEntries;
     if (game.systemRequirements) existingGame.systemRequirements = game.systemRequirements;
 
     // Update pricing if provided
     if (game.pricing) {
-      existingGame.pricing.free = game.pricing.free;
-      if (game.pricing.basePrice) existingGame.pricing.basePrice = game.pricing.basePrice;
-      if (game.pricing.discount) existingGame.pricing.discount = game.pricing.discount;
-      if (game.pricing.discountPrice) {
-        existingGame.pricing.discountPrice = game.pricing.discountPrice;
-        existingGame.pricing.discountPercentage = Math.round(
-          (game.pricing.discountPrice / game.pricing.basePrice) * 100,
-        );
-      }
-      if (game.pricing.discountStartDate) existingGame.pricing.discountStartDate = game.pricing.discountStartDate;
-      if (game.pricing.discountEndDate) existingGame.pricing.discountEndDate = game.pricing.discountEndDate;
-      if (game.pricing.offerType) existingGame.pricing.offerType = game.pricing.offerType;
+      game.pricing.free !== undefined && (existingGame.pricing.free = game.pricing.free);
+      game.pricing.basePrice && game.pricing.free === true
+        ? (existingGame.pricing.basePrice = 0)
+        : game.pricing.basePrice && (existingGame.pricing.basePrice = game.pricing.basePrice);
     }
 
     // Save the updated game to the database

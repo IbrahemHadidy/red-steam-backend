@@ -1,21 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
 
 // Modules
-import { GamesLanguagesModule } from '@repositories/sql/games-languages/games-languages.module';
 import { CompaniesModule } from '@repositories/sql/companies/companies.module';
 import { GamesFeaturesModule } from '@repositories/sql/games-features/games-features.module';
+import { GamesLanguagesModule } from '@repositories/sql/games-languages/games-languages.module';
 import { GamesPricingModule } from '@repositories/sql/games-pricing/games-pricing.module';
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
 import { GamesModule } from '@repositories/sql/games/games.module';
 
 // Services
-import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
+import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
 import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
 import { GamesService } from '@repositories/sql/games/games.service';
@@ -87,9 +87,9 @@ describe('gamesLanguagesService', () => {
       tags: [],
       pricing: {
         free: false,
-        price: 10
+        price: 10,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [
         { name: gameLanguage.name, interface: true, fullAudio: true, subtitles: true },
         { name: gameLanguage2.name, interface: true, fullAudio: false, subtitles: true },
@@ -107,7 +107,7 @@ describe('gamesLanguagesService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
-      featured: false
+      featured: false,
     });
 
     game2 = await gamesService.create({
@@ -134,7 +134,7 @@ describe('gamesLanguagesService', () => {
         free: false,
         price: 10,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [
         { name: gameLanguage.name, interface: true, fullAudio: true, subtitles: false },
         { name: gameLanguage2.name, interface: true, fullAudio: false, subtitles: false },
@@ -152,7 +152,7 @@ describe('gamesLanguagesService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
-      featured: false
+      featured: false,
     });
   });
 
@@ -176,7 +176,7 @@ describe('gamesLanguagesService', () => {
     it('should return the game languages with the given id', async () => {
       const foundGameLanguage = await gamesLanguagesService.getById(gameLanguage.id);
       expect(foundGameLanguage).toEqual(expect.objectContaining({ name: 'Lang1' }));
-      expect(gameLanguage)
+      expect(gameLanguage);
     });
 
     it('should throw an error if the game language does not exist', async () => {
@@ -224,9 +224,7 @@ describe('gamesLanguagesService', () => {
     });
 
     it('should throw an error if the game language name already exists', async () => {
-      await expect(
-        gamesLanguagesService.create('Lang1'),
-      ).rejects.toThrow(ConflictException);
+      await expect(gamesLanguagesService.create('Lang1')).rejects.toThrow(ConflictException);
     });
   });
 
@@ -237,9 +235,7 @@ describe('gamesLanguagesService', () => {
     });
 
     it('should throw an error if the game language does not exist', async () => {
-      await expect(
-        gamesLanguagesService.update(0, 'Lang6'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(gamesLanguagesService.update(0, 'Lang6')).rejects.toThrow(NotFoundException);
     });
   });
 

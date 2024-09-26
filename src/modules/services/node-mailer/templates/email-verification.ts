@@ -1,4 +1,10 @@
-export const emailVerification = `
+/**
+ * Email verification template
+ * @param verificationToken
+ * @param username
+ * @returns The HTML content of the email verification template
+ */
+export const emailVerification = (verificationToken: string, username: string): string => `
 <div
   style="
     padding: 0 !important;
@@ -183,7 +189,7 @@ export const emailVerification = `
                                                             "
                                                           >
                                                             <a
-                                                              href="{FRONT_URL}/verify-account/?token={verificationToken}&username={userName}"
+                                                              href="{FRONT_URL}/verify-account/?token${verificationToken}&username=${username}"
                                                               style="
                                                                 display: block;
                                                                 padding: 13px

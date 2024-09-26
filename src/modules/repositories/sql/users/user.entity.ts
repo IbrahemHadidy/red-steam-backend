@@ -11,7 +11,7 @@ import type { Review as ReviewType } from '@repositories/sql/reviews/review.enti
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid', { name: 'user_id' })
   id: string;
 
   @Column({ unique: true })

@@ -37,41 +37,6 @@ export class ReviewsService {
   }
 
   /**
-   * Create a query builder with dynamic ordering.
-   * @param orderBy - The field to order by.
-   * @param order - The order direction.
-   * @returns A query builder with dynamic ordering.
-   */
-  private createOrderOptions(
-    orderBy: 'date' | 'positive' | 'user' | 'game',
-    order: 'ASC' | 'DESC',
-  ): FindOptionsOrder<ReviewType> {
-    // Build order options
-    const orderOptions: FindOptionsOrder<ReviewType> = {};
-    if (orderBy === 'user') {
-      orderOptions['user.username'] = order;
-    } else if (orderBy === 'game') {
-      orderOptions['game.name'] = order;
-    } else {
-      orderOptions[orderBy] = order;
-    }
-
-    // Return order options
-    return orderOptions;
-  }
-
-  /**
-   * Validate the content of a review.
-   * @param content - The content of the review.
-   * @throws BadRequestException if the content is invalid.
-   */
-  private async validateContent(content: string) {
-    // If content is more than 500 characters or less than 10 characters, throw a bad request exception
-    if (content.length > 500) throw new BadRequestException('Review content must be less than 500 characters long');
-    if (content.length < 10) throw new BadRequestException('Review content must be at least 10 characters long');
-  }
-
-  /**
    * Get all reviews with dynamic ordering.
    * @param orderBy - The field to order by.
    * @param order - The order direction.
@@ -307,7 +272,7 @@ export class ReviewsService {
    * Create a new review.
    * @param review - The review to create.
    * @returns A promise of the created review.
-   * @throws BadRequestException if the game has already been reviewed by the user.
+   * @throws `BadRequestException` if the game has already been reviewed by the user.
    */
   public async create(review: { userId: string; gameId: number; positive: boolean; content: string }): Promise<Review> {
     this.logger.log(`Creating review for game with ID ${review.gameId}`);
@@ -346,7 +311,7 @@ export class ReviewsService {
    * @param id - The ID of the review to update.
    * @param review - The updated review.
    * @returns A promise of the updated review.
-   * @throws NotFoundException if the review does not exist.
+   * @throws `NotFoundException` if the review does not exist.
    */
   public async update(id: number, review: { positive: boolean; content: string }): Promise<ReviewType> {
     this.logger.log(`Updating review with ID ${id}`);
@@ -377,7 +342,7 @@ export class ReviewsService {
    * Delete a review.
    * @param id - The ID of the review to delete.
    * @returns A promise of the deleted review.
-   * @throws NotFoundException if the review does not exist.
+   * @throws `NotFoundException` if the review does not exist.
    */
   public async remove(id: number): Promise<ReviewType> {
     this.logger.log(`Deleting review with ID ${id}`);
@@ -448,5 +413,40 @@ export class ReviewsService {
 
     // If the reviews were not deleted, throw an exception
     if (result.affected === undefined) throw new InternalServerErrorException('Failed to delete reviews');
+  }
+
+  /**
+   * Create a query builder with dynamic ordering.
+   * @param orderBy - The field to order by.
+   * @param order - The order direction.
+   * @returns A query builder with dynamic ordering.
+   */
+  private createOrderOptions(
+    orderBy: 'date' | 'positive' | 'user' | 'game',
+    order: 'ASC' | 'DESC',
+  ): FindOptionsOrder<ReviewType> {
+    // Build order options
+    const orderOptions: FindOptionsOrder<ReviewType> = {};
+    if (orderBy === 'user') {
+      orderOptions['user.username'] = order;
+    } else if (orderBy === 'game') {
+      orderOptions['game.name'] = order;
+    } else {
+      orderOptions[orderBy] = order;
+    }
+
+    // Return order options
+    return orderOptions;
+  }
+
+  /**
+   * Validate the content of a review.
+   * @param content - The content of the review.
+   * @throws `BadRequestException` if the content is invalid.
+   */
+  private async validateContent(content: string) {
+    // If content is more than 500 characters or less than 10 characters, throw a bad request exception
+    if (content.length > 500) throw new BadRequestException('Review content must be less than 500 characters long');
+    if (content.length < 10) throw new BadRequestException('Review content must be at least 10 characters long');
   }
 }

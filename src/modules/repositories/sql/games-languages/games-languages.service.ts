@@ -126,11 +126,11 @@ export class GamesLanguagesService {
 
   /**
    * Gets paginated languages.
-   * @param {number} page - The current page number.
-   * @param {number} limit - The number of items per page.
-   * @param {string} orderBy - The field to order by.
-   * @param {('ASC' | 'DESC')} order - The order direction.
-   * @param {({ name?: string })} searchQuery - The search query.
+   * @param page - The current page number.
+   * @param limit - The number of items per page.
+   * @param orderBy - The field to order by.
+   * @param order - The order direction.
+   * @param searchQuery - The search query.
    * @returns A promise that resolves to the paginated languages.
    */
   public async getLanguagesPaginated(

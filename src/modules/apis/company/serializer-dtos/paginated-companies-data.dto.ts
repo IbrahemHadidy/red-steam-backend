@@ -5,16 +5,16 @@ import { Expose, Type } from 'class-transformer';
 import { CompanyDto } from '@apis/company/serializer-dtos/company.dto';
 
 // Types
-import type { CompanyDto as CompanyDtoType } from '@apis/company/serializer-dtos/company.dto';
+import type { CompanyDto as CompanyType } from '@apis/company/serializer-dtos/company.dto';
 
 export class PaginatedCompaniesDataDto {
   @Expose()
   @Type(() => CompanyDto)
-  items: CompanyDtoType;
+  readonly items: CompanyType;
 
   @Expose()
-  total: number;
+  readonly total: number;
 
   @Expose()
-  totalPages: number;
+  readonly totalPages: number;
 }

@@ -17,7 +17,7 @@ export class CompanyService {
   /**
    * Create a new publisher
    * @param data - The name and website of the publisher
-   * @returns A message indicating the success of the creation
+   * @return A message indicating the success of the creation
    */
   public async createPublisher(data: { name: string; website: string }): Promise<{ message: string }> {
     const { name, website } = data;
@@ -73,7 +73,7 @@ export class CompanyService {
   /**
    * Get publishers by IDs
    * @param ids
-   * @returns An array of publishers
+   * @return `Promise<Publisher[]>` An array of publishers
    */
   public async getPublishers(ids: number[]): Promise<Publisher[]> {
     this.logger.log(`Retrieving publishers with IDs ${ids}`);
@@ -107,7 +107,7 @@ export class CompanyService {
 
   /**
    * Get all developers
-   * @returns An array of all developers
+   * @returns  An array of all developers
    */
   public async getAllDevelopers(): Promise<Developer[]> {
     this.logger.log(`Retrieving all developers`);
@@ -123,8 +123,7 @@ export class CompanyService {
    * @param orderBy - The column to order by
    * @param order - The order direction
    * @param searchQuery - The search query
-   * @returns The paginated publishers
-   * @returns The total number of publishers
+   * @returns The paginated publishers and the total number of publishers
    */
   public async getPublishersPaginated(
     page: number,
@@ -150,8 +149,7 @@ export class CompanyService {
    * @param orderBy - The column to order by
    * @param order - The order direction
    * @param searchQuery - The search query
-   * @returns The paginated developers
-   * @returns The total number of developers
+   * @returns The paginated developers and the total number of developers
    */
   public async getDevelopersPaginated(
     page: number,

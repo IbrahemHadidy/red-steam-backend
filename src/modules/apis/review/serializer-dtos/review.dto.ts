@@ -6,27 +6,27 @@ import { GameDto } from '@apis/game/serializer-dtos/game.dto';
 import { UserDto } from '@apis/user/serializer-dtos/user.dto';
 
 // Types
-import type { GameDto as GameDtoType } from '@apis/game/serializer-dtos/game.dto';
-import type { UserDto as UserDtoType } from '@apis/user/serializer-dtos/user.dto';
+import type { GameDto as GameType } from '@apis/game/serializer-dtos/game.dto';
+import type { UserDto as UserType } from '@apis/user/serializer-dtos/user.dto';
 
 export class ReviewDto {
   @Expose()
-  id: number;
+  readonly id: number;
 
   @Expose()
-  positive: boolean;
+  readonly positive: boolean;
 
   @Expose()
-  date: Date;
+  readonly date: Date;
 
   @Expose()
-  content: string;
+  readonly content: string;
 
   @Expose()
   @Type(() => UserDto)
-  user: UserDtoType;
+  readonly user: UserType;
 
   @Expose()
   @Type(() => GameDto)
-  game: GameDtoType;
+  readonly game: GameType;
 }

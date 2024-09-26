@@ -8,10 +8,10 @@ export class PasswordResetDto {
   @ApiProperty({ description: 'Password reset token', example: 'enter your token here', required: true })
   @IsNotEmpty({ message: 'Token is required' })
   @IsString({ message: 'Token must be a string' })
-  token: string;
+  readonly token: string;
 
   @ApiProperty({ description: 'New password', example: 'enter your new password here', required: true })
   @IsNotEmpty({ message: 'New password is required' })
   @IsString({ message: 'New password must be a string' })
-  newPassword: string;
+  readonly newPassword: string;
 }

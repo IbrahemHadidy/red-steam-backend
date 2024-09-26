@@ -5,16 +5,16 @@ import { Expose, Type } from 'class-transformer';
 import { ReviewDto } from '@apis/review/serializer-dtos/review.dto';
 
 // Types
-import type { ReviewDto as ReviewDtoType } from '@apis/review/serializer-dtos/review.dto';
+import type { ReviewDto as ReviewType } from '@apis/review/serializer-dtos/review.dto';
 
 export class PaginatedReviewsDataDto {
   @Expose()
   @Type(() => ReviewDto)
-  items: ReviewDtoType;
+  readonly items: ReviewType;
 
   @Expose()
-  total: number;
+  readonly total: number;
 
   @Expose()
-  totalPages: number;
+  readonly totalPages: number;
 }

@@ -38,8 +38,8 @@ export class SetResponseCookiesInterceptor implements NestInterceptor {
               sameSite: 'none',
               path: '/',
 
-              // If rememberMe & loggingIn is true, 1 hour cookie, else session cookie
-              maxAge: loggingIn && rememberMe ? 3600 * 1000 : undefined,
+              // If rememberMe & loggingIn is true, 2 hour cookie, else session cookie
+              maxAge: loggingIn && rememberMe ? 7200 : undefined,
             });
           }
 
@@ -52,13 +52,14 @@ export class SetResponseCookiesInterceptor implements NestInterceptor {
               path: '/',
 
               // If rememberMe & loggingIn is true, 30 days cookie, else session cookie
-              maxAge: loggingIn && rememberMe ? 30 * 24 * 3600 * 1000 : undefined,
+              maxAge: loggingIn && rememberMe ? 2592000 : undefined,
             });
           }
 
-          // Remove tokens from response data
+          // Remove tokens and loggingIn from response data
           delete data.accessToken;
           delete data.refreshToken;
+          delete data.loggingIn;
         },
       }),
     );

@@ -5,16 +5,16 @@ import { Expose, Type } from 'class-transformer';
 import { TagDto } from '@apis/tag/serializer-dtos/tag.dto';
 
 // Types
-import type { TagDto as TagDtoType } from '@apis/tag/serializer-dtos/tag.dto';
+import type { TagDto as TagType } from '@apis/tag/serializer-dtos/tag.dto';
 
 export class PaginatedTagsDataDto {
   @Expose()
   @Type(() => TagDto)
-  items: TagDtoType;
+  readonly items: TagType;
 
   @Expose()
-  total: number;
+  readonly total: number;
 
   @Expose()
-  totalPages: number;
+  readonly totalPages: number;
 }

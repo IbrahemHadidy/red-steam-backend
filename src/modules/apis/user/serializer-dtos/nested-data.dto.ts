@@ -5,13 +5,16 @@ import { Expose, Type } from 'class-transformer';
 import { UserDto } from '@apis/user/serializer-dtos/user.dto';
 
 // Types
-import { UserDto as UserDtoType } from '@apis/user/serializer-dtos/user.dto';
+import { UserDto as UserType } from '@apis/user/serializer-dtos/user.dto';
 
 export class NestedDataDto {
   @Expose()
-  message: string;
+  readonly message: string;
+
+  @Expose()
+  readonly isSessionLoggedIn: boolean;
 
   @Expose()
   @Type(() => UserDto)
-  userData: UserDtoType;
+  readonly userData: UserType;
 }

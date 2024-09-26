@@ -1,5 +1,20 @@
-export const paymentConfirmation = `
-  <div
+/**
+ * Payment confirmation template
+ * @param accountName The name of the account
+ * @param orderId The order id of the payment
+ * @param currentDate The current date
+ * @param totalPrice The total price of the payment
+ * @param gameCards The generated template of the game cards
+ * @returns The HTML content of the payment confirmation template
+ */
+export const paymentConfirmation = (
+  accountName: string,
+  orderId: string,
+  currentDate: string,
+  totalPrice: string,
+  gameCards: string,
+): string => `
+<div
   style="
     padding: 0 !important;
     margin: 0 auto !important;
@@ -115,7 +130,7 @@ export const paymentConfirmation = `
                                               font-weight: bold;
                                             "
                                           >
-                                            Hello {accountName}
+                                            Hello ${accountName}
                                           </td>
                                         </tr>
                                       </tbody>
@@ -182,7 +197,7 @@ export const paymentConfirmation = `
                                       </tbody>
                                     </table>
 
-                                    {gameCards}
+                                    ${gameCards}
 
                                     <table
                                       width="100%"
@@ -293,7 +308,7 @@ export const paymentConfirmation = `
                                                                             "
                                                                           >
                                                                             <strong
-                                                                              >{accountName}</strong
+                                                                              >${accountName}</strong
                                                                             >
                                                                           </td>
                                                                         </tr>
@@ -353,7 +368,7 @@ export const paymentConfirmation = `
                                                                             "
                                                                           >
                                                                             <strong
-                                                                              >{orderId}</strong
+                                                                              >${orderId}</strong
                                                                             >
                                                                           </td>
                                                                         </tr>
@@ -414,7 +429,7 @@ export const paymentConfirmation = `
                                                                             "
                                                                           >
                                                                             <strong
-                                                                              >{currentDate}</strong
+                                                                              >${currentDate}</strong
                                                                             >
                                                                           </td>
                                                                         </tr>
@@ -641,7 +656,7 @@ export const paymentConfirmation = `
                                                                             "
                                                                           >
                                                                             <strong
-                                                                              >\${totalPrice}</strong
+                                                                              >\$${totalPrice}</strong
                                                                             >
                                                                           </td>
                                                                         </tr>
@@ -785,7 +800,14 @@ export const paymentConfirmation = `
 </div>
 `;
 
-export const gameCard = `
+/**
+ * Game card template
+ * @param gameName The name of the game
+ * @param gamePrice The price of the game
+ * @param gameImage The image URL of the game
+ * @returns The HTML content of the game card template
+ */
+export const gameCard = (gameName: string, gamePrice: string, gameImage: string): string => `
 <table
   width="100%"
   border="0"
@@ -843,7 +865,7 @@ export const gameCard = `
                                 "
                               >
                                 <img
-                                  src="{gameImage}"
+                                  src="${gameImage}"
                                   width="184"
                                   height="69"
                                   border="0"
@@ -899,7 +921,7 @@ export const gameCard = `
                                 "
                               >
                                 <strong
-                                  >{gameName}<br
+                                  >${gameName}<br
                                 /></strong>
                               </td>
                             </tr>
@@ -950,7 +972,7 @@ export const gameCard = `
                               >
                                 <strong
                                   >
-                                  \${gamePrice}
+                                  \$${gamePrice}
                                   USD</strong
                                 >
                               </td>

@@ -5,9 +5,7 @@ import { randomBytes, scryptSync } from 'crypto';
 import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 // Services
-import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '@repositories/sql/users/users.service';
-import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
 
 // Types
 import type { User } from '@repositories/sql/users/user.entity';
@@ -15,10 +13,8 @@ import type { User } from '@repositories/sql/users/user.entity';
 @Injectable()
 export class UserService {
   constructor(
-    protected readonly user?: UsersService,
-    protected readonly logger?: Logger,
-    protected readonly jwt?: JwtService,
-    protected readonly mailer?: NodeMailerService,
+    private readonly user: UsersService,
+    private readonly logger: Logger,
   ) {}
 
   /**
@@ -26,7 +22,7 @@ export class UserService {
    * @param password The password to hash
    * @returns The hashed password
    */
-  protected async hashPassword(password: string): Promise<string> {
+  public async hashPassword(password: string): Promise<string> {
     this.logger.log('Hashing password');
 
     // Generate a random salt
@@ -48,9 +44,9 @@ export class UserService {
    * @param plainPassword The plain text password
    * @param hashedPassword The hashed password
    * @returns True if the passwords match, false otherwise
-   * @throws UnauthorizedException if the passwords don't match
+   * @throws `UnauthorizedException` if the passwords don't match
    */
-  protected async comparePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+  public async comparePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
     this.logger.log('Comparing passwords');
 
     // Extract the salt from the hashed password
@@ -79,7 +75,7 @@ export class UserService {
    * @param {'username' | 'email' | 'id' | 'identifier'} type The type of the identifier;
    * @returns The created user data
    */
-  protected async findUser(key: string, type: 'email' | 'username' | 'id' | 'identifier'): Promise<User> {
+  public async findUser(key: string, type: 'email' | 'username' | 'id' | 'identifier'): Promise<User> {
     this.logger.log(`findUser called with ${type}: ${key}`);
 
     let user: User;
@@ -113,7 +109,7 @@ export class UserService {
    * @param user The user object
    * @throws `UnauthorizedException` If user is not verified
    */
-  protected async checkVerified(user: User) {
+  public async checkVerified(user: User) {
     if (!user.isVerified) {
       // Throw an unauthorized exception if the user is not verified
       this.logger.error(`User is not verified`);

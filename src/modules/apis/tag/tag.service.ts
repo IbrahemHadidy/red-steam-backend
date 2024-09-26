@@ -17,6 +17,7 @@ export class TagService {
   /**
    * Create a new tag
    * @param data - The name and website of the tag
+   * @returns A message indicating the success of the creation
    */
   public async createTag(data: { name: string }): Promise<{ message: string }> {
     const { name } = data;
@@ -34,7 +35,7 @@ export class TagService {
    * @param id
    * @returns The tag
    */
-  public async getTag(id: number) {
+  public async getTag(id: number): Promise<GameTag> {
     this.logger.log(`Retrieving tag with ID ${id}`);
 
     // Send the response
@@ -46,7 +47,7 @@ export class TagService {
    * @param ids
    * @returns An array of tags
    */
-  public async getTags(ids: number[]) {
+  public async getTags(ids: number[]): Promise<GameTag[]> {
     this.logger.log(`Retrieving tags with IDs ${ids}`);
 
     // Send the response
@@ -57,7 +58,7 @@ export class TagService {
    * Get all tags
    * @returns An array of all tags
    */
-  public async getAllTags() {
+  public async getAllTags(): Promise<GameTag[]> {
     this.logger.log(`Retrieving all tags`);
 
     // Send the response
@@ -71,8 +72,7 @@ export class TagService {
    * @param orderBy - The column to order by
    * @param order - The order direction
    * @param searchQuery - The search query
-   * @returns The paginated tags
-   * @returns The total number of tags
+   * @returns The paginated tags and the total number of tags
    */
   public async getTagsPaginated(
     page: number,

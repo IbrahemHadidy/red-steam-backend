@@ -1,9 +1,9 @@
 import { BadRequestException, Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { TestingModule, Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { environmentConfig, getSqlTypeOrmConfig, getMongoTypeOrmConfig } from '@test/integration-setup';
+import { environmentConfig, getMongoTypeOrmConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
 
 // Modules
 import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
@@ -15,17 +15,17 @@ import { NodeMailerModule } from '@services/node-mailer/node-mailer.module';
 // Services
 import { AuthService } from '@apis/user/auth/auth.service';
 import { PaymentService } from '@apis/user/payment/payment.service';
+import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
+import { CompaniesService } from '@repositories/sql/companies/companies.service';
+import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
+import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
+import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
+import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
+import { GamesService } from '@repositories/sql/games/games.service';
+import { UsersService } from '@repositories/sql/users/users.service';
 import { DropboxService } from '@services/dropbox/dropbox.service';
 import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
 import { PaypalService } from '@services/paypal/paypal.service';
-import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
-import { UsersService } from '@repositories/sql/users/users.service';
-import { GamesService } from '@repositories/sql/games/games.service';
-import { CompaniesService } from '@repositories/sql/companies/companies.service';
-import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
-import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
-import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
-import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
 
 // Entities
 import { Game } from '@repositories/sql/games/game.entity';
@@ -129,7 +129,7 @@ describe('PaymentService', () => {
         free: false,
         price: 5,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,
@@ -144,7 +144,7 @@ describe('PaymentService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
-      featured: false
+      featured: false,
     });
 
     game2 = await gamesService.create({
@@ -171,7 +171,7 @@ describe('PaymentService', () => {
         free: false,
         price: 5,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,
@@ -186,7 +186,7 @@ describe('PaymentService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
-      featured: false
+      featured: false,
     });
   });
 

@@ -1,28 +1,28 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtService } from '@nestjs/jwt';
-import { Logger } from '@nestjs/common';
-import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
-import { UsersModule } from '@repositories/sql/users/users.module';
-import { NodeMailerModule } from '@services/node-mailer/node-mailer.module';
-import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
-import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
-import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
-import { User } from '@repositories/sql/users/user.entity';
-import { Game } from '@repositories/sql/games/game.entity';
 import { InteractionService } from '@apis/user/interaction/interaction.service';
-import { UsersService } from '@repositories/sql/users/users.service';
-import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
+import { Logger } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
 import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
-import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
-import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
-import { GamesService } from '@repositories/sql/games/games.service';
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
 import { GamesFeaturesService } from '@repositories/sql/games-features/games-features.service';
-import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
-import { environmentConfig, getSqlTypeOrmConfig, getMongoTypeOrmConfig } from '@test/integration-setup';
 import { GamesLanguagesService } from '@repositories/sql/games-languages/games-languages.service';
+import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
+import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
+import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
+import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
+import { Game } from '@repositories/sql/games/game.entity';
+import { GamesService } from '@repositories/sql/games/games.service';
+import { ReviewsModule } from '@repositories/sql/reviews/reviews.module';
+import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
+import { User } from '@repositories/sql/users/user.entity';
+import { UsersModule } from '@repositories/sql/users/users.module';
+import { UsersService } from '@repositories/sql/users/users.service';
+import { NodeMailerModule } from '@services/node-mailer/node-mailer.module';
+import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
+import { environmentConfig, getMongoTypeOrmConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
 
 describe('InteractionService', () => {
   let user1: User;
@@ -118,7 +118,7 @@ describe('InteractionService', () => {
         free: false,
         price: 10,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,
@@ -160,7 +160,7 @@ describe('InteractionService', () => {
         free: false,
         price: 10,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,
@@ -175,7 +175,7 @@ describe('InteractionService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
-      featured: false
+      featured: false,
     });
 
     game3 = await gamesService.create({
@@ -202,7 +202,7 @@ describe('InteractionService', () => {
         free: false,
         price: 10,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,
@@ -217,7 +217,7 @@ describe('InteractionService', () => {
         recommended: {},
       },
       legal: 'Test Legal',
-      featured: false
+      featured: false,
     });
 
     tag1 = await gamesTagsService.create('test1');
@@ -316,8 +316,8 @@ describe('InteractionService', () => {
 
       // Assertions
       expect(result).toEqual({ success: true, message: 'Library cleared successfully' });
-    })
-  })
+    });
+  });
 
   describe('addToWishlist', () => {
     it('should add game to wishlist successfully', async () => {

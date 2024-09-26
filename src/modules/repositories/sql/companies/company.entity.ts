@@ -8,9 +8,6 @@ import { Game } from '@repositories/sql/games/game.entity';
 import type { Game as GameType } from '@repositories/sql/games/game.entity';
 
 export class Company extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
-
   @Column()
   name: string;
 
@@ -20,12 +17,18 @@ export class Company extends BaseEntity {
 
 @Entity({ name: 'publishers' })
 export class Publisher extends Company {
+  @PrimaryGeneratedColumn('increment', { name: 'publisher_id' })
+  id: number;
+
   @ManyToMany(() => Game, (game: GameType) => game.publishers)
   games?: GameType[];
 }
 
 @Entity({ name: 'developers' })
 export class Developer extends Company {
+  @PrimaryGeneratedColumn('increment', { name: 'developer_id' })
+  id: number;
+
   @ManyToMany(() => Game, (game: GameType) => game.developers)
   games?: GameType[];
 }

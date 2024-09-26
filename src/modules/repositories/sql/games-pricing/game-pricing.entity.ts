@@ -12,7 +12,7 @@ import type { Game as GameType } from '@repositories/sql/games/game.entity';
 
 @Entity({ name: 'games_pricing' })
 export class GamePricing extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment', { name: 'pricing_id' })
   id: number;
 
   @Column({ default: false })
@@ -39,7 +39,7 @@ export class GamePricing extends BaseEntity {
   @Column({ nullable: true })
   offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
 
-  @Column({ type: 'float', nullable: true })
+  @Column({ type: 'float', default: 0 })
   price: number;
 
   @OneToOne(() => Game, (game: GameType) => game.pricing)
@@ -52,6 +52,7 @@ export class GamePricing extends BaseEntity {
     this.price = this.discount ? this.discountPrice : this.basePrice;
 
     if (this.free) {
+      this.price = 0;
       this.discount = false;
       this.basePrice = 0;
       this.discountPrice = null;

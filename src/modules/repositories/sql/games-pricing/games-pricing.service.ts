@@ -31,87 +31,6 @@ export class GamesPricingService {
   }
 
   /**
-   * Update discount status based on current date
-   * @param pricing GamePricing entity
-   */
-  private updateDiscountStatus(pricing: GamePricingType): void {
-    // Get current date
-    const currentDate = new Date();
-
-    // Update discount status to false if discount end date is before current date
-    if (pricing.discount && pricing.discountEndDate && currentDate > pricing.discountEndDate) {
-      pricing.discount = false;
-      pricing.discountPrice = null;
-      pricing.discountPercentage = null;
-      pricing.discountStartDate = null;
-      pricing.discountEndDate = null;
-      pricing.offerType = null;
-    }
-  }
-
-  /**
-   * Validate pricing
-   * @param pricing Pricing entity
-   * @returns Promise that resolves when validation is successful
-   * @throws `BadRequestException` If validation fails
-   */
-  private async validatePricing(pricing: {
-    free: boolean;
-    basePrice?: number;
-    discount?: boolean;
-    discountPrice?: number;
-    discountStartDate?: Date;
-    discountEndDate?: Date;
-    offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
-  }): Promise<void> {
-    // If game is free, throw a bad request exception with a message
-    if (pricing.free && pricing.discount) throw new BadRequestException('Game is free, cannot have discount');
-
-    // If game is not free and base price is not provided or less than or equal to 0, throw a bad request exception with a message
-    if (!pricing.free && (!pricing.basePrice || pricing.basePrice <= 0))
-      throw new BadRequestException('Game is not free, Base price is required, and must be greater than 0');
-
-    // If discount is provided, validate the following
-    if (pricing.discount) {
-      // If discount price is not provided, throw a bad request exception with a message
-      if (!pricing.discountPrice) throw new BadRequestException('Discount price is required');
-
-      // If discount start date is not provided, throw a bad request exception with a message
-      if (!pricing.discountStartDate) throw new BadRequestException('Discount start date is required');
-
-      // If discount end date is not provided, throw a bad request exception with a message
-      if (!pricing.discountEndDate) throw new BadRequestException('Discount end date is required');
-
-      // If offer type is not provided, throw a bad request exception with a message
-      if (!pricing.offerType) throw new BadRequestException('Offer type is required');
-
-      // If discount start date is greater than discount end date, throw a bad request exception with a message
-      if (pricing.discountStartDate > pricing.discountEndDate)
-        throw new BadRequestException('Discount start date cannot be greater than discount end date');
-
-      // If discount end date is less than current date, throw a bad request exception with a message
-      if (pricing.discountEndDate < new Date())
-        throw new BadRequestException('Discount end date cannot be less than current date');
-    }
-  }
-
-  /**
-   * Calculate discount percentage
-   * @param discountPrice Discount price
-   * @param basePrice Base price
-   * @returns Promise that resolves to discount percentage
-   * @throws `BadRequestException` If base price is less than or equal to 0
-   */
-  private async calculateDiscountPercentage(discountPrice: number, basePrice: number): Promise<number> {
-    // If base price is less than or equal to 0, throw a bad request exception with a message
-    if (!basePrice || basePrice === 0)
-      throw new BadRequestException('Base price must be greater than 0 to calculate discount percentage');
-
-    // Calculate discount percentage
-    return ((basePrice - discountPrice) / basePrice) * 100;
-  }
-
-  /**
    * Get all pricing
    * @param sortBy Sort by
    * @param sortOrder Sort order
@@ -422,5 +341,86 @@ export class GamesPricingService {
 
     // Log the successful deletion of the pricings
     if (result === undefined) throw new InternalServerErrorException('Failed to delete pricings');
+  }
+
+  /**
+   * Update discount status based on current date
+   * @param pricing GamePricing entity
+   */
+  private updateDiscountStatus(pricing: GamePricingType): void {
+    // Get current date
+    const currentDate = new Date();
+
+    // Update discount status to false if discount end date is before current date
+    if (pricing.discount && pricing.discountEndDate && currentDate > pricing.discountEndDate) {
+      pricing.discount = false;
+      pricing.discountPrice = null;
+      pricing.discountPercentage = null;
+      pricing.discountStartDate = null;
+      pricing.discountEndDate = null;
+      pricing.offerType = null;
+    }
+  }
+
+  /**
+   * Validate pricing
+   * @param pricing Pricing entity
+   * @returns Promise that resolves when validation is successful
+   * @throws `BadRequestException` If validation fails
+   */
+  private async validatePricing(pricing: {
+    free: boolean;
+    basePrice?: number;
+    discount?: boolean;
+    discountPrice?: number;
+    discountStartDate?: Date;
+    discountEndDate?: Date;
+    offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
+  }): Promise<void> {
+    // If game is free, throw a bad request exception with a message
+    if (pricing.free && pricing.discount) throw new BadRequestException('Game is free, cannot have discount');
+
+    // If game is not free and base price is not provided or less than or equal to 0, throw a bad request exception with a message
+    if (!pricing.free && (!pricing.basePrice || pricing.basePrice <= 0))
+      throw new BadRequestException('Game is not free, Base price is required, and must be greater than 0');
+
+    // If discount is provided, validate the following
+    if (pricing.discount) {
+      // If discount price is not provided, throw a bad request exception with a message
+      if (!pricing.discountPrice) throw new BadRequestException('Discount price is required');
+
+      // If discount start date is not provided, throw a bad request exception with a message
+      if (!pricing.discountStartDate) throw new BadRequestException('Discount start date is required');
+
+      // If discount end date is not provided, throw a bad request exception with a message
+      if (!pricing.discountEndDate) throw new BadRequestException('Discount end date is required');
+
+      // If offer type is not provided, throw a bad request exception with a message
+      if (!pricing.offerType) throw new BadRequestException('Offer type is required');
+
+      // If discount start date is greater than discount end date, throw a bad request exception with a message
+      if (pricing.discountStartDate > pricing.discountEndDate)
+        throw new BadRequestException('Discount start date cannot be greater than discount end date');
+
+      // If discount end date is less than current date, throw a bad request exception with a message
+      if (pricing.discountEndDate < new Date())
+        throw new BadRequestException('Discount end date cannot be less than current date');
+    }
+  }
+
+  /**
+   * Calculate discount percentage
+   * @param discountPrice Discount price
+   * @param basePrice Base price
+   * @returns Promise that resolves to discount percentage
+   * @throws `BadRequestException` If base price is less than or equal to 0
+   */
+  private async calculateDiscountPercentage(discountPrice: number, basePrice: number): Promise<number> {
+    // If base price is less than or equal to 0, throw a bad request exception with a message
+    if (!basePrice || basePrice === 0)
+      throw new BadRequestException('Base price must be greater than 0 to calculate discount percentage');
+
+    // Calculate discount percentage
+    return ((basePrice - discountPrice) / basePrice) * 100;
   }
 }

@@ -3,6 +3,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 
 // Class-transformer
 import { plainToClass } from 'class-transformer';
+
 // Class-validator
 import { validateSync } from 'class-validator';
 
@@ -19,10 +20,17 @@ import type { ValidationError } from 'class-validator';
  */
 @Injectable()
 export class ParseJsonPipe<T extends object> implements PipeTransform<string, T> {
-  private readonly options: { optional: boolean };
+  private readonly options: { optional?: boolean; validate?: boolean; excludeExtraneousValues?: boolean };
   private readonly dto: new () => T;
 
-  constructor(dto: new () => T, options: { optional: boolean } = { optional: false }) {
+  constructor(
+    dto: new () => T,
+    options: { optional?: boolean; validate?: boolean; excludeExtraneousValues?: boolean } = {
+      optional: false,
+      validate: false,
+      excludeExtraneousValues: true,
+    },
+  ) {
     this.dto = dto;
     this.options = options;
   }
@@ -36,7 +44,16 @@ export class ParseJsonPipe<T extends object> implements PipeTransform<string, T>
     }
 
     const jsonValue = JSON.parse(value);
-    const dtoObject = plainToClass(this.dto, jsonValue, { excludeExtraneousValues: true });
+
+    // Only parse if the onlyParse option is set
+    if (this.options.validate === false) {
+      console.log(jsonValue);
+      return jsonValue;
+    }
+
+    const dtoObject = plainToClass(this.dto, jsonValue, {
+      excludeExtraneousValues: this.options.excludeExtraneousValues,
+    });
 
     const errors = validateSync(dtoObject);
     if (errors.length > 0) {

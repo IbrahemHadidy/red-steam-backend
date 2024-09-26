@@ -9,5 +9,5 @@ export class AddToLibraryDto {
   @IsNotEmpty({ message: 'itemsIds is required' })
   @IsArray({ message: 'itemIds must be an array' })
   @IsNumber({}, { each: true, message: 'itemIds must be an array of numbers' })
-  itemsIds: number[];
+  readonly itemsIds: number[];
 }

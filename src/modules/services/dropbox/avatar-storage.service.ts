@@ -6,7 +6,6 @@ import { ConfigService } from '@nestjs/config';
 import { InvalidFileException } from '@exceptions/invalid-file.exception';
 
 // Services
-import { DropboxTokensService } from '@repositories/mongo/dropbox-tokens/dropbox-tokens.service';
 import { DropboxService } from '@services/dropbox/dropbox.service';
 
 // Types
@@ -17,29 +16,32 @@ interface UploadResponse extends Dropbox {
 }
 
 @Injectable()
-export class AvatarStorageService extends DropboxService {
+export class AvatarStorageService {
   private readonly avatarFolderPath: string;
 
-  constructor(config: ConfigService, logger: Logger, tokensService: DropboxTokensService) {
-    super(config, logger, tokensService);
+  constructor(
+    private readonly dbx: DropboxService,
+    private readonly config: ConfigService,
+    private readonly logger: Logger,
+  ) {
     // Read avatar folder path from environment variable
     this.avatarFolderPath = this.config.get<string>('DROPBOX_AVATAR_FOLDER_PATH');
   }
 
   /**
    * Uploads an avatar to Dropbox
-   * @param {File} avatar - The avatar file to upload
-   * @returns {Promise<Partial<UploadResponse>>} The upload response data
+   * @param avatar - The avatar file to upload
+   * @returns The upload response data
    * @throws `InvalidFileException` - If the file type is not allowed
    * @throws `InternalServerErrorException` - If there was an error uploading the avatar
    */
   public async uploadAvatar(avatar: File): Promise<Partial<UploadResponse>> {
     // Ensure valid access token
-    await this.ensureValidAccessToken();
+    await this.dbx.ensureValidAccessToken();
 
     // Validate file type (adapt based on your requirements)
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!this.isValidMimeType(avatar.mimetype, allowedMimeTypes)) {
+    if (!this.dbx.isValidMimeType(avatar.mimetype, allowedMimeTypes)) {
       throw new InvalidFileException('Invalid file type. Only JPEG and PNG images allowed.');
     }
 
@@ -58,14 +60,14 @@ export class AvatarStorageService extends DropboxService {
     const uploadPath = `${this.avatarFolderPath}/${fileName}`;
 
     // Upload the file to Dropbox
-    const uploadResponse = await this.dropbox.filesUpload({
+    const uploadResponse = await this.dbx.dropboxClient.filesUpload({
       path: uploadPath,
       contents: avatar.buffer,
       mode: { '.tag': 'add' },
     });
 
     // Create a shared link for the uploaded file
-    const sharedLinkResponse = await this.dropbox.sharingCreateSharedLinkWithSettings({
+    const sharedLinkResponse = await this.dbx.dropboxClient.sharingCreateSharedLinkWithSettings({
       path: uploadResponse.result.path_display,
     });
 
@@ -81,18 +83,18 @@ export class AvatarStorageService extends DropboxService {
 
   /**
    * Deletes an avatar from Dropbox
-   * @param {string} filePath - The path of the avatar file to delete
-   * @returns {Promise<void>} A promise that resolves when the avatar is deleted
+   * @param filePath - The path of the avatar file to delete
+   * @returns A promise that resolves when the avatar is deleted
    */
   public async deleteAvatar(filePath: string): Promise<void> {
     // Ensure valid access token
-    await this.ensureValidAccessToken();
+    await this.dbx.ensureValidAccessToken();
 
     // Log the deletion message
     this.logger.log(`Deleting avatar file: ${filePath}`);
 
     // Delete the avatar file from Dropbox
-    await this.dropbox.filesDeleteV2({ path: filePath });
+    await this.dbx.dropboxClient.filesDeleteV2({ path: filePath });
 
     // Log the success message
     this.logger.log(`Avatar ${filePath} deleted successfully`);

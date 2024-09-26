@@ -2,7 +2,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-// Sercices
+// Services
 import { MailerService } from '@nestjs-modules/mailer';
 
 // Templates
@@ -24,26 +24,9 @@ export class NodeMailerService {
     private readonly mailer: MailerService,
     private readonly logger: Logger,
   ) {
-    this.email = `Red Steam ${this.config.get('EMAIL_USER')}`;
+    this.email = `Red Steam ${this.config.get('SMTP_USER')}`;
     this.baseUrl = this.config.get('BASE_URL');
     this.frontUrl = this.config.get('FRONT_URL');
-  }
-
-  /**
-   * Sends an email
-   * @param to The email address of the recipient
-   * @param subject The subject of the email
-   * @param html The HTML content of the email
-   * @returns void
-   * @throws `InternalServerErrorException` If there is an error sending the email
-   */
-  private async sendEmail(to: string, subject: string, html: string): Promise<void> {
-    await this.mailer.sendMail({
-      from: this.email,
-      to,
-      subject,
-      html: html.replace(/{BASE_URL}/g, this.baseUrl).replace(/{FRONT_URL}/g, this.frontUrl),
-    });
   }
 
   /**
@@ -56,11 +39,7 @@ export class NodeMailerService {
     this.logger.log(`Sending verification email to ${to}`);
 
     // Send verification email
-    await this.sendEmail(
-      to,
-      'Verify Your Email Address',
-      emailVerification.replace(/{verificationToken}/g, verificationToken).replace(/{userName}/g, username),
-    );
+    await this.sendEmail(to, 'Verify Your Email Address', emailVerification(verificationToken, username));
 
     // Log that a verification email has been sent to the specified address
     this.logger.log(`Verification email sent to ${to}`);
@@ -77,11 +56,7 @@ export class NodeMailerService {
     this.logger.log(`Sending password reset email to ${to}`);
 
     // Send password reset email
-    await this.sendEmail(
-      to,
-      'Red Steam Password Reset',
-      passwordReset.replace(/{resetToken}/g, resetToken).replace(/{userName}/g, username),
-    );
+    await this.sendEmail(to, 'Red Steam Password Reset', passwordReset(resetToken, username));
 
     // Log that a password reset email has been sent to the specified address
     this.logger.log(`Password reset email sent to ${to}`);
@@ -100,16 +75,17 @@ export class NodeMailerService {
     // Log the initiation of the payment confirmation email
     this.logger.log(`Sending payment confirmation email to ${to}`);
 
-    // Replace the placeholders in the payment confirmation email template
+    // Generate the game cards for the email
     const gameCards = data.games.map((game) => {
-      return gameCard
-        .replace(/{gameName}/g, game.name)
-        .replace(
-          /{gamePrice}/g,
-          game.pricing.discount ? game.pricing.discountPrice.toFixed(2) : game.pricing.basePrice.toFixed(2),
-        )
-        .replace(/{gameImage}/g, game.thumbnailEntries.tabImage);
+      const gameImage = game.thumbnailEntries?.tabImage;
+      return gameCard(
+        game.name,
+        game.pricing.discount ? game.pricing.discountPrice.toFixed(2) : game.pricing.basePrice.toFixed(2),
+        gameImage,
+      );
     });
+
+    // Get the current date and format it
     const currentDate = new Date().toISOString();
     const totalPrice = data.games
       .reduce((total: number, game: Game) => {
@@ -117,17 +93,35 @@ export class NodeMailerService {
       }, 0)
       .toFixed(2);
 
-    paymentConfirmation
-      .replace(/{accountName}/g, data.accountName)
-      .replace(/{orderId}/g, data.orderId)
-      .replace(/{currentDate}/g, currentDate)
-      .replace(/{totalPrice}/g, totalPrice)
-      .replace(/{gameCards}/g, gameCards.join(''));
+    // Replace the placeholders in the template
+    const emailContent = paymentConfirmation(
+      data.accountName,
+      data.orderId,
+      currentDate,
+      totalPrice,
+      gameCards.join(''),
+    );
 
     // Send payment confirmation email
-    await this.sendEmail(to, 'Payment Confirmation', paymentConfirmation);
+    await this.sendEmail(to, 'Payment Confirmation', emailContent);
 
-    // Log that a payment confirmation email has been sent to the specified address
+    // Log success
     this.logger.log(`Payment confirmation email sent to ${to}`);
+  }
+
+  /**
+   * Sends an email
+   * @param to The email address of the recipient
+   * @param subject The subject of the email
+   * @param html The HTML content of the email
+   * @throws `InternalServerErrorException` If there is an error sending the email
+   */
+  private async sendEmail(to: string, subject: string, html: string): Promise<void> {
+    await this.mailer.sendMail({
+      from: this.email,
+      to,
+      subject,
+      html: html.replace(/{BASE_URL}/g, this.baseUrl).replace(/{FRONT_URL}/g, this.frontUrl),
+    });
   }
 }

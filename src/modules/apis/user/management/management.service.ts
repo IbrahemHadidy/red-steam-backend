@@ -15,71 +15,20 @@ import { UsersService } from '@repositories/sql/users/users.service'; // Reposit
 import type { File } from '@nest-lab/fastify-multer';
 
 @Injectable()
-export class ManagementService extends UserService {
+export class ManagementService {
   private readonly resetTokenSecret: string;
 
   constructor(
-    protected readonly jwt: JwtService,
-    protected readonly user: UsersService,
-    protected readonly mailer: NodeMailerService,
-    protected readonly logger: Logger,
+    private readonly jwt: JwtService,
+    private readonly userTools: UserService,
+    private readonly user: UsersService,
+    private readonly mailer: NodeMailerService,
+    private readonly logger: Logger,
     private readonly config: ConfigService,
     private readonly tokenBlacklist: TokenBlacklistService,
     private readonly avatarStorage: AvatarStorageService,
   ) {
-    super();
     this.resetTokenSecret = this.config.get('JWT_RESET_TOKEN_SECRET');
-  }
-
-  /**
-   * Generates a reset token
-   * @param id The user id to generate the token for
-   * @returns The generated token
-   */
-  private async generateResetToken(email: string) {
-    this.logger.log(`Generating reset token for email: ${email}`);
-
-    // if in test mode, return 'test-reset-token' (used for e2e testing)
-    if (process.env.NODE_ENV === 'test') {
-      return 'test-reset-token';
-    }
-
-    const payload = { email };
-
-    // Generate reset token
-    const resetToken = await this.jwt.signAsync(payload, {
-      expiresIn: '1h',
-      secret: this.resetTokenSecret,
-    });
-    return resetToken;
-  }
-
-  /**
-   * Verifies a reset token
-   * @param token The token to verify
-   * @returns The user id if the token is valid
-   */
-  private async verifyResetToken(token: string) {
-    this.logger.log(`Verifying reset token: ${token}`);
-
-    // if in test mode, return 'testuser3@me.com' (used for e2e testing)
-    if (process.env.NODE_ENV === 'test') {
-      if (token === 'test-reset-token') {
-        return 'testuser3@me.com';
-      } else {
-        throw new UnauthorizedException('Invalid token');
-      }
-    }
-
-    try {
-      const decoded = await this.jwt.verifyAsync(token, {
-        secret: this.resetTokenSecret,
-      });
-
-      return decoded.email;
-    } catch (error) {
-      throw new UnauthorizedException('Invalid token');
-    }
   }
 
   /**
@@ -133,10 +82,10 @@ export class ManagementService extends UserService {
     this.logger.log(`Changing username for user with id: ${userId} to: ${newUsername}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Compare password hashes
-    await this.comparePassword(password, user.password);
+    await this.userTools.comparePassword(password, user.password);
 
     // Check if new username is the same as the old one
     if (newUsername === user.username) {
@@ -170,10 +119,10 @@ export class ManagementService extends UserService {
     this.logger.log(`Changing email for user with id: ${userId} to: ${newEmail}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Compare password hashes
-    await this.comparePassword(password, user.password);
+    await this.userTools.comparePassword(password, user.password);
 
     // Check if current email is the same as the old one
     if (currentEmail !== user.email) {
@@ -213,7 +162,7 @@ export class ManagementService extends UserService {
     this.logger.log(`Changing country for user with id: ${userId} to: ${newCountry}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Check if new country is the same as the old one
     if (newCountry === user.country) {
@@ -241,7 +190,7 @@ export class ManagementService extends UserService {
     this.logger.log(`Uploading avatar for user with id: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Delete old avatar
     if (user.profilePicture) {
@@ -272,7 +221,7 @@ export class ManagementService extends UserService {
     this.logger.log(`Deleting avatar for user with id: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Delete old avatar
     const oldAvatar = user.profilePicture.split('/avatar-')[1].split('?')[0];
@@ -297,10 +246,10 @@ export class ManagementService extends UserService {
     this.logger.log(`Changing password for user with id: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Compare password hashes
-    await this.comparePassword(oldPassword, user.password);
+    await this.userTools.comparePassword(oldPassword, user.password);
 
     // Check if new password is the same as the old one
     if (newPassword === oldPassword) {
@@ -309,7 +258,7 @@ export class ManagementService extends UserService {
     }
 
     // Hash password
-    const hashedPassword = await this.hashPassword(newPassword);
+    const hashedPassword = await this.userTools.hashPassword(newPassword);
 
     // Update password
     await this.user.updatePassword(userId, hashedPassword);
@@ -330,7 +279,7 @@ export class ManagementService extends UserService {
     this.logger.log(`Sending password reset email for email: ${email}`);
 
     // Check if email exists
-    const user = await this.findUser(email, 'email');
+    const user = await this.userTools.findUser(email, 'email');
 
     // Generate a password reset token
     const resetToken = await this.generateResetToken(email);
@@ -360,7 +309,7 @@ export class ManagementService extends UserService {
     const userEmail = await this.verifyResetToken(token);
 
     // Check and get user
-    const user = await this.findUser(userEmail, 'email');
+    const user = await this.userTools.findUser(userEmail, 'email');
 
     // Check if token is blacklisted
     const isBlacklisted = await this.tokenBlacklist.isBlacklisted(token);
@@ -370,7 +319,7 @@ export class ManagementService extends UserService {
     }
 
     // Hash password
-    const hashedPassword = await this.hashPassword(newPassword);
+    const hashedPassword = await this.userTools.hashPassword(newPassword);
 
     // Update password
     await this.user.updatePassword(user.id, hashedPassword);
@@ -396,10 +345,10 @@ export class ManagementService extends UserService {
     this.logger.log(`Deleting account for user with id: ${userId}`);
 
     // Check and get user
-    const user = await this.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id');
 
     // Compare password hashes
-    await this.comparePassword(password, user.password);
+    await this.userTools.comparePassword(password, user.password);
 
     // Delete user
     await this.user.remove(userId);
@@ -407,5 +356,56 @@ export class ManagementService extends UserService {
     // Return success message
     this.logger.log(`Account deleted successfully for userId: ${userId}`);
     return { message: 'Account deleted successfully' };
+  }
+
+  /**
+   * Generates a reset token
+   * @param id The user id to generate the token for
+   * @returns The generated token
+   */
+  private async generateResetToken(email: string) {
+    this.logger.log(`Generating reset token for email: ${email}`);
+
+    // if in test mode, return 'test-reset-token' (used for e2e testing)
+    if (process.env.NODE_ENV === 'test') {
+      return 'test-reset-token';
+    }
+
+    const payload = { email };
+
+    // Generate reset token
+    const resetToken = await this.jwt.signAsync(payload, {
+      expiresIn: '1h',
+      secret: this.resetTokenSecret,
+    });
+    return resetToken;
+  }
+
+  /**
+   * Verifies a reset token
+   * @param token The token to verify
+   * @returns The user id if the token is valid
+   */
+  private async verifyResetToken(token: string) {
+    this.logger.log(`Verifying reset token: ${token}`);
+
+    // if in test mode, return 'testuser3@me.com' (used for e2e testing)
+    if (process.env.NODE_ENV === 'test') {
+      if (token === 'test-reset-token') {
+        return 'testuser3@me.com';
+      } else {
+        throw new UnauthorizedException('Invalid token');
+      }
+    }
+
+    try {
+      const decoded = await this.jwt.verifyAsync(token, {
+        secret: this.resetTokenSecret,
+      });
+
+      return decoded.email;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }

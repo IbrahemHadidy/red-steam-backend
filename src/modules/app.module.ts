@@ -116,8 +116,6 @@ export class AppModule implements NestModule {
       optionsSuccessStatus: 204,
       credentials: true,
       maxAge: 3600,
-      allowedHeaders: 'origin, x-requested-with, x-refresh-token, content-type, accept, authorization',
-      exposedHeaders: 'authorization, x-refresh-token',
     });
 
     return app;

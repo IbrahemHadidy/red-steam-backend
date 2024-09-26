@@ -34,7 +34,7 @@ describe('GameService', () => {
   let gamesService: GamesService;
   let usersService: UsersService;
   let companiesService: CompaniesService;
-  let gamesFeaturesService: GamesFeaturesService;
+  let featuresService: GamesFeaturesService;
   let gamesLanguagesService: GamesLanguagesService;
   let gamesTagsService: GamesTagsService;
   let reviewsService: ReviewsService;
@@ -122,7 +122,7 @@ describe('GameService', () => {
     searchService = module.get<SearchService>(SearchService);
     usersService = module.get<UsersService>(UsersService);
     gamesService = module.get<GamesService>(GamesService);
-    gamesFeaturesService = module.get<GamesFeaturesService>(GamesFeaturesService);
+    featuresService = module.get<GamesFeaturesService>(GamesFeaturesService);
     gamesLanguagesService = module.get<GamesLanguagesService>(GamesLanguagesService);
     gamesTagsService = module.get<GamesTagsService>(GamesTagsService);
     companiesService = module.get<CompaniesService>(CompaniesService);
@@ -281,32 +281,32 @@ describe('GameService', () => {
     );
 
     // Create some test game features
-    feature1 = await gamesFeaturesService.create({
+    feature1 = await featuresService.create({
       name: 'Test Feature 1',
       icon: Buffer.from('test icon 1', 'utf-8'),
     });
 
-    feature2 = await gamesFeaturesService.create({
+    feature2 = await featuresService.create({
       name: 'Test Feature 2',
       icon: Buffer.from('test icon 2', 'utf-8'),
     });
 
-    feature3 = await gamesFeaturesService.create({
+    feature3 = await featuresService.create({
       name: 'Test Feature 3',
       icon: Buffer.from('test icon 3', 'utf-8'),
     });
 
-    feature4 = await gamesFeaturesService.create({
+    feature4 = await featuresService.create({
       name: 'Test Feature 4',
       icon: Buffer.from('test icon 4', 'utf-8'),
     });
 
-    feature5 = await gamesFeaturesService.create({
+    feature5 = await featuresService.create({
       name: 'Test Feature 5',
       icon: Buffer.from('test icon 5', 'utf-8'),
     });
 
-    feature6 = await gamesFeaturesService.create({
+    feature6 = await featuresService.create({
       name: 'Test Feature 6',
       icon: Buffer.from('test icon 6', 'utf-8'),
     });
@@ -349,7 +349,7 @@ describe('GameService', () => {
         discountEndDate: new Date('2024-10-30'),
         offerType: 'SPECIAL PROMOTION',
       },
-      gamesFeatures: [feature1.id, feature2.id, feature3.id, feature4.id],
+      features: [feature1.id, feature2.id, feature3.id, feature4.id],
       languages: [
         { name: language1.name, interface: true, fullAudio: true, subtitles: true },
         { name: language2.name, interface: true, fullAudio: true, subtitles: true },
@@ -402,7 +402,7 @@ describe('GameService', () => {
         discountEndDate: new Date('2024-11-30'),
         offerType: 'WEEKEND DEAL',
       },
-      gamesFeatures: [feature2.id, feature3.id, feature4.id, feature5.id],
+      features: [feature2.id, feature3.id, feature4.id, feature5.id],
       languages: [
         { name: language1.name, interface: true, fullAudio: true, subtitles: true },
         { name: language2.name, interface: true, fullAudio: true, subtitles: false },
@@ -453,7 +453,7 @@ describe('GameService', () => {
         discountEndDate: new Date('2024-11-30'),
         offerType: 'WEEKEND DEAL',
       },
-      gamesFeatures: [feature5.id, feature6.id, feature4.id, feature3.id],
+      features: [feature5.id, feature6.id, feature4.id, feature3.id],
       languages: [
         { name: language1.name, interface: true, fullAudio: true, subtitles: true },
         { name: language2.name, interface: true, fullAudio: true, subtitles: true },
@@ -504,7 +504,7 @@ describe('GameService', () => {
         discountEndDate: new Date('2024-11-30'),
         offerType: 'WEEKEND DEAL',
       },
-      gamesFeatures: [feature2.id, feature3.id, feature4.id],
+      features: [feature2.id, feature3.id, feature4.id],
       languages: [
         { name: language1.name, interface: true, fullAudio: true, subtitles: true },
         { name: language4.name, interface: true, fullAudio: true, subtitles: false },
@@ -555,7 +555,7 @@ describe('GameService', () => {
         discountEndDate: new Date('2024-11-30'),
         offerType: 'SPECIAL PROMOTION',
       },
-      gamesFeatures: [feature1.id, feature5.id, feature3.id, feature6.id],
+      features: [feature1.id, feature5.id, feature3.id, feature6.id],
       languages: [
         { name: language6.name, interface: true, fullAudio: true, subtitles: true },
         { name: language5.name, interface: true, fullAudio: true, subtitles: true },
@@ -600,7 +600,7 @@ describe('GameService', () => {
       pricing: {
         free: true,
       },
-      gamesFeatures: [feature2.id, feature3.id, feature4.id],
+      features: [feature2.id, feature3.id, feature4.id],
       languages: [{ name: language1.name, interface: true, fullAudio: true, subtitles: true }],
       platformEntries: {
         win: true,
@@ -752,7 +752,7 @@ describe('GameService', () => {
     await reviewsService.removeAll();
     await gamesService.removeAll();
     await usersService.removeAll();
-    await gamesFeaturesService.removeAll();
+    await featuresService.removeAll();
     await gamesLanguagesService.removeAll();
     await gamesTagsService.removeAll();
     await companiesService.removeAll('developers');
@@ -866,7 +866,7 @@ describe('GameService', () => {
 
         // Assertions
         expect(games.length).toBeGreaterThan(0);
-        expect(games.every((game) => game.gamesFeatures.some((feature) => feature.name === feature1.name))).toBe(true);
+        expect(games.every((game) => game.features.some((feature) => feature.name === feature1.name))).toBe(true);
       });
 
       it('should return games filtered by games languages', async () => {

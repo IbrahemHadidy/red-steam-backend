@@ -11,7 +11,7 @@ import type { User as UserType } from '@repositories/sql/users/user.entity';
 
 @Entity({ name: 'tags' })
 export class GameTag extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment', { name: 'tag_id' })
   id: number;
 
   @Column()

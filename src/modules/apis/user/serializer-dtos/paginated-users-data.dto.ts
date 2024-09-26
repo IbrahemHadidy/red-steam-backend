@@ -5,16 +5,16 @@ import { Expose, Type } from 'class-transformer';
 import { UserDto } from '@apis/user/serializer-dtos/user.dto';
 
 // Types
-import type { UserDto as UserDtoType } from '@apis/user/serializer-dtos/user.dto';
+import type { UserDto as UserType } from '@apis/user/serializer-dtos/user.dto';
 
 export class PaginatedUsersDataDto {
   @Expose()
   @Type(() => UserDto)
-  items: UserDtoType;
+  readonly items: UserType;
 
   @Expose()
-  total: number;
+  readonly total: number;
 
   @Expose()
-  totalPages: number;
+  readonly totalPages: number;
 }

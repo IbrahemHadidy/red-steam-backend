@@ -31,64 +31,6 @@ export class CompaniesService {
   ) {}
 
   /**
-   * Checks if a company with the given property exists.
-   * @param checkBy - The property to check (id, name, or website).
-   * @param checkValue - The value to check.
-   * @param type - The type of the company (publisher or developer).
-   * @throws `NotFoundException` If the company is not found.
-   */
-  private async checkCompanyExists(
-    checkBy: 'id' | 'name' | 'website',
-    checkValue: number | string,
-    type: 'publisher' | 'developer',
-  ): Promise<void> {
-    // Get the repository based on the type
-    const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
-
-    // Check if company exists
-    const company = await repository.findOne({ where: { [checkBy]: checkValue } });
-
-    // Throw a not found exception if company does not exist
-    if (!company) throw new NotFoundException(`${type.charAt(0).toUpperCase() + type.slice(1)} not found`);
-  }
-
-  /**
-   * Checks if a value is unique.
-   * @param updateType - The type of the update (name or website).
-   * @param value - The value to check.
-   * @param type - The type of the company (publisher or developer).
-   * @throws `ConflictException` If the value is not unique.
-   */
-  private async checkValueIsUnique(
-    updateType: 'name' | 'website',
-    value: string,
-    type: 'publisher' | 'developer',
-  ): Promise<void> {
-    // Get the repository based on the type
-    const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
-
-    // Check if value is unique
-    const company = await repository.findOne({ where: { [updateType]: value } });
-
-    // Throw a conflict exception if value is not unique
-    if (company)
-      throw new ConflictException(`${type.charAt(0).toUpperCase() + type.slice(1)} ${updateType} already exists`);
-  }
-
-  /**
-   * Checks if the website is valid.
-   * @param website - The website to check.
-   * @throws `BadRequestException` If the website is not valid.
-   */
-  private async checkValidWebsite(website: string): Promise<void> {
-    // Regular expression to match a valid website URL
-    const urlRegex = /^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/;
-
-    // Throw a bad request exception if the website is not valid
-    if (!website.match(urlRegex)) throw new BadRequestException('Invalid website URL');
-  }
-
-  /**
    * Retrieves all companies.
    * @param type - The type of the companies (publishers or developers).
    * @returns A list of companies.
@@ -184,13 +126,13 @@ export class CompaniesService {
 
   /**
    * Gets paginated companies.
-   * @param {number} page - The current page number.
-   * @param {number} limit - The number of items per page.
-   * @param {string} orderBy - The field to order by.
-   * @param {('ASC' | 'DESC')} order - The order direction.
-   * @param {('publisher' | 'developer')} type - The type of companies to retrieve
-   * @param {{name?: string; website?: string}} searchQuery - The search query.
-   * @returns {Promise<{ items: (PublisherType | DeveloperType)[], total: number, totalPages: number }>} A promise that resolves to the paginated companies.
+   * @param page - The current page number.
+   * @param limit - The number of items per page.
+   * @param orderBy - The field to order by.
+   * @param order - The order direction.
+   * @param type - The type of companies to retrieve
+   * @param searchQuery - The search query.
+   * @returns A promise that resolves to the paginated companies.
    */
   public async getCompaniesPaginated(
     page: number,
@@ -351,5 +293,63 @@ export class CompaniesService {
     // Throw an exception if the removal fails
     if (result.affected === undefined)
       throw new InternalServerErrorException(`Failed to remove ${type} from the database`);
+  }
+
+  /**
+   * Checks if a company with the given property exists.
+   * @param checkBy - The property to check (id, name, or website).
+   * @param checkValue - The value to check.
+   * @param type - The type of the company (publisher or developer).
+   * @throws `NotFoundException` If the company is not found.
+   */
+  private async checkCompanyExists(
+    checkBy: 'id' | 'name' | 'website',
+    checkValue: number | string,
+    type: 'publisher' | 'developer',
+  ): Promise<void> {
+    // Get the repository based on the type
+    const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
+
+    // Check if company exists
+    const company = await repository.findOne({ where: { [checkBy]: checkValue } });
+
+    // Throw a not found exception if company does not exist
+    if (!company) throw new NotFoundException(`${type.charAt(0).toUpperCase() + type.slice(1)} not found`);
+  }
+
+  /**
+   * Checks if a value is unique.
+   * @param updateType - The type of the update (name or website).
+   * @param value - The value to check.
+   * @param type - The type of the company (publisher or developer).
+   * @throws `ConflictException` If the value is not unique.
+   */
+  private async checkValueIsUnique(
+    updateType: 'name' | 'website',
+    value: string,
+    type: 'publisher' | 'developer',
+  ): Promise<void> {
+    // Get the repository based on the type
+    const repository = type === 'publisher' ? this.publisherRepository : this.developerRepository;
+
+    // Check if value is unique
+    const company = await repository.findOne({ where: { [updateType]: value } });
+
+    // Throw a conflict exception if value is not unique
+    if (company)
+      throw new ConflictException(`${type.charAt(0).toUpperCase() + type.slice(1)} ${updateType} already exists`);
+  }
+
+  /**
+   * Checks if the website is valid.
+   * @param website - The website to check.
+   * @throws `BadRequestException` If the website is not valid.
+   */
+  private async checkValidWebsite(website: string): Promise<void> {
+    // Regular expression to match a valid website URL
+    const urlRegex = /^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/;
+
+    // Throw a bad request exception if the website is not valid
+    if (!website.match(urlRegex)) throw new BadRequestException('Invalid website URL');
   }
 }

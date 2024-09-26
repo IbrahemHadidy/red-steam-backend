@@ -110,7 +110,8 @@ export class FeatureController {
     @Query('limit', ParseIntPipe) limit: number,
     @Query('orderBy', new UnionTypeValidationPipe(['id', 'name'])) orderBy: 'id' | 'name',
     @Query('order', new UnionTypeValidationPipe(['ASC', 'DESC'])) order: 'ASC' | 'DESC',
-    @Query('searchQuery', new ParseJsonPipe(FeatureQueryDto, { optional: true })) searchQuery: FeatureQueryDto = {},
+    @Query('searchQuery', new ParseJsonPipe(FeatureQueryDto, { optional: true, validate: true }))
+    searchQuery: FeatureQueryDto = {},
   ) {
     const result = await this.featureService.getFeaturesPaginated(page, limit, orderBy, order, searchQuery);
 

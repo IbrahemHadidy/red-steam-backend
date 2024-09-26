@@ -9,5 +9,5 @@ export class AddToWishlistDto {
   @IsNotEmpty({ message: 'itemsIds is required' })
   @IsArray({ message: 'itemIds must be an array' })
   @IsNumber({}, { each: true, message: 'itemsIds must be an array of numbers' })
-  itemsIds: number[];
+  readonly itemsIds: number[];
 }

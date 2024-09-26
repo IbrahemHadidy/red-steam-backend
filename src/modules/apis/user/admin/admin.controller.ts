@@ -51,7 +51,8 @@ export class AdminController {
     )
     orderBy: 'username' | 'email' | 'country' | 'isVerified' | 'isAdmin' | 'createdAt',
     @Query('order', new UnionTypeValidationPipe(['ASC', 'DESC'])) order: 'ASC' | 'DESC',
-    @Query('searchQuery', new ParseJsonPipe(UserQueryDto, { optional: true })) searchQuery: UserQueryDto = {},
+    @Query('searchQuery', new ParseJsonPipe(UserQueryDto, { optional: true, validate: true }))
+    searchQuery: UserQueryDto = {},
   ) {
     const result = await this.admin.getUsersPaginated(page, limit, orderBy, order, searchQuery);
 

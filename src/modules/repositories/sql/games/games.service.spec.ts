@@ -83,7 +83,7 @@ describe('gamesService', () => {
         free: false,
         price: 10,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,
@@ -125,7 +125,7 @@ describe('gamesService', () => {
         free: false,
         price: 10,
       },
-      gamesFeatures: [],
+      features: [],
       languages: [],
       platformEntries: {
         win: true,
@@ -276,7 +276,7 @@ describe('gamesService', () => {
           free: false,
           price: 100,
         },
-        gamesFeatures: [],
+        features: [],
         languages: [],
         platformEntries: {
           win: true,
@@ -329,7 +329,7 @@ describe('gamesService', () => {
             free: false,
             price: 10,
           },
-          gamesFeatures: [],
+          features: [],
           languages: [],
           platformEntries: {
             win: true,
@@ -381,7 +381,7 @@ describe('gamesService', () => {
           discountEndDate: new Date('2024-10-30'),
           offerType: 'SPECIAL PROMOTION',
         },
-        gamesFeatures: [],
+        features: [],
         platformEntries: {
           win: true,
           mac: false,

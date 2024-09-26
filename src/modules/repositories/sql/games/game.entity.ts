@@ -32,11 +32,14 @@ import type { GameLanguage as GameLanguageType } from '../games-languages/game-l
 
 @Entity({ name: 'games' })
 export class Game extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment', { name: 'game_id' })
   id: number;
 
   @Column({ type: 'varchar', length: 50, unique: true })
   name: string;
+
+  @Column({ type: 'varchar', length: 50, unique: true })
+  storageName: string;
 
   @Column({ type: 'varchar', length: 50 })
   category: string;
@@ -79,7 +82,7 @@ export class Game extends BaseEntity {
 
   @ManyToMany(() => GameFeature, (feature: GameFeatureType) => feature.games)
   @JoinTable({ name: 'games_features' })
-  gamesFeatures?: GameFeatureType[];
+  features?: GameFeatureType[];
 
   @ManyToMany(() => GameLanguage, (language: GameLanguageType) => language.games)
   @JoinTable({ name: 'games_languages' })

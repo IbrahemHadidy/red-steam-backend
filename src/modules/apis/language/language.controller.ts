@@ -110,7 +110,8 @@ export class LanguageController {
     @Query('limit', ParseIntPipe) limit: number,
     @Query('orderBy', new UnionTypeValidationPipe(['id', 'name'])) orderBy: 'id' | 'name',
     @Query('order', new UnionTypeValidationPipe(['ASC', 'DESC'])) order: 'ASC' | 'DESC',
-    @Query('searchQuery', new ParseJsonPipe(LanguageQueryDto, { optional: true })) searchQuery: LanguageQueryDto = {},
+    @Query('searchQuery', new ParseJsonPipe(LanguageQueryDto, { optional: true, validate: true }))
+    searchQuery: LanguageQueryDto = {},
   ) {
     const result = await this.languageService.getLanguagesPaginated(page, limit, orderBy, order, searchQuery);
 
