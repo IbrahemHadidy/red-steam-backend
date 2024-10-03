@@ -45,7 +45,7 @@ export class DataService {
     searchData: {
       sort?: 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews' | 'totalSales';
       partialName?: string;
-      maxPrice?: number;
+      maxPrice?: string;
       tags?: number[];
       excludeTags?: number[];
       paid?: boolean;
@@ -278,7 +278,7 @@ export class DataService {
     this.logger.log(`Finding reviews for game with ID: ${id}`);
 
     // Find reviews by game ID
-    const reviews = await this.review.getByGameId(Number(id), filter, sort, pagination);
+    const reviews = await this.review.getByGameId(id, filter, sort, pagination);
 
     // Return reviews
     return reviews;

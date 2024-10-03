@@ -19,5 +19,5 @@ export class GameFeature extends BaseEntity {
   icon: Buffer;
 
   @ManyToMany(() => Game, (game: GameType) => game.features)
-  games?: GameType[];
+  games: GameType[];
 }

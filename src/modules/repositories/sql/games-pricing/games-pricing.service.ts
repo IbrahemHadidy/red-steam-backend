@@ -11,6 +11,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, FindOptionsRelations, FindOptionsWhere, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 
+// DecimalJS
+import Decimal from 'decimal.js';
+
 // Entities
 import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
 
@@ -118,8 +121,8 @@ export class GamesPricingService {
       | 'discountEndDate'
       | 'offerType';
     sortOrder: 'ASC' | 'DESC';
-    minPrice?: number;
-    maxPrice?: number;
+    minPrice?: string;
+    maxPrice?: string;
     skip?: number;
     take?: number;
   }): Promise<GameType[]> {
@@ -187,9 +190,9 @@ export class GamesPricingService {
    */
   public async create(pricing: {
     free: boolean;
-    basePrice: number;
+    basePrice: string;
     discount?: boolean;
-    discountPrice?: number;
+    discountPrice?: string;
     discountStartDate?: Date;
     discountEndDate?: Date;
     offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
@@ -250,9 +253,9 @@ export class GamesPricingService {
     id: number,
     pricing: {
       free?: boolean;
-      basePrice?: number;
+      basePrice?: string;
       discount?: boolean;
-      discountPrice?: number;
+      discountPrice?: string;
       discountStartDate?: Date;
       discountEndDate?: Date;
       offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
@@ -370,18 +373,21 @@ export class GamesPricingService {
    */
   private async validatePricing(pricing: {
     free: boolean;
-    basePrice?: number;
+    basePrice?: string;
     discount?: boolean;
-    discountPrice?: number;
+    discountPrice?: string;
     discountStartDate?: Date;
     discountEndDate?: Date;
     offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
   }): Promise<void> {
+    // Create decimals
+    const basePriceDecimal = new Decimal(pricing.basePrice);
+
     // If game is free, throw a bad request exception with a message
     if (pricing.free && pricing.discount) throw new BadRequestException('Game is free, cannot have discount');
 
     // If game is not free and base price is not provided or less than or equal to 0, throw a bad request exception with a message
-    if (!pricing.free && (!pricing.basePrice || pricing.basePrice <= 0))
+    if (!pricing.free && (!pricing.basePrice || basePriceDecimal.lte(0)))
       throw new BadRequestException('Game is not free, Base price is required, and must be greater than 0');
 
     // If discount is provided, validate the following
@@ -415,12 +421,23 @@ export class GamesPricingService {
    * @returns Promise that resolves to discount percentage
    * @throws `BadRequestException` If base price is less than or equal to 0
    */
-  private async calculateDiscountPercentage(discountPrice: number, basePrice: number): Promise<number> {
+  private async calculateDiscountPercentage(discountPrice: string, basePrice: string): Promise<number> {
+    // Create decimals
+    const basePriceDecimal = new Decimal(basePrice);
+    const discountPriceDecimal = new Decimal(discountPrice);
+
     // If base price is less than or equal to 0, throw a bad request exception with a message
-    if (!basePrice || basePrice === 0)
+    if (!basePrice || basePriceDecimal)
       throw new BadRequestException('Base price must be greater than 0 to calculate discount percentage');
 
     // Calculate discount percentage
-    return ((basePrice - discountPrice) / basePrice) * 100;
+    const discountPercentage = basePriceDecimal
+      .minus(discountPriceDecimal)
+      .dividedBy(basePriceDecimal)
+      .times(100)
+      .toDecimalPlaces(0)
+      .toNumber();
+
+    return discountPercentage;
   }
 }

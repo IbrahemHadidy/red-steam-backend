@@ -14,10 +14,10 @@ import {
 // Entities
 import { Developer, Publisher } from '@repositories/sql/companies/company.entity';
 import { GameFeature } from '@repositories/sql/games-features/game-feature.entity';
+import { GameLanguage } from '@repositories/sql/games-languages/game-language.entity';
 import { GamePricing } from '@repositories/sql/games-pricing/game-pricing.entity';
 import { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
 import { Review } from '@repositories/sql/reviews/review.entity';
-import { GameLanguage } from '../games-languages/game-language.entity';
 
 // Types
 import type {
@@ -25,10 +25,10 @@ import type {
   Publisher as PublisherType,
 } from '@repositories/sql/companies/company.entity';
 import type { GameFeature as GameFeatureType } from '@repositories/sql/games-features/game-feature.entity';
+import type { GameLanguage as GameLanguageType } from '@repositories/sql/games-languages/game-language.entity';
 import type { GamePricing as GamePricingType } from '@repositories/sql/games-pricing/game-pricing.entity';
 import type { GameTag as GameTagType } from '@repositories/sql/games-tags/game-tag.entity';
 import type { Review as ReviewType } from '@repositories/sql/reviews/review.entity';
-import type { GameLanguage as GameLanguageType } from '../games-languages/game-language.entity';
 
 @Entity({ name: 'games' })
 export class Game extends BaseEntity {
@@ -55,11 +55,11 @@ export class Game extends BaseEntity {
 
   @ManyToMany(() => Publisher, (company: PublisherType) => company.games)
   @JoinTable({ name: 'games_publishers' })
-  publishers?: PublisherType[];
+  publishers: PublisherType[];
 
   @ManyToMany(() => Developer, (company: DeveloperType) => company.games)
   @JoinTable({ name: 'games_developers' })
-  developers?: DeveloperType[];
+  developers: DeveloperType[];
 
   @Column({ type: 'jsonb' })
   thumbnailEntries: ThumbnailsEntry;
@@ -72,21 +72,21 @@ export class Game extends BaseEntity {
 
   @ManyToMany(() => GameTag, (tag: GameTagType) => tag.games)
   @JoinTable({ name: 'games_tags' })
-  tags?: GameTagType[];
+  tags: GameTagType[];
 
   @OneToOne(() => GamePricing, (pricing: GamePricingType) => pricing.game, {
     cascade: true,
   })
   @JoinColumn({ name: 'pricing_id' })
-  pricing?: GamePricingType;
+  pricing: GamePricingType;
 
   @ManyToMany(() => GameFeature, (feature: GameFeatureType) => feature.games)
   @JoinTable({ name: 'games_features' })
-  features?: GameFeatureType[];
+  features: GameFeatureType[];
 
   @ManyToMany(() => GameLanguage, (language: GameLanguageType) => language.games)
   @JoinTable({ name: 'games_languages' })
-  languages?: GameLanguageType[];
+  languages: GameLanguageType[];
 
   @Column({ type: 'jsonb', nullable: true })
   languageSupport: LanguageSupportEntry[];
@@ -113,7 +113,7 @@ export class Game extends BaseEntity {
   legal: string;
 
   @OneToMany(() => Review, (review: ReviewType) => review.game)
-  reviews?: ReviewType[];
+  reviews: ReviewType[];
 
   @Column({ type: 'int', default: 0 })
   totalSales: number;
@@ -126,15 +126,24 @@ export class Game extends BaseEntity {
 
   // Function to update reviews count and average rating
   async updateReviewsData() {
-    const reviews = this.reviews;
-    const positiveReviewsCount = reviews.filter((review) => review.positive).length;
-    this.reviewsCount = reviews.length;
-    if (reviews.length > 0) {
-      this.averageRating = (positiveReviewsCount / reviews.length) * 100;
+    const result: { count: number; positivecount: number } = await Game.createQueryBuilder('game')
+      .leftJoin('game.reviews', 'review')
+      .select(['COUNT(review.id) AS count', 'SUM(CASE WHEN review.positive = true THEN 1 ELSE 0 END) AS positivecount'])
+      .where('game.id = :id', { id: this.id })
+      .getRawOne();
+
+    const reviewsCount = Number(result.count) || 0;
+    const positiveReviewsCount = Number(result.positivecount) || 0;
+
+    this.reviewsCount = reviewsCount;
+
+    if (reviewsCount > 0) {
+      this.averageRating = (positiveReviewsCount / reviewsCount) * 100;
     } else {
       this.averageRating = 0;
-      this.reviewsCount = 0;
     }
+
+    // Call save after calculating reviews data
     await this.save();
   }
 }

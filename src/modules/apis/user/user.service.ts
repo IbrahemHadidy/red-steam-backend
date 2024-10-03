@@ -75,22 +75,22 @@ export class UserService {
    * @param {'username' | 'email' | 'id' | 'identifier'} type The type of the identifier;
    * @returns The created user data
    */
-  public async findUser(key: string, type: 'email' | 'username' | 'id' | 'identifier'): Promise<User> {
+  public async findUser(key: string, type: 'email' | 'username' | 'id' | 'identifier', reviews = false): Promise<User> {
     this.logger.log(`findUser called with ${type}: ${key}`);
 
     let user: User;
     switch (type) {
       case 'email':
-        user = await this.user.getByEmail(key);
+        user = await this.user.getByEmail(key, reviews);
         break;
       case 'username':
-        user = await this.user.getByUsername(key);
+        user = await this.user.getByUsername(key, reviews);
         break;
       case 'id':
-        user = await this.user.getById(key);
+        user = await this.user.getById(key, reviews);
         break;
       case 'identifier':
-        user = await this.user.getByEmailOrUsername(key);
+        user = await this.user.getByEmailOrUsername(key, reviews);
         break;
     }
     if (!user) {

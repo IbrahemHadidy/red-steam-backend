@@ -21,7 +21,7 @@ export class Publisher extends Company {
   id: number;
 
   @ManyToMany(() => Game, (game: GameType) => game.publishers)
-  games?: GameType[];
+  games: GameType[];
 }
 
 @Entity({ name: 'developers' })
@@ -30,5 +30,5 @@ export class Developer extends Company {
   id: number;
 
   @ManyToMany(() => Game, (game: GameType) => game.developers)
-  games?: GameType[];
+  games: GameType[];
 }

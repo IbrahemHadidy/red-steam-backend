@@ -33,4 +33,9 @@ export class SignupDto {
   @IsNotEmpty({ message: 'Please enter a country code' })
   @IsString({ message: 'Invalid country code' })
   readonly country: string;
+
+  @ApiProperty({ description: 'The recaptcha token.', example: 'TEST_TOKEN', required: true })
+  @IsNotEmpty({ message: 'Recaptcha token is required.' })
+  @IsString({ message: 'Recaptcha token must be a string.' })
+  readonly recaptchaToken: string;
 }

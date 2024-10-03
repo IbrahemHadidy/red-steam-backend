@@ -36,7 +36,7 @@ export class ManagementService {
    * @param email The email to check
    * @returns The result of the check
    */
-  public async checkEmailExists(data: { email: string }) {
+  public async checkEmailExists(data: { email: string }): Promise<{ exists: boolean; message: string }> {
     const { email } = data;
 
     this.logger.log(`Checking if email exists: ${email}`);
@@ -56,7 +56,7 @@ export class ManagementService {
    * @param username The username to check
    * @returns The result of the check
    */
-  public async checkUsernameExists(data: { username: string }) {
+  public async checkUsernameExists(data: { username: string }): Promise<{ exists: boolean; message: string }> {
     const { username } = data;
 
     this.logger.log(`Checking if username exists: ${username}`);
@@ -75,8 +75,14 @@ export class ManagementService {
    * Change username
    * @param data An object containing the userId, password, and newUsername
    * @returns The result of the change
+   * @throws `ConflictException` If the new username already exists
+   * @throws `BadRequestException` If the new username is the same as the current one
    */
-  public async changeUsername(data: { userId: string; password: string; newUsername: string }) {
+  public async changeUsername(data: {
+    userId: string;
+    password: string;
+    newUsername: string;
+  }): Promise<{ message: string }> {
     const { userId, password, newUsername } = data;
 
     this.logger.log(`Changing username for user with id: ${userId} to: ${newUsername}`);
@@ -112,8 +118,16 @@ export class ManagementService {
    * Change email
    * @param data An object containing the userId, password, currentEmail, and newEmail
    * @returns The result of the change
+   * @throws `UnauthorizedException` If the current email is incorrect
+   * @throws `BadRequestException` If the new email is the same as the current one
+   * @throws `ConflictException` If the new email already exists
    */
-  public async changeEmail(data: { userId: string; password: string; currentEmail: string; newEmail: string }) {
+  public async changeEmail(data: {
+    userId: string;
+    password: string;
+    currentEmail: string;
+    newEmail: string;
+  }): Promise<{ message: string }> {
     const { userId, password, currentEmail, newEmail } = data;
 
     this.logger.log(`Changing email for user with id: ${userId} to: ${newEmail}`);
@@ -155,8 +169,9 @@ export class ManagementService {
    * Change country
    * @param data An object containing the userId and newCountry
    * @returns The result of the change
+   * @throws `BadRequestException` If the new country is the same as the current one
    */
-  public async changeCountry(data: { userId: string; newCountry: string }) {
+  public async changeCountry(data: { userId: string; newCountry: string }): Promise<{ message: string }> {
     const { userId, newCountry } = data;
 
     this.logger.log(`Changing country for user with id: ${userId} to: ${newCountry}`);
@@ -184,7 +199,7 @@ export class ManagementService {
    * @param userId The user id to upload the avatar
    * @returns The result of the upload
    */
-  public async uploadAvatar(data: { avatar: File; userId: string }) {
+  public async uploadAvatar(data: { avatar: File; userId: string }): Promise<{ message: string }> {
     const { avatar, userId } = data;
 
     this.logger.log(`Uploading avatar for user with id: ${userId}`);
@@ -215,7 +230,7 @@ export class ManagementService {
    * @param userId The user id to delete the avatar
    * @returns The result of the delete
    */
-  public async deleteAvatar(data: { userId: string }) {
+  public async deleteAvatar(data: { userId: string }): Promise<{ message: string }> {
     const { userId } = data;
 
     this.logger.log(`Deleting avatar for user with id: ${userId}`);
@@ -239,8 +254,13 @@ export class ManagementService {
    * Change password
    * @param data An object containing the userId, oldPassword, and newPassword
    * @returns The result of the change
+   * @throws `BadRequestException` If the new password is the same as the old one
    */
-  public async changePassword(data: { userId: string; oldPassword: string; newPassword: string }) {
+  public async changePassword(data: {
+    userId: string;
+    oldPassword: string;
+    newPassword: string;
+  }): Promise<{ message: string }> {
     const { userId, oldPassword, newPassword } = data;
 
     this.logger.log(`Changing password for user with id: ${userId}`);
@@ -273,7 +293,7 @@ export class ManagementService {
    * @param data An object containing the email
    * @returns The result of the change
    */
-  public async forgotPassword(data: { email: string }) {
+  public async forgotPassword(data: { email: string }): Promise<{ message: string }> {
     const { email } = data;
 
     this.logger.log(`Sending password reset email for email: ${email}`);
@@ -299,8 +319,9 @@ export class ManagementService {
    * Submit password reset
    * @param data An object containing the token and newPassword
    * @returns The result of the change
+   * @throws `UnauthorizedException` If the token is blacklisted
    */
-  public async passwordReset(data: { token: string; newPassword: string }) {
+  public async passwordReset(data: { token: string; newPassword: string }): Promise<{ message: string }> {
     const { token, newPassword } = data;
 
     this.logger.log(`Submitting password reset for token: ${token}`);
@@ -339,7 +360,7 @@ export class ManagementService {
    * @param data An object containing the userId and password
    * @returns The result of the delete
    */
-  public async deleteAccount(data: { userId: string; password: string }) {
+  public async deleteAccount(data: { userId: string; password: string }): Promise<{ message: string }> {
     const { userId, password } = data;
 
     this.logger.log(`Deleting account for user with id: ${userId}`);
@@ -363,7 +384,7 @@ export class ManagementService {
    * @param id The user id to generate the token for
    * @returns The generated token
    */
-  private async generateResetToken(email: string) {
+  private async generateResetToken(email: string): Promise<string> {
     this.logger.log(`Generating reset token for email: ${email}`);
 
     // if in test mode, return 'test-reset-token' (used for e2e testing)
@@ -385,8 +406,9 @@ export class ManagementService {
    * Verifies a reset token
    * @param token The token to verify
    * @returns The user id if the token is valid
+   * @throws `UnauthorizedException` If the token is invalid
    */
-  private async verifyResetToken(token: string) {
+  private async verifyResetToken(token: string): Promise<string> {
     this.logger.log(`Verifying reset token: ${token}`);
 
     // if in test mode, return 'testuser3@me.com' (used for e2e testing)

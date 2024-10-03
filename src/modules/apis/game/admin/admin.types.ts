@@ -30,7 +30,7 @@ export interface CreateData {
   }[];
   pricing: {
     free: boolean;
-    basePrice?: number;
+    basePrice?: string;
   };
   tags: number[];
   features: number[];
@@ -114,7 +114,7 @@ export interface UpdateData {
   featuredOrders?: number[];
   pricing?: {
     free?: boolean;
-    basePrice?: number;
+    price?: string;
   };
   tags?: number[];
   features?: number[];

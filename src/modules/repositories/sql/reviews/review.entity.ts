@@ -2,6 +2,7 @@
 import {
   AfterInsert,
   AfterRemove,
+  AfterUpdate,
   BaseEntity,
   Column,
   Entity,
@@ -25,11 +26,11 @@ export class Review extends BaseEntity {
 
   @ManyToOne(() => User, (user: UserType) => user.reviews)
   @JoinColumn({ name: 'user_id' })
-  user?: UserType;
+  user: UserType;
 
   @ManyToOne(() => Game, (game: GameType) => game.reviews)
   @JoinColumn({ name: 'game_id' })
-  game?: GameType;
+  game: GameType;
 
   @Column()
   positive: boolean;
@@ -41,6 +42,7 @@ export class Review extends BaseEntity {
   content: string;
 
   @AfterInsert()
+  @AfterUpdate()
   @AfterRemove()
   async updateGameReviewsData() {
     if (this.game) {

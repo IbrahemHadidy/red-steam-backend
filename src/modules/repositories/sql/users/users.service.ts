@@ -58,11 +58,11 @@ export class UsersService {
    * @param id - The ID of the user to retrieve.
    * @return A Promise that resolves to the user entity.
    */
-  public async getById(id: string): Promise<UserType> {
+  public async getById(id: string, reviews?: boolean): Promise<UserType> {
     this.logger.log(`Retrieving user with ID ${id} from the database`);
 
     // Get the user by ID
-    const user = await this.userRepository.findOne({ where: { id }, relations: this.relations });
+    const user = await this.userRepository.findOne({ where: { id }, relations: { tags: true, reviews } });
 
     // Return the user
     return user;
@@ -73,11 +73,11 @@ export class UsersService {
    * @param username - The username of the user to retrieve.
    * @return A Promise that resolves to the user entity or null if the user is not found.
    */
-  public async getByUsername(username: string): Promise<UserType> {
+  public async getByUsername(username: string, reviews?: boolean): Promise<UserType> {
     this.logger.log(`Retrieving user with username ${username} from the database`);
 
     // Get the user by username
-    const user = await this.userRepository.findOne({ where: { username }, relations: this.relations });
+    const user = await this.userRepository.findOne({ where: { username }, relations: { tags: true, reviews } });
 
     // Return the user
     return user;
@@ -86,13 +86,14 @@ export class UsersService {
   /**
    * Retrieves a user by their email address.
    * @param email - The email address of the user to retrieve.
+   * @param reviews - Whether to include reviews in the search.
    * @return A Promise that resolves to the user entity or null if the user is not found.
    */
-  public async getByEmail(email: string): Promise<UserType | null> {
+  public async getByEmail(email: string, reviews?: boolean): Promise<UserType | null> {
     this.logger.log(`Retrieving user with email ${email} from the database`);
 
     // Get the user by email
-    const user = await this.userRepository.findOne({ where: { email }, relations: this.relations });
+    const user = await this.userRepository.findOne({ where: { email }, relations: { tags: true, reviews } });
 
     // Return the user
     return user;
@@ -103,13 +104,13 @@ export class UsersService {
    * @param emailOrUsername - The email or username of the user to retrieve.
    * @return A Promise that resolves to the user entity or null if the user is not found.
    */
-  public async getByEmailOrUsername(emailOrUsername: string): Promise<UserType> {
+  public async getByEmailOrUsername(emailOrUsername: string, reviews?: boolean): Promise<UserType> {
     this.logger.log(`Retrieving user with identifier: ${emailOrUsername} from the database`);
 
     // Get the user by email
     const user = await this.userRepository.findOne({
       where: [{ email: emailOrUsername }, { username: emailOrUsername }],
-      relations: this.relations,
+      relations: { tags: true, reviews },
     });
 
     // Return the user

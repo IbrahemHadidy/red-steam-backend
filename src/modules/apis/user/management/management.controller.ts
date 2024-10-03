@@ -17,6 +17,9 @@ import {
 // Fastify
 import { FastifyRequest as Request } from 'fastify';
 
+// Recaptcha
+import { Recaptcha } from '@nestlab/google-recaptcha';
+
 // Multer
 import { FileInterceptor } from '@nest-lab/fastify-multer';
 
@@ -184,6 +187,7 @@ export class ManagementController {
   }
 
   @ApiDescriptor(forgotPasswordDescriptor)
+  @Recaptcha()
   @Post('password/forgot')
   @HttpCode(200)
   public async forgotPassword(@Body() data: ForgotPasswordDto) {

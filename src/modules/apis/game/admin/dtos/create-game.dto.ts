@@ -8,112 +8,112 @@ import { IsArray, IsBoolean, IsDate, IsNotEmpty, IsNumber, IsObject, IsOptional,
 import { ApiProperty } from '@nestjs/swagger';
 
 class ImageEntriesDto {
-  @IsNotEmpty()
-  @IsNumber()
+  @IsNotEmpty({ message: 'The order of the image is required' })
+  @IsNumber({ allowNaN: false }, { message: 'The order of the image must be a number' })
   readonly order: number;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The path of the image must be a string' })
   readonly featured?: boolean;
 }
 
 class VideoEntriesDto {
-  @IsNotEmpty()
-  @IsNumber()
+  @IsNotEmpty({ message: 'The order of the video is required' })
+  @IsNumber({ allowNaN: false }, { message: 'The order of the video must be a number' })
   readonly order: number;
 }
 
 class PricingDto {
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'The price of the game is required' })
+  @IsBoolean({ message: 'The price of the game must be a boolean' })
   readonly free: boolean;
 
   @IsOptional()
-  @IsNumber()
-  readonly basePrice?: number;
+  @IsString({ message: 'The base price of the game must be a string' })
+  readonly basePrice?: string;
 }
 
 class LanguageDto {
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'The name of the language is required' })
+  @IsString({ message: 'The name of the language must be a string' })
   readonly name: string;
 
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'The interface of the language is required' })
+  @IsBoolean({ message: 'The interface of the language must be a boolean' })
   readonly interface: boolean;
 
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'The audio of the language is required' })
+  @IsBoolean({ message: 'The audio of the language must be a boolean' })
   readonly fullAudio: boolean;
 
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'The subtitles of the language is required' })
+  @IsBoolean({ message: 'The subtitles of the language must be a boolean' })
   readonly subtitles: boolean;
 }
 
 class SystemRequirementDto {
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The OS system requirement must be a string' })
   readonly os?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The CPU system requirement must be a string' })
   readonly cpu?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The RAM system requirement must be a string' })
   readonly ram?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The GPU system requirement must be a string' })
   readonly gpu?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The DX system requirement must be a string' })
   readonly dx?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The Network system requirement must be a string' })
   readonly network?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The Storage system requirement must be a string' })
   readonly storage?: string;
 
   @IsOptional()
-  @IsString()
-  readonly additionalNotes?: string;
-
-  @IsOptional()
-  @IsString()
+  @IsString({ message: 'The Sound card system requirement must be a string' })
   readonly soundCard?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The VR support system requirement must be a string' })
   readonly vrSupport?: string;
+
+  @IsOptional()
+  @IsString({ message: 'The Additional notes of the system requirement must be a string' })
+  readonly additionalNotes?: string;
 }
 
 class SystemRequirementsDto {
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'The minimum system requirement is required' })
+  @IsBoolean({ message: 'The minimum system requirement must be a boolean' })
   readonly req64: boolean;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'The mini system requirement is required' })
   @Type(() => SystemRequirementDto)
   readonly mini: SystemRequirementDto;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'The recommended system requirement is required' })
   @Type(() => SystemRequirementDto)
   readonly recommended: SystemRequirementDto;
 }
 
 class PlatformsDto {
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'The platform is required' })
+  @IsBoolean({ message: 'The platform must be a boolean' })
   readonly win: boolean;
 
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'The platform is required' })
+  @IsBoolean({ message: 'The platform must be a boolean' })
   readonly mac: boolean;
 }
 

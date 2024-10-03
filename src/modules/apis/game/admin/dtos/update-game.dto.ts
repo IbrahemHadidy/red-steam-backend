@@ -13,97 +13,97 @@ class ChangedOrdersDto {
 }
 
 class AddedScreenshotsDto {
-  @IsNotEmpty()
-  @IsNumber()
+  @IsNotEmpty({ each: true, message: 'The screenshots of the game is required' })
+  @IsNumber({ allowNaN: false }, { each: true, message: 'The screenshots of the game must be an array of numbers' })
   readonly order: number;
 }
 
 class AddedVideosDto {
-  @IsNotEmpty()
-  @IsNumber()
+  @IsNotEmpty({ each: true, message: 'The videos of the game is required' })
+  @IsNumber({ allowNaN: false }, { each: true, message: 'The videos of the game must be an array of numbers' })
   readonly order: number;
 }
 
 class PricingDto {
   @IsOptional()
-  @IsBoolean()
+  @IsBoolean({ message: 'The free status of the game must be a boolean' })
   readonly free?: boolean;
 
   @IsOptional()
-  @IsNumber()
-  readonly basePrice?: number;
+  @IsString({ message: 'The price of the game must be a string' })
+  readonly price?: string;
 }
 
 class LanguageDto {
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'The name of the language is required' })
+  @IsString({ message: 'The name of the language must be a string' })
   readonly name: string;
 
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'The interface status of the language is required' })
+  @IsBoolean({ message: 'The interface status of the language must be a boolean' })
   readonly interface: boolean;
 
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'The audio status of the language is required' })
+  @IsBoolean({ message: 'The audio status of the language must be a boolean' })
   readonly fullAudio: boolean;
 
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'The subtitles status of the language is required' })
+  @IsBoolean({ message: 'The subtitles status of the language must be a boolean' })
   readonly subtitles: boolean;
 }
 
 class SystemRequirementDto {
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The OS system requirement must be a string' })
   readonly os?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The CPU system requirement must be a string' })
   readonly cpu?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The RAM system requirement must be a string' })
   readonly ram?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The GPU system requirement must be a string' })
   readonly gpu?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The DX system requirement must be a string' })
   readonly dx?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The Network system requirement must be a string' })
   readonly network?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The Storage system requirement must be a string' })
   readonly storage?: string;
 
   @IsOptional()
-  @IsString()
-  readonly additionalNotes?: string;
-
-  @IsOptional()
-  @IsString()
+  @IsString({ message: 'The Sound card system requirement must be a string' })
   readonly soundCard?: string;
 
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'The VR support system requirement must be a string' })
   readonly vrSupport?: string;
+
+  @IsOptional()
+  @IsString({ message: 'The Additional notes of the system requirement must be a string' })
+  readonly additionalNotes?: string;
 }
 
 class SystemRequirementsDto {
-  @IsNotEmpty()
-  @IsBoolean()
+  @IsNotEmpty({ message: 'The requirements of the game is required' })
+  @IsBoolean({ message: 'The requirements of the game must be a boolean' })
   readonly req64: boolean;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'The requirements of the game is required' })
   @Type(() => SystemRequirementDto)
   readonly mini: SystemRequirementDto;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'The requirements of the game is required' })
   @Type(() => SystemRequirementDto)
   readonly recommended: SystemRequirementDto;
 }

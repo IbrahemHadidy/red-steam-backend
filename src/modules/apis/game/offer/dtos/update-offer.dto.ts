@@ -1,5 +1,5 @@
 // Class-validator
-import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 
 // Swagger
 import { ApiProperty } from '@nestjs/swagger';
@@ -7,8 +7,8 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateOfferDto {
   @ApiProperty({ example: 10, description: 'discount price', required: false })
   @IsOptional()
-  @IsNumber({ allowNaN: false }, { message: 'discount price must be a number' })
-  readonly discountPrice?: number;
+  @IsString({ message: 'discount price must be a string' })
+  readonly discountPrice?: string;
 
   @ApiProperty({ example: '2022-01-01', description: 'discount start date', required: false })
   @IsOptional()

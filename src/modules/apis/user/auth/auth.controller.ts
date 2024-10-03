@@ -4,6 +4,9 @@ import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/c
 // Fastify
 import { FastifyRequest as Request } from 'fastify';
 
+// Recaptcha
+import { Recaptcha } from '@nestlab/google-recaptcha';
+
 // Swagger
 import { ApiDescriptor } from '@decorators/api-descriptor.decorator';
 import { ApiTags } from '@nestjs/swagger';
@@ -48,6 +51,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiDescriptor(signupDescriptor)
+  @Recaptcha()
   @MaskEmail()
   @Serialize(NestedDataDto)
   @Post('signup')
@@ -60,6 +64,7 @@ export class AuthController {
   }
 
   @ApiDescriptor(loginDescriptor)
+  @Recaptcha()
   @MaskEmail()
   @SetResponseCookies()
   @Serialize(NestedDataDto)

@@ -16,5 +16,5 @@ export class GameLanguage extends BaseEntity {
   name: string;
 
   @ManyToMany(() => Game, (game: GameType) => game.languages)
-  games?: GameType[];
+  games: GameType[];
 }

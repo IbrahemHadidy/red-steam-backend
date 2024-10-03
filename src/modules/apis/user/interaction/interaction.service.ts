@@ -8,6 +8,11 @@ import { ReviewsService } from '@repositories/sql/reviews/reviews.service';
 import { UserService } from '@apis/user/user.service'; // Api service (The Extended Service)
 import { UsersService } from '@repositories/sql/users/users.service'; // Repository service (The Injected Service)
 
+// Types
+import type { GameTag } from '@repositories/sql/games-tags/game-tag.entity';
+import type { Review } from '@repositories/sql/reviews/review.entity';
+import type { CartItem, LibraryItem, WishlistItem } from '@repositories/sql/users/user.entity';
+
 @Injectable()
 export class InteractionService {
   constructor(
@@ -23,7 +28,7 @@ export class InteractionService {
    * @param data - An object containing the user's ID and the new tags
    * @returns A message indicating the success of the operation
    */
-  public async changeTags(data: { userId: string; tags: number[] }) {
+  public async changeTags(data: { userId: string; tags: number[] }): Promise<{ message: string }> {
     const { userId, tags } = data;
 
     this.logger.log(`Changing tags for user with id: ${userId} to: ${tags}`);
@@ -44,7 +49,7 @@ export class InteractionService {
    * @param data - An object containing the user's ID
    * @returns The user's tags
    */
-  public async getTags(data: { userId: string }) {
+  public async getTags(data: { userId: string }): Promise<{ tags: GameTag[] }> {
     const { userId } = data;
 
     this.logger.log(`Getting tags for user with id: ${userId}`);
@@ -63,7 +68,7 @@ export class InteractionService {
    * @returns A message indicating the success of the operation.
    * @throws `BadRequestException` If any of the items are already in the user's library.
    */
-  public async addToLibrary(data: { itemsIds: number[]; userId: string }) {
+  public async addToLibrary(data: { itemsIds: number[]; userId: string }): Promise<{ message: string }> {
     const { itemsIds, userId } = data;
 
     this.logger.log(`Adding games with IDs ${itemsIds} to library for user with ID: ${userId}`);
@@ -97,7 +102,7 @@ export class InteractionService {
    * @param data - An object containing the user's ID and a list of item IDs to remove from the library.
    * @returns A message indicating the success of the operation.
    */
-  public async removeFromLibrary(data: { itemsIds: number[]; userId: string }) {
+  public async removeFromLibrary(data: { itemsIds: number[]; userId: string }): Promise<{ message: string }> {
     const { itemsIds, userId } = data;
 
     this.logger.log(`Removing games with IDs ${itemsIds} from library for user with ID: ${userId}`);
@@ -118,7 +123,7 @@ export class InteractionService {
    * @param data - An object containing the user's ID.
    * @returns A message indicating the success of the operation.
    */
-  public async clearLibrary(data: { userId: string }) {
+  public async clearLibrary(data: { userId: string }): Promise<{ message: string }> {
     const { userId } = data;
 
     this.logger.log(`Clearing library for user with ID: ${userId}`);
@@ -140,7 +145,7 @@ export class InteractionService {
    * @returns A message indicating the success of the operation.
    * @throws `BadRequestException` If any of the items are already in the user's wishlist.
    */
-  public async addToWishlist(data: { itemsIds: number[]; userId: string }) {
+  public async addToWishlist(data: { itemsIds: number[]; userId: string }): Promise<{ message: string }> {
     const { itemsIds, userId } = data;
 
     this.logger.log(`Adding games with IDs ${itemsIds} to wishlist for user with ID: ${userId}`);
@@ -174,7 +179,7 @@ export class InteractionService {
    * @param data - An object containing the user's ID and a list of item IDs to remove from the wishlist.
    * @returns A message indicating the success of the operation.
    */
-  public async removeFromWishlist(data: { itemsIds: number[]; userId: string }) {
+  public async removeFromWishlist(data: { itemsIds: number[]; userId: string }): Promise<{ message: string }> {
     const { itemsIds, userId } = data;
 
     this.logger.log(`Removing games with IDs ${itemsIds} from wishlist for user with ID: ${userId}`);
@@ -195,7 +200,7 @@ export class InteractionService {
    * @param data - An object containing the user's ID
    * @returns A message indicating the success of the operation.
    */
-  public async clearWishlist(data: { userId: string }) {
+  public async clearWishlist(data: { userId: string }): Promise<{ message: string }> {
     const { userId } = data;
 
     this.logger.log(`Clearing wishlist for user with ID: ${userId}`);
@@ -217,7 +222,7 @@ export class InteractionService {
    * @returns A message indicating the success of the operation.
    * @throws `BadRequestException` If any of the items are already in the user's cart.
    */
-  public async addToCart(data: { itemsIds: number[]; userId: string }) {
+  public async addToCart(data: { itemsIds: number[]; userId: string }): Promise<{ message: string }> {
     const { itemsIds, userId } = data;
 
     this.logger.log(`Adding games with IDs ${itemsIds} to cart for user with ID: ${userId}`);
@@ -254,7 +259,7 @@ export class InteractionService {
    * @param data - An object containing the user's ID and a list of item IDs to remove from the cart.
    * @returns A message indicating the success of the operation.
    */
-  public async removeFromCart(data: { itemsIds: number[]; userId: string }) {
+  public async removeFromCart(data: { itemsIds: number[]; userId: string }): Promise<{ message: string }> {
     const { itemsIds, userId } = data;
 
     this.logger.log(`Removing games with IDs ${itemsIds} from cart for user with ID: ${userId}`);
@@ -275,7 +280,7 @@ export class InteractionService {
    * @param data - An object containing the user's ID
    * @returns A message indicating the success of the operation.
    */
-  public async clearCart(data: { userId: string }) {
+  public async clearCart(data: { userId: string }): Promise<{ message: string }> {
     const { userId } = data;
 
     this.logger.log(`Clearing cart for user with ID: ${userId}`);
@@ -296,7 +301,7 @@ export class InteractionService {
    * @param data - An object containing the user's ID
    * @returns The user's library
    */
-  public async getLibrary(data: { userId: string }) {
+  public async getLibrary(data: { userId: string }): Promise<LibraryItem[]> {
     const { userId } = data;
 
     this.logger.log(`Getting library for user with ID: ${userId}`);
@@ -314,7 +319,7 @@ export class InteractionService {
    * @param data - An object containing the user's ID
    * @returns The user's wishlist
    */
-  public async getWishlist(data: { userId: string }) {
+  public async getWishlist(data: { userId: string }): Promise<WishlistItem[]> {
     const { userId } = data;
 
     this.logger.log(`Getting wishlist for user with ID: ${userId}`);
@@ -332,7 +337,7 @@ export class InteractionService {
    * @param data - An object containing the user's ID
    * @returns The user's cart
    */
-  public async getCart(data: { userId: string }) {
+  public async getCart(data: { userId: string }): Promise<CartItem[]> {
     const { userId } = data;
 
     this.logger.log(`Getting cart for user with ID: ${userId}`);
@@ -351,7 +356,12 @@ export class InteractionService {
    * @returns A success message
    */
 
-  public async reviewGame(data: { userId: string; gameId: number; positive: boolean; content: string }) {
+  public async reviewGame(data: {
+    userId: string;
+    gameId: number;
+    positive: boolean;
+    content: string;
+  }): Promise<{ message: string }> {
     const { userId, gameId, positive, content } = data;
 
     this.logger.log(`Reviewing game with ID: ${gameId} for user with ID: ${userId}`);
@@ -361,7 +371,50 @@ export class InteractionService {
 
     // Return the result
     this.logger.log(`Game reviewed successfully for user with ID: ${userId}`);
-    return { success: true, message: 'Game reviewed successfully' };
+    return { message: 'Game reviewed successfully' };
+  }
+
+  /**
+   * Updates a review
+   * @param data - An object containing the user's ID, the review ID, and the new review content
+   * @returns A success message
+   */
+  public async updateReview(data: {
+    reviewId: number;
+    positive: boolean;
+    content: string;
+  }): Promise<{ message: string }> {
+    const { reviewId, positive, content } = data;
+
+    this.logger.log(`Editing review with ID: ${reviewId}`);
+
+    // Update the review
+    await this.review.update(reviewId, { positive, content });
+
+    // Return the result
+    this.logger.log(`Review updated successfully for review with ID: ${reviewId}`);
+    return { message: 'Review updated successfully' };
+  }
+
+  /**
+   * Checks if a user has reviewed a game
+   * @param data - An object containing the user's ID and the game ID
+   * @returns A boolean indicating whether the user has reviewed the game
+   */
+  public async hasReviewedGame(data: {
+    userId: string;
+    gameId: number;
+  }): Promise<{ reviewed: boolean; review?: Review }> {
+    const { userId, gameId } = data;
+
+    this.logger.log(`Checking if user with ID: ${userId} has reviewed game with ID: ${gameId}`);
+
+    // Check if the user has reviewed the game
+    const hasReviewed = await this.review.hasUserReviewedGame(userId, gameId);
+
+    // Return the result
+    this.logger.log(`User has reviewed game successfully for user with ID: ${userId}`);
+    return { reviewed: hasReviewed.reviewed, review: hasReviewed.review };
   }
 
   /**
@@ -369,13 +422,13 @@ export class InteractionService {
    * @param data - An object containing the user's ID
    * @returns The user's reviews
    */
-  public async getReviews(data: { userId: string }) {
+  public async getReviews(data: { userId: string }): Promise<Review[]> {
     const { userId } = data;
 
     this.logger.log(`Getting reviews for user with ID: ${userId}`);
 
     // Check and get user
-    const user = await this.userTools.findUser(userId, 'id');
+    const user = await this.userTools.findUser(userId, 'id', true);
 
     // Return the user's reviews
     this.logger.log(`Reviews retrieved successfully for user with ID: ${userId}`);

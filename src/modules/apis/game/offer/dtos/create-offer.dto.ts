@@ -12,8 +12,8 @@ export class CreateOfferDto {
 
   @ApiProperty({ example: 10, description: 'discount price', required: true })
   @IsNotEmpty({ message: 'discount price is required' })
-  @IsNumber({ allowNaN: false }, { message: 'discount price must be a number' })
-  readonly discountPrice: number;
+  @IsString({ message: 'discount price must be a string' })
+  readonly discountPrice: string;
 
   @ApiProperty({ example: '2022-01-01', description: 'discount start date', required: true })
   @IsNotEmpty({ message: 'discount start date is required' })

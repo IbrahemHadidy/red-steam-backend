@@ -25,6 +25,7 @@ import type {
   ThumbnailsEntry,
   VideoEntry,
 } from '@repositories/sql/games/game.entity';
+import type { GameLanguage as GameLanguageType } from '../games-languages/game-language.entity';
 
 @Injectable()
 export class GamesService {
@@ -152,7 +153,7 @@ export class GamesService {
     tags: number[];
     pricing: {
       free: boolean;
-      price?: number;
+      price?: string;
     };
     features: number[];
     languages: {
@@ -191,6 +192,7 @@ export class GamesService {
     // Create new game entity
     const newGame = new Game();
     newGame.name = game.name;
+    newGame.storageName = game.name;
     newGame.category = game.category;
     newGame.description = game.description;
     newGame.releaseDate = game.releaseDate;
@@ -255,9 +257,15 @@ export class GamesService {
       tags?: number[];
       pricing?: {
         free?: boolean;
-        basePrice?: number;
+        price?: string;
       };
       features?: number[];
+      languages: {
+        name: string;
+        interface: boolean;
+        fullAudio: boolean;
+        subtitles: boolean;
+      }[];
       featured?: boolean;
       platformEntries?: PlatformEntry;
       link?: string;
@@ -270,12 +278,30 @@ export class GamesService {
   ): Promise<GameType> {
     this.logger.log(`Updating game with ID ${id} in the database`);
 
+    // Get relations
+    const relations: FindOptionsRelations<Game> = {
+      publishers: !!game.publishers,
+      developers: !!game.developers,
+      tags: !!game.tags,
+      pricing: !!game.pricing,
+      features: !!game.features,
+      languages: !!game.languages,
+    };
+
     // Check if game exists
     const existingGame = await this.gameRepository.findOne({
       where: { id },
+      relations,
     });
+
     // Throw a not found exception if game does not exist
     if (!existingGame) throw new NotFoundException(`Game with ID ${id} not found`);
+
+    // Get game languages if they are provided
+    let gameLanguages: GameLanguageType[] | undefined = [];
+    if (game.languages) {
+      gameLanguages = await this.languagesService.getByNameList(game.languages.map((language) => language.name));
+    }
 
     // Update fields if they are provided
     if (game.name) existingGame.name = game.name;
@@ -304,6 +330,10 @@ export class GamesService {
     if (game.features) {
       const features = await this.featuresService.getByIds(game.features);
       existingGame.features = features;
+    }
+    if (game.languages) {
+      existingGame.languages = gameLanguages;
+      existingGame.languageSupport = game.languages;
     }
     if (game.featured !== undefined) existingGame.featured = game.featured;
     if (game.changedThumbnails) {
@@ -351,10 +381,16 @@ export class GamesService {
 
     // Update pricing if provided
     if (game.pricing) {
-      game.pricing.free !== undefined && (existingGame.pricing.free = game.pricing.free);
-      game.pricing.basePrice && game.pricing.free === true
-        ? (existingGame.pricing.basePrice = 0)
-        : game.pricing.basePrice && (existingGame.pricing.basePrice = game.pricing.basePrice);
+      if (game.pricing.free !== true && game.pricing.price) {
+        existingGame.pricing.free = false;
+        existingGame.pricing.basePrice = game.pricing.price;
+        existingGame.pricing.price = game.pricing.price;
+      }
+      if (game.pricing.free === true) {
+        existingGame.pricing.free = game.pricing.free;
+        existingGame.pricing.basePrice = '0.00';
+        existingGame.pricing.price = '0.00';
+      }
     }
 
     // Save the updated game to the database

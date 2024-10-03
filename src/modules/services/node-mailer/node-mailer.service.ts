@@ -2,6 +2,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+// DecimalJS
+import Decimal from 'decimal.js';
+
 // Services
 import { MailerService } from '@nestjs-modules/mailer';
 
@@ -80,17 +83,20 @@ export class NodeMailerService {
       const gameImage = game.thumbnailEntries?.tabImage;
       return gameCard(
         game.name,
-        game.pricing.discount ? game.pricing.discountPrice.toFixed(2) : game.pricing.basePrice.toFixed(2),
+        game.pricing.discount ? game.pricing.discountPrice : game.pricing.basePrice,
         gameImage,
       );
     });
 
     // Get the current date and format it
     const currentDate = new Date().toISOString();
+
+    // Calculate the total price
     const totalPrice = data.games
-      .reduce((total: number, game: Game) => {
-        return total + Number(game.pricing.discount ? game.pricing.discountPrice : game.pricing.basePrice);
-      }, 0)
+      .reduce((total: Decimal, game: Game) => {
+        const price = new Decimal(game.pricing.discount ? game.pricing.discountPrice : game.pricing.basePrice);
+        return total.plus(price);
+      }, new Decimal(0))
       .toFixed(2);
 
     // Replace the placeholders in the template

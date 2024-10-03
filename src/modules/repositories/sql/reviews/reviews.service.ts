@@ -159,7 +159,7 @@ export class ReviewsService {
     // Add the sort to the where condition
     const reviews = await this.reviewRepository.find({
       where: whereCondition,
-      relations: { game: true },
+      relations: { game: true, user: true },
       order: { date: sort === 'newest' ? 'DESC' : 'ASC' },
       skip: pagination.offset,
       take: pagination.limit,
@@ -269,6 +269,28 @@ export class ReviewsService {
   }
 
   /**
+   * Check if a user has reviewed a game.
+   * @param userId - The ID of the user.
+   * @param gameId - The ID of the game.
+   * @returns A promise of a boolean indicating if the user has reviewed the game.
+   */
+  public async hasUserReviewedGame(userId: string, gameId: number): Promise<{ reviewed: boolean; review?: Review }> {
+    this.logger.log(`Checking if user with ID ${userId} has reviewed game with ID ${gameId}`);
+
+    // Check if the review exists
+    const review = await this.reviewRepository.findOne({
+      where: {
+        user: { id: userId },
+        game: { id: gameId },
+      },
+      relations: { user: true, game: true },
+    });
+
+    // Return true if the review exists
+    return { reviewed: !!review, review };
+  }
+
+  /**
    * Create a new review.
    * @param review - The review to create.
    * @returns A promise of the created review.
@@ -287,6 +309,7 @@ export class ReviewsService {
     // Check if the game has already been reviewed
     const existingReview = await this.reviewRepository.findOne({
       where: { user: { id: review.userId }, game: { id: review.gameId } },
+      relations: { user: true, game: true },
     });
     if (existingReview) throw new ConflictException('You have already reviewed this game');
 
@@ -317,7 +340,10 @@ export class ReviewsService {
     this.logger.log(`Updating review with ID ${id}`);
 
     // Check if the review exists
-    const existingReview = await this.reviewRepository.findOne({ where: { id } });
+    const existingReview = await this.reviewRepository.findOne({
+      where: { id },
+      relations: { user: true, game: true },
+    });
     if (!existingReview) throw new NotFoundException(`Review with ID ${id} not found`);
 
     // Validate the content
@@ -348,7 +374,10 @@ export class ReviewsService {
     this.logger.log(`Deleting review with ID ${id}`);
 
     // Check if the review exists
-    const existingReview = await this.reviewRepository.findOne({ where: { id } });
+    const existingReview = await this.reviewRepository.findOne({
+      where: { id },
+      relations: { user: true, game: true },
+    });
     if (!existingReview) throw new NotFoundException(`Review with ID ${id} not found`);
 
     // Delete the review

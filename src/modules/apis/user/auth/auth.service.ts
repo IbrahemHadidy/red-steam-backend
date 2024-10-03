@@ -39,7 +39,12 @@ export class AuthService {
    * @param data An object containing username, email, password, and country
    * @returns The created user data
    */
-  public async signup(data: { username: string; email: string; password: string; country: string }) {
+  public async signup(data: {
+    username: string;
+    email: string;
+    password: string;
+    country: string;
+  }): Promise<{ message: string }> {
     const { username, email, password, country } = data;
 
     this.logger.log(`Signing up user ${email}`);
@@ -75,7 +80,14 @@ export class AuthService {
    * @returns Message, user data, access and refresh tokens if login is successful
    * @throws `InternalServerErrorException` if login fails
    */
-  public async login(data: { identifier: string; password: string; rememberMe: boolean }) {
+  public async login(data: { identifier: string; password: string; rememberMe: boolean }): Promise<{
+    message: string;
+    loggingIn: boolean;
+    accessToken: string;
+    refreshToken: string;
+    isSessionLoggedIn: boolean;
+    userData: User;
+  }> {
     const { identifier, password, rememberMe } = data;
 
     this.logger.log(`Logging in user with username/email: ${identifier}, rememberMe: ${rememberMe}`);
@@ -111,7 +123,7 @@ export class AuthService {
    * @returns Success message, user data and access token if login is successful
    * @throws `InternalServerErrorException` if user is not logged out
    */
-  public async autoLogin(data: { userId: string }) {
+  public async autoLogin(data: { userId: string }): Promise<{ message: string; userData: User; accessToken: string }> {
     const { userId } = data;
 
     this.logger.log(`Auto logging in user with id: ${userId}`);
@@ -139,7 +151,11 @@ export class AuthService {
    * @param headers The request headers, containing the access token
    * @returns Message if logout is successful
    */
-  public async logout(data: { userId: string; accessToken: string; refreshToken: string }) {
+  public async logout(data: {
+    userId: string;
+    accessToken: string;
+    refreshToken: string;
+  }): Promise<{ message: string }> {
     const { userId, accessToken, refreshToken } = data;
 
     this.logger.log(`Logging out user with id: ${userId}`);
@@ -162,7 +178,7 @@ export class AuthService {
    * @returns Message and new access token if refresh is successful
    * @throws `InternalServerErrorException` if user is not logged in
    */
-  public async refreshToken(data: { userId: string }) {
+  public async refreshToken(data: { userId: string }): Promise<{ message: string; accessToken: string }> {
     const { userId } = data;
 
     this.logger.log(`Refreshing access token for user with id: ${userId}`);
@@ -189,7 +205,7 @@ export class AuthService {
    * @param headers The request headers, containing the access token
    * @returns User data
    */
-  public async getUserData(data: { userId: string }) {
+  public async getUserData(data: { userId: string }): Promise<{ userData: User }> {
     const { userId } = data;
 
     this.logger.log(`Getting user data for user with id: ${userId}`);
@@ -207,7 +223,7 @@ export class AuthService {
    * @param data An object containing the email
    * @returns Verification status
    */
-  public async getVerificationStatus(data: { email: string }) {
+  public async getVerificationStatus(data: { email: string }): Promise<{ verified: boolean }> {
     const { email } = data;
 
     this.logger.log(`Getting verification status for user with email: ${email}`);
@@ -225,7 +241,7 @@ export class AuthService {
    * @param data An object containing the email
    * @returns Success message
    */
-  public async resendVerificationToken(data: { email: string }) {
+  public async resendVerificationToken(data: { email: string }): Promise<{ message: string }> {
     const { email } = data;
 
     this.logger.log(`Resending verification token for user with email: ${email}`);
@@ -267,7 +283,7 @@ export class AuthService {
    * @returns success message if verification is successful
    * @throws `BadRequestException` if verification token is invalid
    */
-  public async verifyEmail(data: { username: string; token: string }) {
+  public async verifyEmail(data: { username: string; token: string }): Promise<{ message: string }> {
     const { username, token } = data;
 
     this.logger.log(`Verifying email for user with username: ${username}`);
@@ -294,7 +310,10 @@ export class AuthService {
    * @param data access token and refresh token
    * @returns new access token and refresh token
    */
-  public async updateTokens(data: { userId: string; accessToken: string; refreshToken: string }) {
+  public async updateTokens(data: { userId: string; accessToken: string; refreshToken: string }): Promise<{
+    accessToken: string;
+    refreshToken: string;
+  }> {
     const { userId, accessToken, refreshToken } = data;
 
     this.logger.log(`Updating access and refresh token`);
@@ -322,7 +341,7 @@ export class AuthService {
    * Gets waiting time for email verification
    * @returns Waiting time in milliseconds
    */
-  public getWaitingTime() {
+  public getWaitingTime(): { waitingTime: number } {
     this.logger.log(`Getting waiting time for email verification`);
     const waitingTime = 20 * 60 * 1000;
     this.logger.log(`Got waiting time for email verification`);
@@ -336,7 +355,7 @@ export class AuthService {
    * @param type The type of token to create
    * @returns The prefixed access token
    */
-  private async createJwtToken(user: User, expiry: string, type: 'access' | 'refresh') {
+  private async createJwtToken(user: User, expiry: string, type: 'access' | 'refresh'): Promise<string> {
     this.logger.log(`Creating ${type} token for user ${user.id}`);
 
     // Create payload
@@ -366,7 +385,7 @@ export class AuthService {
    * Creates a new verification token
    * @returns The verification token
    */
-  private async createVerificationToken() {
+  private async createVerificationToken(): Promise<string> {
     this.logger.log('Creating verification token');
     // Generate verification token
     const verificationToken = UUIDv4();

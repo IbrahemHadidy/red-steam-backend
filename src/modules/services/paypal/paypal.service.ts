@@ -37,7 +37,7 @@ export class PaypalService {
    * @returns Order response
    */
   async createOrder(
-    totalPrice: number,
+    totalPrice: string,
   ): Promise<HttpResponse<{ id: string; links: { href: string; method: string }[] }>> {
     // Log the initiation of the order creation process
     this.logger.log(`Creating PayPal order for user with ID ${totalPrice}`);
@@ -53,7 +53,7 @@ export class PaypalService {
         {
           amount: {
             currency_code: 'USD',
-            value: totalPrice.toString(),
+            value: totalPrice,
           },
         },
       ],

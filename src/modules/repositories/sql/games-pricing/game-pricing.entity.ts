@@ -4,6 +4,9 @@ import { BadRequestException } from '@nestjs/common';
 // TypeORM
 import { BaseEntity, BeforeInsert, BeforeUpdate, Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
+// DecimalJS
+import Decimal from 'decimal.js';
+
 // Entities
 import { Game } from '@repositories/sql/games/game.entity';
 
@@ -18,8 +21,8 @@ export class GamePricing extends BaseEntity {
   @Column({ default: false })
   free: boolean;
 
-  @Column({ nullable: true, type: 'float' })
-  basePrice: number;
+  @Column({ nullable: true, type: 'decimal', precision: 10, scale: 2 })
+  basePrice: string;
 
   @Column({ default: false })
   discount?: boolean;
@@ -27,8 +30,8 @@ export class GamePricing extends BaseEntity {
   @Column({ nullable: true, type: 'float' })
   discountPercentage?: number;
 
-  @Column({ nullable: true, type: 'float' })
-  discountPrice?: number;
+  @Column({ nullable: true, type: 'decimal', precision: 10, scale: 2 })
+  discountPrice?: string;
 
   @Column({ nullable: true })
   discountStartDate?: Date;
@@ -39,8 +42,8 @@ export class GamePricing extends BaseEntity {
   @Column({ nullable: true })
   offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
 
-  @Column({ type: 'float', default: 0 })
-  price: number;
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: '0.00' })
+  price: string;
 
   @OneToOne(() => Game, (game: GameType) => game.pricing)
   game?: GameType;
@@ -49,31 +52,33 @@ export class GamePricing extends BaseEntity {
   @BeforeInsert()
   @BeforeUpdate()
   finalize() {
-    this.price = this.discount ? this.discountPrice : this.basePrice;
+    const basePriceDecimal = new Decimal(this.basePrice || '0.00');
+    const discountPriceDecimal = new Decimal(this.discountPrice || '0.00');
 
     if (this.free) {
-      this.price = 0;
+      this.price = '0.00';
       this.discount = false;
-      this.basePrice = 0;
+      this.basePrice = '0.00';
       this.discountPrice = null;
       this.offerType = null;
       this.discountStartDate = null;
       this.discountEndDate = null;
       this.discountPercentage = null;
-    }
+    } else {
+      this.price = this.discount ? discountPriceDecimal.toFixed(2) : basePriceDecimal.toFixed(2);
 
-    if (this.discount) {
-      if (this.basePrice <= 0)
-        throw new BadRequestException('Base price must be greater than 0 to calculate discount percentage');
-      this.discountPercentage = Math.round((this.discountPrice / this.basePrice) * 100);
-    }
-
-    if (!this.discount) {
-      this.discountPrice = null;
-      this.discountPercentage = null;
-      this.discountStartDate = null;
-      this.discountEndDate = null;
-      this.offerType = null;
+      if (this.discount) {
+        if (basePriceDecimal.lessThanOrEqualTo(0)) {
+          throw new BadRequestException('Base price must be greater than 0 to calculate discount percentage');
+        }
+        this.discountPercentage = Math.round(discountPriceDecimal.dividedBy(basePriceDecimal).times(100).toNumber());
+      } else {
+        this.discountPrice = null;
+        this.discountPercentage = null;
+        this.discountStartDate = null;
+        this.discountEndDate = null;
+        this.offerType = null;
+      }
     }
   }
 }

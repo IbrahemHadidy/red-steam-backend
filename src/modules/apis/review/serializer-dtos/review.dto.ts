@@ -17,6 +17,7 @@ export class ReviewDto {
   readonly positive: boolean;
 
   @Expose()
+  @Type(() => Date)
   readonly date: Date;
 
   @Expose()

@@ -18,7 +18,7 @@ export class OfferService {
    */
   public async createOffer(data: {
     gameId: number;
-    discountPrice: number;
+    discountPrice: string;
     discountStartDate: Date;
     discountEndDate: Date;
     offerType: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
@@ -40,7 +40,7 @@ export class OfferService {
    */
   public async updateOffer(data: {
     gameId: number;
-    discountPrice?: number;
+    discountPrice?: string;
     discountStartDate?: Date;
     discountEndDate?: Date;
     offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';

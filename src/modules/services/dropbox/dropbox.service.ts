@@ -161,13 +161,13 @@ export class DropboxService implements OnModuleInit {
       // Create a new Dropbox client with the new access token
       this.dropboxClient = new Dropbox({ accessToken: access_token });
 
-      // Update the refresh token if a new one is provided
-      const newTokenExpirationTime = Date.now() + expires_in * 1000;
+      // Create expiration date
+      const expirationDate = new Date(Date.now() + expires_in * 1000).getTime();
 
       // Save the new tokens in the database
       await this.tokenService.saveToken({
         accessToken: access_token,
-        expirationTime: newTokenExpirationTime,
+        expirationTime: expirationDate,
       });
 
       this.logger.log('Tokens updated.');

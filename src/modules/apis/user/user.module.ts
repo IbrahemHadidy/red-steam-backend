@@ -1,8 +1,10 @@
 // NestJS
 import { Logger, Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 // Modules
 import { JwtModule } from '@nestjs/jwt';
+import { GoogleRecaptchaModule } from '@nestlab/google-recaptcha';
 import { DropboxTokensModule } from '@repositories/mongo/dropbox-tokens/token-blacklist.module';
 import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
 import { GamesModule } from '@repositories/sql/games/games.module';
@@ -27,8 +29,22 @@ import { InteractionController } from '@apis/user/interaction/interaction.contro
 import { ManagementController } from '@apis/user/management/management.controller';
 import { PaymentController } from '@apis/user/payment/payment.controller';
 
+// Types
+import type { FastifyRequest } from 'fastify';
+
 @Module({
   imports: [
+    GoogleRecaptchaModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        return {
+          secretKey: configService.get<string>('RECAPTCHA_SECRET'),
+          response: (req: FastifyRequest) => req.body['recaptchaToken'],
+          // skipIf: process.env.NODE_ENV !== 'production',
+        };
+      },
+      inject: [ConfigService],
+    }),
     UsersModule,
     GamesModule,
     ReviewsModule,

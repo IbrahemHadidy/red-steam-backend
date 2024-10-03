@@ -1,6 +1,9 @@
 // NestJS
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 
+// DecimalJS
+import Decimal from 'decimal.js';
+
 // Services
 import { GamesService } from '@repositories/sql/games/games.service';
 import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
@@ -30,7 +33,11 @@ export class PaymentService {
    * @throws `BadRequestException` If any of the cart items are already in the user's library
    * @throws `UnauthorizedException` If user is not verified
    */
-  public async createOrder(data: { userId: string; totalPrice: number; cartItems: number[] }) {
+  public async createOrder(data: { userId: string; totalPrice: string; cartItems: number[] }): Promise<{
+    orderId: string;
+    approvalUrl: string;
+    orderData: { userId: string; totalPrice: string; cartItems: number[] };
+  }> {
     const { userId, totalPrice, cartItems } = data;
 
     this.logger.log(`Creating order for user with ID: ${userId}`);
@@ -70,7 +77,11 @@ export class PaymentService {
    * @param data An object containing the orderId and userId
    * @returns An object containing the captured order status, order ID, and payer's name
    */
-  public async captureOrder(data: { orderId: string; userId: string; cartItems: number[] }) {
+  public async captureOrder(data: {
+    orderId: string;
+    userId: string;
+    cartItems: number[];
+  }): Promise<{ status: string; orderId: string; payerName: string }> {
     const { orderId, userId, cartItems } = data;
 
     this.logger.log(`Capturing order with ID: ${orderId}`);
@@ -112,18 +123,20 @@ export class PaymentService {
    * @param totalPrice The total price of the cart
    * @throws `BadRequestException` If total price does not match calculated price
    */
-  private async calculatePrice(cartItems: number[], totalPrice: number) {
+  private async calculatePrice(cartItems: number[], totalPrice: string): Promise<void> {
     this.logger.log(`Calculating total price of cart items`);
 
     // Recalculate total price
-    const calculatedPrice = (await this.game.getByIds(cartItems))
-      .reduce((total: number, game: Game) => {
-        return total + Number(game.pricing.discount ? game.pricing.discountPrice : game.pricing.basePrice);
-      }, 0)
-      .toFixed(2);
+    const games = await this.game.getByIds(cartItems);
+    const calculatedPrice = games
+      .reduce((total: Decimal, game: Game) => {
+        const price = new Decimal(game.pricing.discount ? game.pricing.discountPrice : game.pricing.basePrice);
+        return total.plus(price);
+      }, new Decimal('0.00'))
+      .toString();
 
     // Check if total price matches calculated price
-    if (totalPrice !== +calculatedPrice) {
+    if (totalPrice !== calculatedPrice) {
       this.logger.error(`Total price does not match calculated price`);
       throw new BadRequestException('Total price does not match calculated price');
     }

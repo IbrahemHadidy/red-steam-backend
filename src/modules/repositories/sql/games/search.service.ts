@@ -54,7 +54,7 @@ export class SearchService {
     searchData: {
       sort?: 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews' | 'totalSales';
       partialName?: string;
-      maxPrice?: number;
+      maxPrice?: string;
       tags?: number[];
       excludeTags?: number[];
       paid?: boolean;

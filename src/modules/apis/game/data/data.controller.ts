@@ -11,7 +11,6 @@ import { Serialize } from '@decorators/serialize.decorator';
 // Pipes
 import { ParseQueryArrayPipe } from '@pipes/parse-query-array.pipe';
 import { ParseQueryBoolPipe } from '@pipes/parse-query-boolean.pipe';
-import { ParseQueryFloatPipe } from '@pipes/parse-query-float.pipe';
 import { ParseQueryIntPipe } from '@pipes/parse-query-integer.pipe';
 import { UnionTypeValidationPipe } from '@pipes/union-type-validation.pipe';
 
@@ -67,7 +66,7 @@ export class DataController {
     )
     sort?: 'relevance' | 'name' | 'lowestPrice' | 'highestPrice' | 'releaseDate' | 'reviews' | 'totalSales',
     @Query('partialName') partialName?: string,
-    @Query('maxPrice', new ParseQueryFloatPipe()) maxPrice?: number,
+    @Query('maxPrice') maxPrice?: string,
     @Query('tags', new ParseQueryArrayPipe({ items: Number })) tags?: number[],
     @Query('excludeTags', new ParseQueryArrayPipe({ items: Number })) excludeTags?: number[],
     @Query('paid', new ParseQueryBoolPipe()) paid?: boolean,

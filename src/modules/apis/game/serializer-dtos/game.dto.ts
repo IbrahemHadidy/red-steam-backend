@@ -138,7 +138,7 @@ class PricingDto {
   readonly free: boolean;
 
   @Expose()
-  readonly basePrice: number;
+  readonly basePrice: string;
 
   @Expose()
   readonly discount?: boolean;
@@ -147,7 +147,7 @@ class PricingDto {
   readonly discountPercentage?: number;
 
   @Expose()
-  readonly discountPrice?: number;
+  readonly discountPrice?: string;
 
   @Expose()
   readonly discountStartDate?: Date;
@@ -159,7 +159,7 @@ class PricingDto {
   readonly offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
 
   @Expose()
-  readonly price: number;
+  readonly price: string;
 }
 
 export class GameDto {

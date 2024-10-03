@@ -1,5 +1,17 @@
 // NestJS
-import { Body, Controller, Delete, Get, HttpCode, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 
 // Fastify
 import { FastifyRequest as Request } from 'fastify';
@@ -23,12 +35,14 @@ import { RemoveFromCartDto } from '@apis/user/interaction/dtos/remove-from-cart.
 import { RemoveFromLibraryDto } from '@apis/user/interaction/dtos/remove-from-library.dto';
 import { RemoveFromWishlistDto } from '@apis/user/interaction/dtos/remove-from-wishlist.dto';
 import { ReviewGameDto } from '@apis/user/interaction/dtos/review-game.dto';
+import { UpdateReviewDto } from '@apis/user/interaction/dtos/update-review.dto';
 
 // Swagger descriptors
 import { addToCartDescriptor } from '@apis/user/interaction/api-descriptors/add-to-cart.descriptor';
 import { addToLibraryDescriptor } from '@apis/user/interaction/api-descriptors/add-to-library.descriptor';
 import { addToWishlistDescriptor } from '@apis/user/interaction/api-descriptors/add-to-wishlist.descriptor';
 import { changeTagsDescriptor } from '@apis/user/interaction/api-descriptors/change-tags.descriptor';
+import { checkReviewDescriptor } from '@apis/user/interaction/api-descriptors/check-review.descriptor';
 import { getCartDescriptor } from '@apis/user/interaction/api-descriptors/get-cart.descriptor';
 import { getLibraryDescriptor } from '@apis/user/interaction/api-descriptors/get-library.descriptor';
 import { getReviewsDescriptor } from '@apis/user/interaction/api-descriptors/get-reviews.descriptor';
@@ -38,6 +52,7 @@ import { removeFromCartDescriptor } from '@apis/user/interaction/api-descriptors
 import { removeFromLibraryDescriptor } from '@apis/user/interaction/api-descriptors/remove-from-library.descriptor';
 import { removeFromWishlistDescriptor } from '@apis/user/interaction/api-descriptors/remove-from-wishlist.descriptor';
 import { reviewGameDescriptor } from '@apis/user/interaction/api-descriptors/review-game.descriptor';
+import { updateReviewDescriptor } from '@apis/user/interaction/api-descriptors/update-review.descriptor';
 
 @ApiTags('User Interaction')
 @Controller('user/interaction')
@@ -230,6 +245,33 @@ export class InteractionController {
     };
 
     const result = await this.interactionService.reviewGame(data);
+
+    // Send the response
+    return result;
+  }
+
+  @ApiDescriptor(updateReviewDescriptor)
+  @UseGuards(JwtAccessAuthGuard)
+  @Put('review')
+  @HttpCode(200)
+  public async updateReview(@Body() bodyData: UpdateReviewDto) {
+    const result = await this.interactionService.updateReview(bodyData);
+
+    // Send the response
+    return result;
+  }
+
+  @ApiDescriptor(checkReviewDescriptor)
+  @UseGuards(JwtAccessAuthGuard)
+  @Get('check-review/:gameId')
+  @HttpCode(200)
+  public async checkReview(@Req() request: Request, @Param('gameId', ParseIntPipe) gameId: number) {
+    const data: { userId: string; gameId: number } = {
+      userId: request['userId'],
+      gameId,
+    };
+
+    const result = await this.interactionService.hasReviewedGame(data);
 
     // Send the response
     return result;
