@@ -26,9 +26,4 @@ export class LoginDto {
   @IsNotEmpty({ message: 'Remember me is required.' })
   @IsBoolean()
   readonly rememberMe: boolean;
-
-  @ApiProperty({ description: 'The recaptcha token.', example: 'TEST_TOKEN', required: true })
-  @IsNotEmpty({ message: 'Recaptcha token is required.' })
-  @IsString({ message: 'Recaptcha token must be a string.' })
-  readonly recaptchaToken: string;
 }

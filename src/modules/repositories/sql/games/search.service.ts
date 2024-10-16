@@ -327,7 +327,7 @@ export class SearchService {
     // Fetch the full Game entities with tags
     const foundGames = await this.gameRepository.find({
       where: excludedGames ? { id: And(In(gameIds), Not(In(excludedGames))) } : { id: In(gameIds) },
-      relations: { tags: true },
+      relations: { tags: true, pricing: true },
       // TODO: Add cache
       // cache: {
       //   id: `games-${JSON.stringify(gameIds)}`,

@@ -189,7 +189,7 @@ export const emailVerification = (verificationToken: string, username: string): 
                                                             "
                                                           >
                                                             <a
-                                                              href="{FRONT_URL}/verify-account/?token${verificationToken}&username=${username}"
+                                                              href="{FRONT_URL}/verify-account/?token=${verificationToken}&username=${username}"
                                                               style="
                                                                 display: block;
                                                                 padding: 13px

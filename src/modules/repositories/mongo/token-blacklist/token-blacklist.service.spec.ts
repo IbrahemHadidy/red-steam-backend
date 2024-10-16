@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { v4 as UUIDv4 } from 'uuid';
 import { environmentConfig, getMongoTypeOrmConfig } from '@test/integration-setup';
+import { randomUUID } from 'crypto';
 
 import { TokenBlacklistModule } from '@repositories/mongo/token-blacklist/token-blacklist.module';
 import { TokenBlacklistService } from '@repositories/mongo/token-blacklist/token-blacklist.service';
@@ -28,7 +28,7 @@ describe('TokenBlacklistService', () => {
 
     tokenBlacklistService = module.get<TokenBlacklistService>(TokenBlacklistService);
 
-    token = UUIDv4();
+    token = randomUUID();
   });
 
   afterEach(async () => {

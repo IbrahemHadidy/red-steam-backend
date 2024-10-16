@@ -114,7 +114,7 @@ export class DataService {
 
     // Find featured games
     const games = await this.search.getByParameters(
-      { featured: true, excludedGames: excludedGames.length > 0 ? excludedGames : undefined },
+      { featured: true, excludedGames: excludedGames.length > 0 ? excludedGames : undefined, sort: 'releaseDate' },
       { limit: limit, offset: 0 },
     );
     this.logger.log(`Found ${games.length} featured games`);
@@ -131,6 +131,9 @@ export class DataService {
    */
   public async getByUserTags(tags?: number[], excludedGames?: number[], limit?: number): Promise<Game[]> {
     this.logger.log(`Finding games by tags`);
+
+    // If no tags are provided, return an empty array
+    if (!tags || tags.length === 0) return [];
 
     // Find games by tags
     const games = await this.search.getByUserTags(tags, excludedGames.length > 0 ? excludedGames : undefined, limit);

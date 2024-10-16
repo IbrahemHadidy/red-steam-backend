@@ -1,17 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { v4 as UUIDv4 } from 'uuid';
 import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
+import { randomUUID } from 'crypto';
 
 // Modules
 import { GamesTagsModule } from '@repositories/sql/games-tags/games-tags.module';
 import { UsersModule } from '@repositories/sql/users/users.module';
 
 // Services
-import { UsersService } from '@repositories/sql/users/users.service';
 import { GamesTagsService } from '@repositories/sql/games-tags/games-tags.service';
+import { UsersService } from '@repositories/sql/users/users.service';
 
 // Entities
 import { User } from '@repositories/sql/users/user.entity';
@@ -55,7 +55,7 @@ describe('usersService', () => {
       country: 'EG',
     });
 
-    unexistingUserId = UUIDv4();
+    unexistingUserId = randomUUID();
   });
 
   afterEach(async () => {
@@ -145,12 +145,14 @@ describe('usersService', () => {
       const foundUser = await usersService.getByEmailOrUsername(user.username);
 
       // Assertions
-      expect(foundUser).toEqual(expect.objectContaining({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        country: user.country,
-      }));
+      expect(foundUser).toEqual(
+        expect.objectContaining({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          country: user.country,
+        }),
+      );
     });
   });
 

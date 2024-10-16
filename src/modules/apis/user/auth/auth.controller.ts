@@ -64,7 +64,6 @@ export class AuthController {
   }
 
   @ApiDescriptor(loginDescriptor)
-  @Recaptcha()
   @MaskEmail()
   @SetResponseCookies()
   @Serialize(NestedDataDto)

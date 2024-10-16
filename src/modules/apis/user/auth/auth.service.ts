@@ -3,7 +3,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, Logger }
 import { ConfigService } from '@nestjs/config';
 
 // UUID
-import { v4 as UUIDv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 // Services
 import { JwtService } from '@nestjs/jwt';
@@ -388,7 +388,7 @@ export class AuthService {
   private async createVerificationToken(): Promise<string> {
     this.logger.log('Creating verification token');
     // Generate verification token
-    const verificationToken = UUIDv4();
+    const verificationToken = randomUUID();
 
     // Send verification email
     this.logger.log('Created verification token');

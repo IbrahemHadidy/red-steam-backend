@@ -19,11 +19,7 @@ export class ParseQueryArrayPipe<T> implements PipeTransform {
   }
 
   public async transform(value: [] | null | undefined): Promise<T[] | undefined> {
-    if (value === undefined || value === null) {
-      return undefined;
-    }
-
-    return this.parseArrayPipe.transform(value, {
+    return this.parseArrayPipe.transform(value ?? [], {
       type: 'query',
     });
   }

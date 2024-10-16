@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { environmentConfig, getSqlTypeOrmConfig } from '@test/integration-setup';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 // Modules
 import { CompaniesModule } from '@repositories/sql/companies/companies.module';
@@ -464,7 +464,7 @@ describe('gamesService', () => {
     });
 
     it('should throw NotFoundException if user does not exist', async () => {
-      await expect(reviewsService.removeAllUserReviews(uuidv4())).rejects.toThrow(NotFoundException);
+      await expect(reviewsService.removeAllUserReviews(randomUUID())).rejects.toThrow(NotFoundException);
     });
   });
 

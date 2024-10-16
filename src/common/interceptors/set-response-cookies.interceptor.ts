@@ -28,7 +28,7 @@ export class SetResponseCookiesInterceptor implements NestInterceptor {
           const { accessToken, refreshToken, loggingIn } = data;
 
           // Get rememberMe value
-          const rememberMe: boolean = request.body['rememberMe'];
+          const rememberMe: boolean = (loggingIn && request.body['rememberMe']) || false;
 
           // Set accessToken in HttpOnly cookie
           if (accessToken) {
@@ -37,9 +37,7 @@ export class SetResponseCookiesInterceptor implements NestInterceptor {
               secure: true,
               sameSite: 'none',
               path: '/',
-
-              // If rememberMe & loggingIn is true, 2 hour cookie, else session cookie
-              maxAge: loggingIn && rememberMe ? 7200 : undefined,
+              maxAge: 3600, // 1 hour
             });
           }
 
@@ -52,7 +50,7 @@ export class SetResponseCookiesInterceptor implements NestInterceptor {
               path: '/',
 
               // If rememberMe & loggingIn is true, 30 days cookie, else session cookie
-              maxAge: loggingIn && rememberMe ? 2592000 : undefined,
+              maxAge: rememberMe ? 2592000 : undefined,
             });
           }
 
