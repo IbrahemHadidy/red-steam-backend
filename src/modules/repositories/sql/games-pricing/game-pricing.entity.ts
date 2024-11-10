@@ -2,7 +2,16 @@
 import { BadRequestException } from '@nestjs/common';
 
 // TypeORM
-import { BaseEntity, BeforeInsert, BeforeUpdate, Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  AfterLoad,
+  BaseEntity,
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 // DecimalJS
 import Decimal from 'decimal.js';
@@ -21,7 +30,7 @@ export class GamePricing extends BaseEntity {
   @Column({ default: false })
   free: boolean;
 
-  @Column({ nullable: true, type: 'decimal', precision: 10, scale: 2 })
+  @Column({ nullable: false, default: '0.00', type: 'decimal', precision: 10, scale: 2 })
   basePrice: string;
 
   @Column({ default: false })
@@ -79,6 +88,18 @@ export class GamePricing extends BaseEntity {
         this.discountEndDate = null;
         this.offerType = null;
       }
+    }
+  }
+
+  @AfterLoad()
+  checkDiscountEndDate() {
+    if (this.discountEndDate && this.discountEndDate < new Date()) {
+      this.discount = false;
+      this.discountPrice = null;
+      this.discountPercentage = null;
+      this.discountStartDate = null;
+      this.discountEndDate = null;
+      this.offerType = null;
     }
   }
 }

@@ -264,14 +264,17 @@ export class GamesPricingService {
     this.logger.log(`Updating pricing with ID ${id}`);
 
     // Check if pricing exists
-    const existingPricing = await this.gamesPricingRepository.findOne({ where: { id } });
-    if (!existingPricing) throw new NotFoundException(`Pricing with ID ${id} not found`);
+    const existingPricing = await this.gamesPricingRepository.findOne({
+      where: { id },
+    });
+
+    if (!existingPricing) throw new NotFoundException(`Game with ID ${id} not found`);
 
     // Validate pricing
     await this.validatePricing({
-      free: pricing.free,
-      basePrice: pricing.basePrice,
-      discount: pricing.discount,
+      free: pricing.free ?? existingPricing.free,
+      basePrice: pricing.basePrice ?? existingPricing.basePrice,
+      discount: pricing.discount ?? existingPricing.discount,
       discountPrice: pricing.discountPrice,
       discountStartDate: pricing.discountStartDate,
       discountEndDate: pricing.discountEndDate,
@@ -280,17 +283,21 @@ export class GamesPricingService {
 
     // Calculate discount percentage
     const discountPercentage = pricing.discount
-      ? await this.calculateDiscountPercentage(pricing.discountPrice, pricing.basePrice)
+      ? await this.calculateDiscountPercentage(pricing.discountPrice, existingPricing.basePrice)
       : existingPricing.discountPercentage;
 
     // Update fields
-    if (pricing.basePrice) existingPricing.basePrice = pricing.basePrice;
-    if (discountPercentage) existingPricing.discountPercentage = discountPercentage;
-    if (pricing.discountPrice) existingPricing.discountPrice = pricing.discountPrice;
-    if (pricing.discountStartDate) existingPricing.discountStartDate = pricing.discountStartDate;
-    if (pricing.discountEndDate) existingPricing.discountEndDate = pricing.discountEndDate;
-    if (pricing.offerType) existingPricing.offerType = pricing.offerType;
-    if (pricing.free) existingPricing.free = pricing.free;
+    if (pricing.basePrice) existingPricing.basePrice = pricing.basePrice ?? existingPricing.basePrice;
+    if (pricing.discount) existingPricing.discount = pricing.discount ?? existingPricing.discount;
+    if (discountPercentage)
+      existingPricing.discountPercentage = discountPercentage ?? existingPricing.discountPercentage;
+    if (pricing.discountPrice) existingPricing.discountPrice = pricing.discountPrice ?? existingPricing.discountPrice;
+    if (pricing.discountStartDate)
+      existingPricing.discountStartDate = pricing.discountStartDate ?? existingPricing.discountStartDate;
+    if (pricing.discountEndDate)
+      existingPricing.discountEndDate = pricing.discountEndDate ?? existingPricing.discountEndDate;
+    if (pricing.offerType) existingPricing.offerType = pricing.offerType ?? existingPricing.offerType;
+    if (pricing.free) existingPricing.free = pricing.free ?? existingPricing.free;
 
     // Update discount status
     this.updateDiscountStatus(existingPricing);
@@ -381,7 +388,7 @@ export class GamesPricingService {
     offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
   }): Promise<void> {
     // Create decimals
-    const basePriceDecimal = new Decimal(pricing.basePrice);
+    const basePriceDecimal = pricing.basePrice && new Decimal(pricing.basePrice);
 
     // If game is free, throw a bad request exception with a message
     if (pricing.free && pricing.discount) throw new BadRequestException('Game is free, cannot have discount');
@@ -427,7 +434,7 @@ export class GamesPricingService {
     const discountPriceDecimal = new Decimal(discountPrice);
 
     // If base price is less than or equal to 0, throw a bad request exception with a message
-    if (!basePrice || basePriceDecimal)
+    if (!basePrice || basePriceDecimal.eq(0))
       throw new BadRequestException('Base price must be greater than 0 to calculate discount percentage');
 
     // Calculate discount percentage

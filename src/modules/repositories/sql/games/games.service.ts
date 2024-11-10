@@ -3,7 +3,7 @@ import { ConflictException, Injectable, InternalServerErrorException, Logger, No
 
 // TypeORM
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, In, Repository } from 'typeorm';
+import { FindOptionsRelations, ILike, In, Repository } from 'typeorm';
 
 // Services
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
@@ -25,6 +25,7 @@ import type {
   ThumbnailsEntry,
   VideoEntry,
 } from '@repositories/sql/games/game.entity';
+import type { FindOptionsOrder, FindOptionsWhere } from 'typeorm';
 import type { GameLanguage as GameLanguageType } from '../games-languages/game-language.entity';
 
 @Injectable()
@@ -133,6 +134,64 @@ export class GamesService {
   }
 
   /**
+   * Gets paginated games.
+   * @param page - The current page number.
+   * @param limit - The number of items per page.
+   * @param orderBy - The field to order by.
+   * @param order - The order direction.
+   * @param searchQuery - The search query.
+   * @returns A promise that resolves to the paginated games.
+   */
+  public async getGamesPaginated(
+    page: number,
+    limit: number,
+    orderBy:
+      | 'id'
+      | 'name'
+      | 'discountPrice'
+      | 'basePrice'
+      | 'discountPercentage'
+      | 'offerType'
+      | 'discountStartDate'
+      | 'discountEndDate',
+    order: 'ASC' | 'DESC',
+    discount: boolean,
+    searchQuery?: { name?: string },
+  ): Promise<{ items: Game[]; total: number; totalPages: number }> {
+    this.logger.log(`Getting games paginated: page ${page}, limit ${limit}, order by ${orderBy} ${order}`);
+
+    // Create a where clause based on the search query
+    const where: FindOptionsWhere<Game> = {};
+    if (discount) where.pricing = { discount: true };
+    if (searchQuery?.name) where.name = ILike(`%${searchQuery.name}%`);
+
+    const orderOptions: FindOptionsOrder<Game> = {};
+    if (orderBy === 'id') orderOptions.id = order;
+    if (orderBy === 'name') orderOptions.name = order;
+    if (orderBy === 'discountPrice') orderOptions.pricing = { discountPrice: order };
+    if (orderBy === 'basePrice') orderOptions.pricing = { basePrice: order };
+    if (orderBy === 'discountPercentage') orderOptions.pricing = { discountPercentage: order };
+    if (orderBy === 'offerType') orderOptions.pricing = { offerType: order };
+    if (orderBy === 'discountStartDate') orderOptions.pricing = { discountStartDate: order };
+    if (orderBy === 'discountEndDate') orderOptions.pricing = { discountEndDate: order };
+
+    // Get the paginated games
+    const [items, total] = await this.gameRepository.findAndCount({
+      where,
+      order: orderOptions,
+      relations: { pricing: true },
+      skip: Math.max((page - 1) * limit, 0),
+      take: limit,
+    });
+
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(total / limit);
+
+    // Return the paginated games and total number of pages
+    return { items, total, totalPages };
+  }
+
+  /**
    * Creates a new game.
    * @param {Game} game - The game entity to be created.
    * @return {Promise<GameType>} A Promise that resolves to the created game entity.
@@ -217,7 +276,7 @@ export class GamesService {
     // Create new game pricing and link it to the saved game
     const pricing = new GamePricing();
     pricing.free = game.pricing.free;
-    pricing.basePrice = game.pricing.price;
+    pricing.basePrice = game.pricing.price ?? '0.00';
 
     // Link the pricing to the game
     newGame.pricing = pricing;

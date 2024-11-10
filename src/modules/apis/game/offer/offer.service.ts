@@ -3,11 +3,16 @@ import { Injectable, Logger } from '@nestjs/common';
 
 // Services
 import { GamesPricingService } from '@repositories/sql/games-pricing/games-pricing.service';
+import { GamesService } from '@repositories/sql/games/games.service';
+
+// Types
+import type { Game } from '@repositories/sql/games/game.entity';
 
 @Injectable()
 export class OfferService {
   constructor(
     private readonly logger: Logger,
+    private readonly game: GamesService,
     private readonly pricing: GamesPricingService,
   ) {}
 
@@ -27,10 +32,49 @@ export class OfferService {
     this.logger.log(`Creating offer for game with ID ${gameId}`);
 
     // Update the game's pricing to include the offer
-    await this.pricing.update(gameId, { free: false, discountPrice, discountStartDate, discountEndDate, offerType });
+    await this.pricing.update(gameId, {
+      free: false,
+      discount: true,
+      discountPrice,
+      discountStartDate,
+      discountEndDate,
+      offerType,
+    });
 
     // Return a success message
     return { message: 'Offer created successfully' };
+  }
+
+  /**
+   * Get paginated offers
+   * @param page - The current page number
+   * @param limit - The number of items per page
+   * @param orderBy - The column to order by
+   * @param order - The order direction
+   * @param searchQuery - The search query
+   * @returns An object containing the paginated offers and the total number of offers
+   */
+  public async getOffersPaginated(
+    page: number,
+    limit: number,
+    orderBy:
+      | 'id'
+      | 'name'
+      | 'discountPrice'
+      | 'basePrice'
+      | 'discountPercentage'
+      | 'offerType'
+      | 'discountStartDate'
+      | 'discountEndDate',
+    order: 'ASC' | 'DESC',
+    searchQuery: { name?: string },
+  ): Promise<{ items: Game[]; total: number; totalPages: number }> {
+    this.logger.log(
+      `Retrieving offers, page: ${page}, limit: ${limit}, order by: ${orderBy}, order: ${order}, search query: ${JSON.stringify(searchQuery)}`,
+    );
+
+    // Get features paginated and return them if they exist
+    return await this.game.getGamesPaginated(page, limit, orderBy, order, true, searchQuery);
   }
 
   /**
