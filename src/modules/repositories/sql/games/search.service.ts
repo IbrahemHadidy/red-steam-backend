@@ -135,7 +135,7 @@ export class SearchService {
 
     // Apply paid filter
     if (offers) {
-      query.andWhere('pricing.discount = true');
+      query.andWhere('pricing.discount = true AND pricing.discountEndDate > :now', { now: new Date() });
     }
 
     // Apply price filter
