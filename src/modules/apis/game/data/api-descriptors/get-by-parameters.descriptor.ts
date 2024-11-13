@@ -118,10 +118,10 @@ export const getByParametersDescriptor: ApiDescriptorOptions = {
       required: false,
     },
     {
-      name: 'offset',
+      name: 'page',
       type: Number,
       required: false,
-      description: 'Get games after this offset',
+      description: 'The page number to fetch games from',
     },
     {
       name: 'limit',

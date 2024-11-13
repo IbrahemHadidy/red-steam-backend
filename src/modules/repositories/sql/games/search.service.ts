@@ -69,7 +69,7 @@ export class SearchService {
       excludedGames?: number[];
       upcomingMode?: 'onlyUpcoming' | 'exclude';
     },
-    pagination: { offset: number; limit: number } = { offset: 0, limit: 20 },
+    pagination: { page: number; limit: number } = { page: 0, limit: 20 },
   ): Promise<GameType[]> {
     const {
       sort,
@@ -90,7 +90,7 @@ export class SearchService {
       upcomingMode,
     } = searchData;
 
-    const { offset, limit } = pagination;
+    const { page, limit } = pagination;
 
     this.logger.log(`Finding games with parameters: ${JSON.stringify(searchData)}`);
 
@@ -281,13 +281,13 @@ export class SearchService {
     }
 
     // Apply pagination
-    query.skip(offset).take(limit);
+    query.skip(Math.max((page - 1) * limit, 0)).take(limit);
 
     // Set cache for 30 seconds
     query.cache(`games-${JSON.stringify(searchData)}`, 30 * 1000);
 
     // Retrieve games with the given parameters
-    const games = await query.getMany();
+    const [games] = await query.getManyAndCount();
 
     // Return the games
     return games;

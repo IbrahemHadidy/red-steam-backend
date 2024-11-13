@@ -60,9 +60,10 @@ export class DataService {
       excludedGames?: number[];
       upcomingMode?: 'onlyUpcoming' | 'exclude';
     },
-    pagination: { offset: number; limit: number },
+    pagination: { page: number; limit: number },
   ): Promise<Game[]> {
     this.logger.log(`Finding games by criteria`);
+    this.logger.log(pagination);
 
     // Prepare search data
     const data = {
@@ -95,7 +96,7 @@ export class DataService {
 
     // Find games by parameters
     const games = await this.search.getByParameters(data, {
-      offset: pagination.offset,
+      page: pagination.page,
       limit: pagination.limit,
     });
     this.logger.log(`Found ${games.length} games`);
@@ -115,7 +116,7 @@ export class DataService {
     // Find featured games
     const games = await this.search.getByParameters(
       { featured: true, excludedGames: excludedGames.length > 0 ? excludedGames : undefined, sort: 'releaseDate' },
-      { limit: limit, offset: 0 },
+      { limit: limit, page: 0 },
     );
     this.logger.log(`Found ${games.length} featured games`);
 
@@ -183,7 +184,7 @@ export class DataService {
     // Find games with offers
     const games = await this.search.getByParameters(
       { offers: true, excludedGames: excludedGames.length > 0 ? excludedGames : undefined, sort: 'relevance' },
-      { limit: 24, offset: 0 },
+      { limit: 24, page: 0 },
     );
 
     // Return games
@@ -204,7 +205,7 @@ export class DataService {
         excludedGames: excludedGames.length > 0 ? excludedGames : undefined,
         sort: 'releaseDate',
       },
-      { limit: 10, offset: 0 },
+      { limit: 10, page: 0 },
     );
 
     // Return games
@@ -221,7 +222,7 @@ export class DataService {
     // Find games with top sales
     const games = await this.search.getByParameters(
       { sort: 'totalSales', excludedGames: excludedGames.length > 0 ? excludedGames : undefined },
-      { limit: 10, offset: 0 },
+      { limit: 10, page: 0 },
     );
 
     // Return games
@@ -238,7 +239,7 @@ export class DataService {
     // Find games with specials
     const games = await this.search.getByParameters(
       { featured: true, excludedGames: excludedGames.length > 0 ? excludedGames : undefined, sort: 'relevance' },
-      { limit: 10, offset: 0 },
+      { limit: 10, page: 0 },
     );
 
     // Return games
@@ -259,7 +260,7 @@ export class DataService {
         excludedGames: excludedGames.length > 0 ? excludedGames : undefined,
         sort: 'releaseDate',
       },
-      { limit: 10, offset: 0 },
+      { limit: 10, page: 0 },
     );
 
     // Return games

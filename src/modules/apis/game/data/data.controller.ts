@@ -83,7 +83,7 @@ export class DataController {
     excludedGames?: number[],
     @Query('upcomingMode', new UnionTypeValidationPipe(['onlyUpcoming', 'exclude'], { optional: true }))
     upcomingMode?: 'onlyUpcoming' | 'exclude',
-    @Query('offset', new ParseQueryIntPipe()) offset?: number,
+    @Query('page', new ParseQueryIntPipe()) page?: number,
     @Query('limit', new ParseQueryIntPipe()) limit?: number,
   ) {
     const result = await this.dataService.getByParameters(
@@ -106,7 +106,7 @@ export class DataController {
         upcomingMode,
       },
       {
-        offset,
+        page,
         limit,
       },
     );
