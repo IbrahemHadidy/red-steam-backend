@@ -63,7 +63,6 @@ export class DataService {
     pagination: { page: number; limit: number },
   ): Promise<Game[]> {
     this.logger.log(`Finding games by criteria`);
-    this.logger.log(pagination);
 
     // Prepare search data
     const data = {

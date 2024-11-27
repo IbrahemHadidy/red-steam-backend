@@ -47,7 +47,6 @@ export class ParseJsonPipe<T extends object> implements PipeTransform<string, T>
 
     // Only parse if the onlyParse option is set
     if (this.options.validate === false) {
-      console.log(jsonValue);
       return jsonValue;
     }
 

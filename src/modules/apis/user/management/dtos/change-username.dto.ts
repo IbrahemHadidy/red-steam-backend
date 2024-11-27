@@ -1,5 +1,5 @@
 // Class-validator
-import { IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 // Swagger
 import { ApiProperty } from '@nestjs/swagger';
@@ -11,10 +11,6 @@ export class ChangeUsernameDto {
   readonly newUsername: string;
 
   @ApiProperty({ description: 'current password', example: 'enter password here', required: true })
-  @IsNotEmpty({ message: 'Password is required' })
-  @IsStrongPassword(
-    { minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1 },
-    { message: 'Invalid password' },
-  )
-  readonly password: string;
+  @IsNotEmpty({ message: 'Current password is required' })
+  readonly currentPassword: string;
 }

@@ -80,10 +80,10 @@ export class ManagementService {
    */
   public async changeUsername(data: {
     userId: string;
-    password: string;
+    currentPassword: string;
     newUsername: string;
   }): Promise<{ message: string }> {
-    const { userId, password, newUsername } = data;
+    const { userId, currentPassword, newUsername } = data;
 
     this.logger.log(`Changing username for user with id: ${userId} to: ${newUsername}`);
 
@@ -91,7 +91,7 @@ export class ManagementService {
     const user = await this.userTools.findUser(userId, 'id');
 
     // Compare password hashes
-    await this.userTools.comparePassword(password, user.password);
+    await this.userTools.comparePassword(currentPassword, user.password);
 
     // Check if new username is the same as the old one
     if (newUsername === user.username) {
@@ -124,11 +124,11 @@ export class ManagementService {
    */
   public async changeEmail(data: {
     userId: string;
-    password: string;
+    currentPassword: string;
     currentEmail: string;
     newEmail: string;
   }): Promise<{ message: string }> {
-    const { userId, password, currentEmail, newEmail } = data;
+    const { userId, currentPassword, currentEmail, newEmail } = data;
 
     this.logger.log(`Changing email for user with id: ${userId} to: ${newEmail}`);
 
@@ -136,7 +136,7 @@ export class ManagementService {
     const user = await this.userTools.findUser(userId, 'id');
 
     // Compare password hashes
-    await this.userTools.comparePassword(password, user.password);
+    await this.userTools.comparePassword(currentPassword, user.password);
 
     // Check if current email is the same as the old one
     if (currentEmail !== user.email) {
@@ -258,10 +258,10 @@ export class ManagementService {
    */
   public async changePassword(data: {
     userId: string;
-    oldPassword: string;
+    currentPassword: string;
     newPassword: string;
   }): Promise<{ message: string }> {
-    const { userId, oldPassword, newPassword } = data;
+    const { userId, currentPassword, newPassword } = data;
 
     this.logger.log(`Changing password for user with id: ${userId}`);
 
@@ -269,10 +269,10 @@ export class ManagementService {
     const user = await this.userTools.findUser(userId, 'id');
 
     // Compare password hashes
-    await this.userTools.comparePassword(oldPassword, user.password);
+    await this.userTools.comparePassword(currentPassword, user.password);
 
     // Check if new password is the same as the old one
-    if (newPassword === oldPassword) {
+    if (newPassword === currentPassword) {
       this.logger.warn(`New password must be different from the current one for userId: ${userId}`);
       throw new BadRequestException('New password must be different');
     }
@@ -360,8 +360,8 @@ export class ManagementService {
    * @param data An object containing the userId and password
    * @returns The result of the delete
    */
-  public async deleteAccount(data: { userId: string; password: string }): Promise<{ message: string }> {
-    const { userId, password } = data;
+  public async deleteAccount(data: { userId: string; currentPassword: string }): Promise<{ message: string }> {
+    const { userId, currentPassword } = data;
 
     this.logger.log(`Deleting account for user with id: ${userId}`);
 
@@ -369,7 +369,7 @@ export class ManagementService {
     const user = await this.userTools.findUser(userId, 'id');
 
     // Compare password hashes
-    await this.userTools.comparePassword(password, user.password);
+    await this.userTools.comparePassword(currentPassword, user.password);
 
     // Delete user
     await this.user.remove(userId);
