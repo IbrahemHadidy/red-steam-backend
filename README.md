@@ -1,73 +1,112 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Red-Steam Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This repository contains the **Backend** for the Red-Steam project, built with [NestJS](https://nestjs.com/). It provides API endpoints for user authentication, game management, and more. The backend is designed to be used in conjunction with the [Frontend repository](https://github.com/IbrahemHadidy/red-steam-frontend) to create the complete Red-Steam web application.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- **Secure Authentication**: JWT-based authentication with access and refresh tokens, including role-based - authorization and token blacklisting.
+- **RESTful API**: Designed for comprehensive game and user management.
+- **Modular Architecture**: Built with NestJS and TypeORM for scalable, maintainable server-side development.
+- **Game Media Management**: Backend logic for serving and organizing media assets using Dropbox integration and database management.
+- **Payment Gateway Integration**: Secure PayPal sandbox integration for processing game purchases.
+- **Advanced Security**: ReCAPTCHA protection, cookie management with CSRF protection, and custom-built guards.
+- **Custom Middleware & Logging**: Used for authentication, request handling, and efficient structured logging.
+- **Interceptors & Filters**: Custom logic for request transformation and detailed error handling.
+- **Custom Decorators & DTOs**: Reusable code for cleaner and more maintainable logic, with data validation and transformation.
+- **Cache Management** (**_Work in Progress_**): Implements caching strategies using Redis for performance optimization.
+- **Media Uploads & File Handling**: Upload and manage media assets like images and videos.
+- **API Documentation**: Integrated Swagger UI for comprehensive API documentation.
+- **Automated Documentation**: Generates detailed, interactive documentation for the project using Compodoc.
+- **TypeScript**: Ensures type safety and enhances maintainability for scalable development.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Technologies
+
+- **NestJS**: Framework used for building efficient, scalable, and maintainable server-side applications.
+- **TypeORM**: ORM for PostgreSQL, enabling simplified database management and seamless integration with the app.
+- **PostgreSQL**: Manages entities such as Companies, Games, Features, Languages, Tags, and Users.
+- **MongoDB**: Handles JWT token blacklisting and Dropbox access token expiration.
+- **JWT**: Provides secure authentication and role-based authorization.
+- **Dropbox**: Used as a free cloud storage solution for managing media assets, balancing cost and load times.
+- **Redis**: Used for cache management to optimize performance (Work in Progress).
+- **ReCAPTCHA**: Integrates with forms and endpoints for protection against spam and automated abuse.
+- **Google SMTP**: Used for sending email notifications, password recovery, and checkout receipts.
+- **TypeScript**: Ensures type safety and better maintainability during development.
+
+---
 
 ## Installation
 
+1. **Clone the repository**:
+
+   ```bash
+   git clone https://github.com/IbrahemHadidy/red-steam-backend.git
+   cd red-steam-backend
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   pnpm install
+   ```
+3. **Set up environment variables**:
+
+   - Navigate to `src/common/configs/environments/` and copy the content of sample.env into a new file called .env.local.
+     -Fill in the required values.
+
+4. **Run the redsteam.sql script**:
+
+   - Ensure your PostgreSQL server is running.
+   - Use the provided redsteam.sql file to set up the database schema and initial data. Run the following command in your terminal:
+     ```bash
+     psql -U your_postgres_user -d redsteam -f src/common/configs/db/redsteam.sql
+     ```
+   - Replace `your_postgres_user` with your PostgreSQL username.
+
+5. **Run the development server**:
+
+   ```bash
+   pnpm start:dev
+   ```
+
+6. **Access the API documentation (Swagger)** at `http://localhost:5000/api`.
+
+---
+
+## Database Migration
+
+To run TypeORM migrations:
+
 ```bash
-$ yarn install
+pnpm typeorm migration:run
 ```
 
-## Running the app
+## Build for Production
+
+Build the application:
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+pnpm build
 ```
 
-## Test
+Start the production server:
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+pnpm start:prod
 ```
 
-## Support
+## Testing
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+This project includes integration and E2E tests for verifying the application's behavior. However, the testing suite is **incomplete and outdated** and mostly contain issues that cause tests to fail.
 
-## Stay in touch
+### Running Tests
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+To run the integration tests, use the following command:
 
-## License
+```bash
+pnpm run test
+```
 
-Nest is [MIT licensed](LICENSE).
+To run the E2E tests, use the following command:
+
+```bash
+pnpm run test:e2e
+```
