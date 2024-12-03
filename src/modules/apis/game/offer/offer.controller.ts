@@ -109,7 +109,7 @@ export class OfferController {
   @Put(':id')
   @HttpCode(200)
   async updateOffer(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateOfferDto) {
-    const result = await this.offerService.updateOffer({ gameId: id, ...body });
+    const result = await this.offerService.updateOffer({ id, ...body });
 
     // Send the response
     return result;

@@ -80,7 +80,9 @@ export class GamePricing extends BaseEntity {
         if (basePriceDecimal.lessThanOrEqualTo(0)) {
           throw new BadRequestException('Base price must be greater than 0 to calculate discount percentage');
         }
-        this.discountPercentage = Math.round(discountPriceDecimal.dividedBy(basePriceDecimal).times(100).toNumber());
+        this.discountPercentage = Math.round(
+          basePriceDecimal.minus(discountPriceDecimal).dividedBy(basePriceDecimal).times(100).toNumber(),
+        );
       } else {
         this.discountPrice = null;
         this.discountPercentage = null;

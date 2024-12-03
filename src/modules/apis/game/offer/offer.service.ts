@@ -83,17 +83,17 @@ export class OfferService {
    * @returns A message indicating that the offer was updated
    */
   public async updateOffer(data: {
-    gameId: number;
+    id: number;
     discountPrice?: string;
     discountStartDate?: Date;
     discountEndDate?: Date;
     offerType?: 'SPECIAL PROMOTION' | 'WEEKEND DEAL';
   }): Promise<{ message: string }> {
-    const { gameId, discountPrice, discountStartDate, discountEndDate, offerType } = data;
-    this.logger.log(`Creating offer for game with ID ${gameId}`);
+    const { id, discountPrice, discountStartDate, discountEndDate, offerType } = data;
+    this.logger.log(`Updating offer with ID ${id}`);
 
     // Update the game's pricing to include the new offer details
-    await this.pricing.update(gameId, { free: false, discountPrice, discountStartDate, discountEndDate, offerType });
+    await this.pricing.update(id, { free: false, discountPrice, discountStartDate, discountEndDate, offerType });
 
     // Return a success message
     return { message: 'Offer updated successfully' };
@@ -101,14 +101,15 @@ export class OfferService {
 
   /**
    * Delete offer by game ID
-   * @param gameId The ID of the game
+   * @param id The ID of the offer
    * @returns A message indicating the success of the operation
    */
-  public async delete(gameId: number): Promise<{ message: string }> {
-    this.logger.log(`Deleting offer with game ID: ${gameId}`);
+  public async delete(id: number): Promise<{ message: string }> {
+    this.logger.log(`Deleting offer with ID: ${id}`);
 
     // Update the game's pricing to remove the offer
-    await this.pricing.update(gameId, {
+    await this.pricing.update(id, {
+      discount: false,
       discountPrice: null,
       discountStartDate: null,
       discountEndDate: null,
