@@ -182,7 +182,6 @@ export class CreateGameDto {
     description: 'The price of the game',
     example: '{"free": false, "basePrice": 12.5}',
     required: true,
-    type: 'object',
   })
   @IsNotEmpty({ message: 'The price of the game is required' })
   @IsObject({ message: 'The price of the game must be an object' })
@@ -211,7 +210,7 @@ export class CreateGameDto {
   @Type(() => LanguageDto)
   readonly languages: LanguageDto[];
 
-  @ApiProperty({ description: 'The game platforms', example: '{win: true, mac: true}', required: true, type: 'object' })
+  @ApiProperty({ description: 'The game platforms', example: '{win: true, mac: true}', required: true })
   @IsNotEmpty({ message: 'The game platforms is required' })
   @IsObject({ message: 'The game platforms must be an object' })
   @Type(() => PlatformsDto)
@@ -249,7 +248,6 @@ export class CreateGameDto {
     }
     `,
     required: true,
-    type: 'object',
   })
   @IsNotEmpty({ message: 'The game system requirements is required' })
   @IsObject({ message: 'The game system requirements must be an object' })

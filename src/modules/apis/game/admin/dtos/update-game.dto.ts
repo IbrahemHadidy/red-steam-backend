@@ -218,7 +218,6 @@ export class UpdateGameDto {
   @ApiProperty({
     description: 'The price of the game',
     example: '{"free": false, "basePrice": 12.5}',
-    type: 'object',
   })
   @IsOptional()
   @IsObject({ message: 'The price of the game must be an object' })
@@ -247,7 +246,7 @@ export class UpdateGameDto {
   @Type(() => LanguageDto)
   readonly languages?: LanguageDto[];
 
-  @ApiProperty({ description: 'The game platforms', example: '{win: true, mac: true}', type: 'object' })
+  @ApiProperty({ description: 'The game platforms', example: '{win: true, mac: true}' })
   @IsOptional()
   @IsObject({ message: 'The game platforms must be an object' })
   @Type(() => PlatformsDto)
@@ -284,7 +283,6 @@ export class UpdateGameDto {
       }
     }
     `,
-    type: 'object',
   })
   @IsOptional()
   @IsObject({ message: 'The game system requirements must be an object' })

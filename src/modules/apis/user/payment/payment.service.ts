@@ -64,10 +64,10 @@ export class PaymentService {
     const order = await this.payment.createOrder(totalPrice);
 
     // Return order data
-    this.logger.log(`Order created with ID: ${order.result.id}`);
+    this.logger.log(`Order created with ID: ${order.id}`);
     return {
-      orderId: order.result.id,
-      approvalUrl: order.result.links[1].href,
+      orderId: order.id,
+      approvalUrl: order.links[1].href,
       orderData: { userId, totalPrice, cartItems },
     };
   }

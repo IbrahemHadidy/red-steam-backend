@@ -1,9 +1,6 @@
 // NestJS
-import { HttpException, Injectable, InternalServerErrorException, Logger, OnModuleInit } from '@nestjs/common';
+import { HttpException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
-// Axios (for making requests to the Dropbox API)
-import axios from 'axios';
 
 // Dropbox
 import { Dropbox } from 'dropbox';
@@ -12,8 +9,8 @@ import { Dropbox } from 'dropbox';
 import { DropboxTokensService } from '@repositories/mongo/dropbox-tokens/dropbox-tokens.service';
 
 // Types
+import type { OnModuleInit } from '@nestjs/common';
 import type { DropboxToken } from '@repositories/mongo/dropbox-tokens/dropbox-token.entity';
-import type { Dropbox as DropboxType } from 'dropbox';
 
 @Injectable()
 export class DropboxService implements OnModuleInit {
@@ -26,7 +23,7 @@ export class DropboxService implements OnModuleInit {
   private readonly clientId: string;
   private readonly clientSecret: string;
   private readonly refreshToken: string;
-  public dropboxClient: DropboxType;
+  public dropboxClient: Dropbox;
 
   constructor(
     private readonly config: ConfigService,
@@ -146,17 +143,26 @@ export class DropboxService implements OnModuleInit {
 
     try {
       // Make a request to the Dropbox API to refresh the access token
-      const response = await axios.post('https://api.dropbox.com/oauth2/token', null, {
-        params: {
-          refresh_token: this.refreshToken,
-          grant_type: 'refresh_token',
-          client_id: this.clientId,
-          client_secret: this.clientSecret,
-        },
+      const url = 'https://api.dropbox.com/oauth2/token';
+      const params = new URLSearchParams({
+        refresh_token: this.refreshToken,
+        grant_type: 'refresh_token',
+        client_id: this.clientId,
+        client_secret: this.clientSecret,
+      });
+      
+      const headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      };
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: params.toString(),
       });
 
       // Extract the access token and refresh token from the response
-      const { access_token, expires_in } = response.data;
+      const { access_token, expires_in } = await response.json();
 
       // Create a new Dropbox client with the new access token
       this.dropboxClient = new Dropbox({ accessToken: access_token });

@@ -3,14 +3,15 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 // Paypal
-import paypal from '@paypal/checkout-server-sdk';
+import { CheckoutPaymentIntent, Client, Environment, LogLevel, OrdersController } from '@paypal/paypal-server-sdk';
 
-// Types
-import type { HttpResponse } from 'paypal__paypalhttp';
+// Types 
+import type { Order } from '@paypal/paypal-server-sdk';
 
 @Injectable()
 export class PaypalService {
-  private readonly client: paypal.core.PayPalHttpClient;
+  private readonly client: Client;
+  private readonly ordersController: OrdersController;
 
   constructor(
     private readonly configService: ConfigService,
@@ -20,15 +21,33 @@ export class PaypalService {
     const clientSecret = this.configService.get<string>('PAYPAL_CLIENT_SECRET');
     const environmentType = this.configService.get<string>('NODE_ENV');
 
-    let environment: paypal.core.PayPalEnvironment;
+    let environment: Environment;
 
     if (environmentType === 'production') {
-      environment = new paypal.core.LiveEnvironment(clientId, clientSecret);
+      environment = Environment.Production;
     } else {
-      environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
+      environment = Environment.Sandbox;
     }
 
-    this.client = new paypal.core.PayPalHttpClient(environment);
+    this.client = new Client({
+      clientCredentialsAuthCredentials: {
+        oAuthClientId: clientId,
+        oAuthClientSecret: clientSecret
+      },
+      timeout: 0,
+      environment,
+      logging: {
+        logLevel: LogLevel.Info,
+        logRequest: {
+          logBody: true
+        },
+        logResponse: {
+          logHeaders: true
+        }
+      },
+    });
+
+    this.ordersController = new OrdersController(this.client);
   }
 
   /**
@@ -38,35 +57,34 @@ export class PaypalService {
    */
   async createOrder(
     totalPrice: string,
-  ): Promise<HttpResponse<{ id: string; links: { href: string; method: string }[] }>> {
+  ): Promise<Order> {
     // Log the initiation of the order creation process
     this.logger.log(`Creating PayPal order for user with ID ${totalPrice}`);
 
     // Create request body
-    const request = new paypal.orders.OrdersCreateRequest();
-
-    // Set request body
-    request.prefer('return=representation');
-    request.requestBody({
-      intent: 'CAPTURE',
-      purchase_units: [
-        {
-          amount: {
-            currency_code: 'USD',
-            value: totalPrice,
-          },
-        },
-      ],
-    });
+    const collect = {
+      body: {
+        intent: CheckoutPaymentIntent.Capture,
+        purchaseUnits: [
+          {
+            amount: {
+              currencyCode: 'USD',
+              value: totalPrice,
+            },
+          }
+        ],
+      },
+      prefer: 'return=representation'
+    }
 
     // Send request
-    const order = await this.client.execute(request);
+    const { result }  = await this.ordersController.ordersCreate(collect);
 
     // Log the successful order creation
     this.logger.log(`PayPal order created successfully for user with ID ${totalPrice}`);
 
     // Return order
-    return order;
+    return result;
   }
 
   /**
@@ -79,21 +97,24 @@ export class PaypalService {
     this.logger.log(`Capturing PayPal order with ID: ${orderId}`);
 
     // Create request body
-    const request = new paypal.orders.OrdersCaptureRequest(orderId);
+    const collect = {
+      id: orderId,
+      prefer: 'return=representation'
+    }
 
     // Send request
-    const capture = await this.client.execute(request);
+    const capture = await this.ordersController.ordersCapture(collect);
 
     // Extract data from response
     const responseData = capture.result;
 
     // Extract payer's name
-    const payerName = responseData.payer.name.given_name;
+    const payerName = responseData.payer.name.givenName;
 
     // Log the captured order status, order ID, and payer's name
     this.logger.log('PayPal capture response status:', responseData.status);
     this.logger.log('PayPal capture response order ID:', responseData.id);
-    this.logger.log('PayPal capture response payer name:', responseData.payer.name.given_name);
+    this.logger.log('PayPal capture response payer name:', responseData.payer.name.givenName);
 
     // Return captured order status, payer's name, and order ID
     return {

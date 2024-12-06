@@ -1,6 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 import { PaypalModule } from '@services/paypal/paypal.module';
 import { PaypalService } from '@services/paypal/paypal.service';
 
@@ -28,7 +28,7 @@ describe('PaypalService', () => {
 
   describe('createOrder', () => {
     it('should create order', async () => {
-      const order = await paymentService.createOrder(10);
+      const order = await paymentService.createOrder('10');
 
       // Assertions
       expect(order).toBeDefined();
@@ -38,10 +38,10 @@ describe('PaypalService', () => {
   describe('captureOrder', () => {
     it('should capture order after manual approval', async () => {
       // Create order
-      const createdOrder = await paymentService.createOrder(10);
+      const createdOrder = await paymentService.createOrder('10');
 
       // Get approval URL
-      const approvalUrl = createdOrder.result.links.find((link: { rel: string }) => link.rel === 'approve').href;
+      const approvalUrl = createdOrder.links.find((link: { rel: string }) => link.rel === 'approve').href;
 
       // Log the approval URL and wait for manual approval
       console.log(
@@ -68,7 +68,7 @@ describe('PaypalService', () => {
       await new Promise((resolve) => setTimeout(resolve, 60000)); // Wait for 1 minute
 
       // Capture order after manual approval
-      const capturedOrder = await paymentService.captureOrder(createdOrder.result.id);
+      const capturedOrder = await paymentService.captureOrder(createdOrder.id);
 
       // Assertions
       expect(capturedOrder).toBeDefined();
