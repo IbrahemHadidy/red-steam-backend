@@ -138,3 +138,20 @@ pnpm compodoc
 ```
 
 Once generated, you can access the documentation in the `documentation` folder within the project.
+
+---
+
+## Future Plans
+
+If the project continues, the following features are planned for potential development:
+
+- **Enhanced Security**: Improved security measures including OTP services for secure logins, phone number verification, and transaction authentication.
+- **Cache Management**: Implement caching strategies with Redis to optimize performance.
+- **GraphQL Support**: Adding a GraphQL API for more flexible data queries.
+- **WebSockets Integration**: Real-time updates for user interactions and notifications.
+- **Advanced Logging**: Incorporation of a more robust logging system for better monitoring and debugging.
+- **API Rate Limiting**: Adding API rate limiting to prevent abuse and ensure fair usage.
+- **CDN Integration**: Implementing a Content Delivery Network (CDN) to distribute media assets, replacing traditional cloud storage. This change will enhance load times and improve the overall user experience by ensuring faster and more reliable access to content.
+
+Note: This list is not exhaustive, and additional features may be added as the project evolves.
+
