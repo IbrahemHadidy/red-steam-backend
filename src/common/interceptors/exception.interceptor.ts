@@ -1,18 +1,9 @@
-// NestJS
+import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { HttpException, Injectable, Logger } from '@nestjs/common';
-
-// RxJS
+import type { Observable } from 'rxjs';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-// Types
-import type { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
-import type { Observable } from 'rxjs';
-
-/**
- * Interceptor to handle common HTTP exceptions and customize error responses.
- * @returns Customized error response
- */
 @Injectable()
 export class ExceptionInterceptor implements NestInterceptor {
   constructor(private readonly logger: Logger) {}
@@ -22,32 +13,33 @@ export class ExceptionInterceptor implements NestInterceptor {
       catchError((error) => {
         let statusCode = 500;
         let message = 'Internal server error';
+        let userMessage = 'An unexpected error occurred';
 
         if (error instanceof HttpException) {
-          statusCode = error.getStatus(); // Get the HTTP status code from the error
-          const errorMessage = error.getResponse()['message'] || error.message; // Get the error message from the response, fallback to error.message if not available
+          statusCode = error.getStatus();
+          const errorMessage = error.getResponse()['message'] || error.message;
 
           if (Array.isArray(errorMessage)) {
-            // If the message is an array, join its elements into a single string
             message = errorMessage.join(', ');
           } else {
             message = errorMessage;
           }
-        } else {
-          console.error(error); // Log the error to console
+
+          userMessage = process.env.NODE_ENV === 'production' ? 'An unexpected error occurred' : message;
+        } else if (error instanceof Error) {
+          message = error.message;
         }
 
-        // Customize the response as needed
         const response = {
           statusCode,
-          message,
+          message: userMessage,
+          timestamp: new Date().toISOString(),
+          path: _context.switchToHttp().getRequest().url,
+          method: _context.switchToHttp().getRequest().method,
         };
 
-        // Log error details
-        this.logger.error(error.message);
-        console.error(error.stack);
+        this.logger.error(`Status: ${statusCode} | Message: ${message} | Path: ${_context.switchToHttp().getRequest().url}`, error.stack);
 
-        // Send the response to the client
         return throwError(() => response);
       }),
     );
