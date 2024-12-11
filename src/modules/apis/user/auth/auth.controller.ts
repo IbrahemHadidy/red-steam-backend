@@ -132,6 +132,7 @@ export class AuthController {
   @ApiDescriptor(userDataDescriptor)
   @UseGuards(JwtAccessAuthGuard)
   @Serialize(NestedDataDto)
+  @MaskEmail()
   @Get('user-data')
   @HttpCode(200)
   public async getUserData(@Req() request: Request) {

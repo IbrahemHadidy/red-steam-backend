@@ -158,11 +158,11 @@ export class ManagementService {
     }
 
     // Update email
-    await this.user.updateEmail(userId, newEmail);
+    await this.user.updateEmail(userId, newEmail, true);
 
     // Return success message
     this.logger.log(`Email changed successfully for userId: ${userId}`);
-    return { message: 'Email changed successfully' };
+    return { message: 'Email changed successfully, please verify your email' };
   }
 
   /**

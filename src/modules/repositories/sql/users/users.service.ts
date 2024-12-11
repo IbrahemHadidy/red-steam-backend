@@ -363,11 +363,12 @@ export class UsersService {
    * Updates the email of a user.
    * @param id - The ID of the user.
    * @param email - The new email to set.
+   * @param setUnverified - Whether to set the email as unverified.
    * @return A Promise that resolves to the updated user entity.
    * @throws `NotFoundException` if the user is not found.
    * @throws `InternalServerErrorException` if the update fails.
    */
-  public async updateEmail(id: string, email: string): Promise<UserType> {
+  public async updateEmail(id: string, email: string, setUnverified = false): Promise<UserType> {
     this.logger.log(`Updating email of user with ID ${id} in the database`);
 
     // Check if user exists
@@ -378,6 +379,7 @@ export class UsersService {
 
     // Update the user
     user.email = email;
+    user.isVerified = !setUnverified;
     const updatedUser = await this.userRepository.save(user);
 
     // Throw an exception if the user was not updated
