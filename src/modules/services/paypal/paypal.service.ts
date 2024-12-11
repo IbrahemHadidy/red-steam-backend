@@ -78,7 +78,7 @@ export class PaypalService {
     }
 
     // Send request
-    const { result }  = await this.ordersController.ordersCreate(collect);
+    const { result } = await this.ordersController.ordersCreate(collect);
 
     // Log the successful order creation
     this.logger.log(`PayPal order created successfully for user with ID ${totalPrice}`);

@@ -15,11 +15,10 @@ import type { DropboxToken } from '@repositories/mongo/dropbox-tokens/dropbox-to
 @Injectable()
 export class DropboxService implements OnModuleInit {
   private token: DropboxToken;
-  private lastTokenCheck: number = 0; // Timestamp of the last token check
+  private lastUpdated: number = 0; // Last time the access token was updated
   private retryUpdateCount: number = 0; // Number of retries for updating the access token
   private readonly MAX_UPDATE_RETRIES: number = 3; // Maximum number of retries for updating the access token
-  private readonly TOKEN_CHECK_INTERVAL: number = 10 * 60 * 1000; // 10 minutes
-  private readonly NEAR_EXPIRATION_THRESHOLD: number = 15 * 60 * 1000; // 15 minutes
+  private readonly TOKEN_REFRESH_INTERVAL: number = 60 * 60 * 1000; // Token refresh interval in milliseconds
   private readonly clientId: string;
   private readonly clientSecret: string;
   private readonly refreshToken: string;
@@ -63,37 +62,17 @@ export class DropboxService implements OnModuleInit {
    * Ensures that the access token is valid and refreshes it if needed.
    */
   public async ensureValidAccessToken(): Promise<void> {
-    // Get the current timestamp
-    const now = Date.now();
-
-    // Skip token validation if within the interval
-    if (now - this.lastTokenCheck < this.TOKEN_CHECK_INTERVAL) return;
-
-    this.logger.log('Ensuring access token is valid...');
-
-    // Get the tokens from the database
-    const token = await this.tokenService.getToken();
-
-    if (token !== null) {
-      // Check if the access token is near expiration
-      const isTokenNearExpiration = Date.now() >= token.expirationTime - this.NEAR_EXPIRATION_THRESHOLD;
-      if (isTokenNearExpiration) {
-        // If the access token is near expiration or expired, refresh it
-        this.logger.warn('Access token is either near expiration or has expired. Refreshing...');
-        await this.updateTokens();
-        this.logger.log('Access token refreshed.');
-      } else {
-        // If the access token is valid, do nothing
-        this.logger.log('Access token is valid.');
-      }
-    } else {
-      // If no tokens are found, attempt to refresh the token
-      this.logger.warn('No access token found. Attempting to refresh token...');
+    const currentTime = Date.now();
+    if (currentTime - this.lastUpdated < this.TOKEN_REFRESH_INTERVAL) return;
+    
+    try {
+      this.logger.log('Updating access token...');
       await this.updateTokens();
+      this.lastUpdated = currentTime;
+    } catch (error) {
+      this.logger.error('Failed to refresh token', error);
+      throw error;
     }
-
-    // Update the timestamp after checking
-    this.lastTokenCheck = Date.now();
   }
 
   /**
