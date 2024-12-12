@@ -499,11 +499,9 @@ export class UsersService {
     // Add new items to the user's library
     user.library.push(...newItems);
 
-    // Save the updated user entity
-    user.cart = [];
-
     // Remove added items from wishlist if they exist
     const newItemsIds = newItems.map((item) => item.id);
+    user.cart = user.cart.filter((item) => !newItemsIds.includes(item.id));
     user.wishlist = user.wishlist.filter((item) => !newItemsIds.includes(item.id));
 
     // Save the updated user entity
