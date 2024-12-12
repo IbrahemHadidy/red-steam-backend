@@ -3,7 +3,7 @@ import { ConflictException, Injectable, InternalServerErrorException, Logger, No
 
 // TypeORM
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, ILike, In, MoreThanOrEqual, Repository } from 'typeorm';
+import { FindOptionsRelations, ILike, In, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 
 // Services
 import { CompaniesService } from '@repositories/sql/companies/companies.service';
@@ -162,7 +162,7 @@ export class GamesService {
 
     // Create a where clause based on the search query
     const where: FindOptionsWhere<Game> = {};
-    if (discount) where.pricing = { discount: true, discountEndDate: MoreThanOrEqual(new Date()) };
+    if (discount) where.pricing = { discount: true, discountEndDate: MoreThanOrEqual(new Date()), discountStartDate: LessThanOrEqual(new Date()) };
     if (searchQuery?.name) where.name = ILike(`%${searchQuery.name}%`);
 
     const orderOptions: FindOptionsOrder<Game> = {};

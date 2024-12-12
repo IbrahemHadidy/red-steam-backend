@@ -141,7 +141,7 @@ export class SearchService {
     // Apply price filter
     if (maxPrice) {
       query.andWhere(
-        '(pricing.basePrice <= :maxPrice OR (pricing.discountPrice <= :maxPrice AND pricing.discount = true AND pricing.discountEndDate > :now))',
+        '(pricing.basePrice <= :maxPrice OR (pricing.discountPrice <= :maxPrice AND pricing.discount = true AND pricing.discountEndDate > :now AND pricing.discountStartDate < :now))',
         { maxPrice, now: new Date() },
       );
     }

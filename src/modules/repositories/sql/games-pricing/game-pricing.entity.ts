@@ -95,7 +95,7 @@ export class GamePricing extends BaseEntity {
 
   @AfterLoad()
   checkDiscountEndDate() {
-    if (this.discountEndDate && this.discountEndDate < new Date()) {
+    if (this.discountEndDate && (this.discountEndDate < new Date() || this.discountStartDate > new Date())) {
       this.discount = false;
       this.discountPrice = null;
       this.discountPercentage = null;
