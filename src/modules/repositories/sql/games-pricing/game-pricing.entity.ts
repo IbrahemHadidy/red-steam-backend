@@ -95,13 +95,18 @@ export class GamePricing extends BaseEntity {
 
   @AfterLoad()
   checkDiscountEndDate() {
-    if (this.discountEndDate && (this.discountEndDate < new Date() || this.discountStartDate > new Date())) {
-      this.discount = false;
-      this.discountPrice = null;
-      this.discountPercentage = null;
-      this.discountStartDate = null;
-      this.discountEndDate = null;
-      this.offerType = null;
+    if (this.discount) {
+      if (this.discountEndDate < new Date() || this.discountStartDate > new Date()) {
+        this.discount = false;
+        this.discountPrice = null;
+        this.discountPercentage = null;
+        this.discountStartDate = null;
+        this.discountEndDate = null;
+        this.offerType = null;
+      } else {
+        const discountPriceDecimal = new Decimal(this.discountPrice || '0.00');
+        if (discountPriceDecimal.equals(0)) this.free = true;
+      }
     }
   }
 }
