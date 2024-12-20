@@ -209,11 +209,11 @@ export class GameStorageService {
       throw new BadRequestException('Invalid parameters: gameName and filePath are required');
     }
 
-    // Log the deletion message
-    this.logger.log(`Deleting file: ${filePath}`);
-
     // Construct the path of the file to delete
     const filePathToDelete = `${this.gameFolderPath}/${gameName}/${filePath}`;
+
+    // Log the deletion message
+    this.logger.log(`Deleting file: ${filePathToDelete}`);
 
     // Delete the file from Dropbox
     await this.dbx.dropboxClient.filesDeleteV2({ path: filePathToDelete });

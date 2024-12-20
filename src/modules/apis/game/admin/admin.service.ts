@@ -265,7 +265,7 @@ export class AdminService {
     // Delete the deleted screenshots from storage
     if (data.deletedScreenshots) {
       for (const screenshot of data.deletedScreenshots) {
-        await this.deleteFile(storageName, `screenshots/${screenshot.toString()}.jpg`);
+        await this.deleteFile(storageName, `images/${screenshot.toString()}.jpg`);
       }
     }
 
@@ -283,8 +283,8 @@ export class AdminService {
       for (const entry of data.changedScreenshots) {
         const screenshot = await this.renameFile(
           storageName,
-          `screenshots/${entry.oldOrder}.jpg`,
-          `screenshots/${entry.newOrder}.jpg`,
+          `images/${entry.oldOrder}.jpg`,
+          `images/${entry.newOrder}.jpg`,
         );
         renamedScreenshots.push({
           oldOrder: entry.oldOrder,
@@ -324,7 +324,7 @@ export class AdminService {
         const screenshot = await this.storage.uploadFile(
           entry.image,
           storageName,
-          `screenshots/${entry.image.originalname}`,
+          `images/${entry.image.originalname}`,
           ['image/jpeg'],
         );
         newScreenshots.push({
