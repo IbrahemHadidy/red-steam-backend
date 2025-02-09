@@ -61,7 +61,7 @@ class AppBootstrapper {
     SwaggerModule.setup('api', app, document, options);
 
     // Start the Nest application on specified port
-    await app.listen(this.port);
+    await app.listen(this.port, '0.0.0.0');
 
     // Enable hot module replacement (HMR) support for development
     if (process.env.NODE_ENV === 'development' && module.hot) {
