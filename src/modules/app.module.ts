@@ -32,11 +32,13 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [
-        `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-        `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-        'src/common/configs/environments/.env',
-      ],
+      envFilePath: process.env.RENDER
+        ? '/etc/secrets/.env'
+        : [
+            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
+            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
+            'src/common/configs/environments/.env',
+          ],
     }),
     // CacheModule.registerAsync({
     //   imports: [ConfigModule],
@@ -110,7 +112,7 @@ export class AppModule implements NestModule {
 
     // Configure CORS (to allow cross-origin requests)
     app.enableCors({
-      origin: process.env.FRONT_URL,
+      origin: [process.env.FRONT_URL, process.env.BASE_URL],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       preflightContinue: false,
       optionsSuccessStatus: 204,

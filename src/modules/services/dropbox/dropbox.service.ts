@@ -64,9 +64,8 @@ export class DropboxService implements OnModuleInit {
   public async ensureValidAccessToken(): Promise<void> {
     const currentTime = Date.now();
     if (currentTime - this.lastUpdated < this.TOKEN_REFRESH_INTERVAL) return;
-    
+
     try {
-      this.logger.log('Updating access token...');
       await this.updateTokens();
       this.lastUpdated = currentTime;
     } catch (error) {
@@ -118,7 +117,7 @@ export class DropboxService implements OnModuleInit {
    * Updates the Dropbox tokens by refreshing the access token using the refresh token.
    */
   private async updateTokens(): Promise<void> {
-    this.logger.log('Updating tokens...');
+    this.logger.log('Updating access token...');
 
     try {
       // Make a request to the Dropbox API to refresh the access token
@@ -129,11 +128,11 @@ export class DropboxService implements OnModuleInit {
         client_id: this.clientId,
         client_secret: this.clientSecret,
       });
-      
+
       const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
       };
-      
+
       const response = await fetch(url, {
         method: 'POST',
         headers,
