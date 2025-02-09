@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 // Paypal
 import { CheckoutPaymentIntent, Client, Environment, LogLevel, OrdersController } from '@paypal/paypal-server-sdk';
 
-// Types 
+// Types
 import type { Order } from '@paypal/paypal-server-sdk';
 
 @Injectable()
@@ -23,27 +23,28 @@ export class PaypalService {
 
     let environment: Environment;
 
-    if (environmentType === 'production') {
-      environment = Environment.Production;
-    } else {
-      environment = Environment.Sandbox;
-    }
+    // if (environmentType === 'production') {
+    //   environment = Environment.Production;
+    // } else {
+    //   environment = Environment.Sandbox;
+    // }
+    environment = Environment.Sandbox;
 
     this.client = new Client({
       clientCredentialsAuthCredentials: {
         oAuthClientId: clientId,
-        oAuthClientSecret: clientSecret
+        oAuthClientSecret: clientSecret,
       },
       timeout: 0,
       environment,
       logging: {
         logLevel: LogLevel.Info,
         logRequest: {
-          logBody: true
+          logBody: true,
         },
         logResponse: {
-          logHeaders: true
-        }
+          logHeaders: true,
+        },
       },
     });
 
@@ -55,9 +56,7 @@ export class PaypalService {
    * @param totalPrice
    * @returns Order response
    */
-  async createOrder(
-    totalPrice: string,
-  ): Promise<Order> {
+  async createOrder(totalPrice: string): Promise<Order> {
     // Log the initiation of the order creation process
     this.logger.log(`Creating PayPal order for user with ID ${totalPrice}`);
 
@@ -71,11 +70,11 @@ export class PaypalService {
               currencyCode: 'USD',
               value: totalPrice,
             },
-          }
+          },
         ],
       },
-      prefer: 'return=representation'
-    }
+      prefer: 'return=representation',
+    };
 
     // Send request
     const { result } = await this.ordersController.ordersCreate(collect);
@@ -99,8 +98,8 @@ export class PaypalService {
     // Create request body
     const collect = {
       id: orderId,
-      prefer: 'return=representation'
-    }
+      prefer: 'return=representation',
+    };
 
     // Send request
     const capture = await this.ordersController.ordersCapture(collect);

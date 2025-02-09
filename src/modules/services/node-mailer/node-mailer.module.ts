@@ -17,8 +17,7 @@ import { NodeMailerService } from '@services/node-mailer/node-mailer.service';
         transport: {
           service: 'gmail',
           host: 'smtp.gmail.com',
-          // secure: configService.get<string>('NODE_ENV') === 'production', // Set to true if using SSL/TLS
-          secure: false,
+          secure: configService.get<string>('NODE_ENV') === 'production',
           auth: {
             user: configService.get<string>('SMTP_USER'),
             pass: configService.get<string>('SMTP_PASSWORD'),
