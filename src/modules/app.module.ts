@@ -32,13 +32,11 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.RENDER
-        ? '/etc/secrets/.env'
-        : [
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
-            `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
-            'src/common/configs/environments/.env',
-          ],
+      envFilePath: [
+        `src/common/configs/environments/.env.${process.env.NODE_ENV}.local`,
+        `src/common/configs/environments/.env.${process.env.NODE_ENV}`,
+        'src/common/configs/environments/.env',
+      ],
     }),
     // CacheModule.registerAsync({
     //   imports: [ConfigModule],
