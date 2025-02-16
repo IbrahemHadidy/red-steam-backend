@@ -57,6 +57,8 @@ export class GamePricing extends BaseEntity {
   @OneToOne(() => Game, (game: GameType) => game.pricing)
   game?: GameType;
 
+  static skipDiscountCheck = false;
+
   // Final calculations
   @BeforeInsert()
   @BeforeUpdate()
@@ -95,6 +97,8 @@ export class GamePricing extends BaseEntity {
 
   @AfterLoad()
   checkDiscountEndDate() {
+    if (GamePricing.skipDiscountCheck) return;
+
     if (this.discount) {
       if (this.discountEndDate < new Date() || this.discountStartDate > new Date()) {
         this.discount = false;

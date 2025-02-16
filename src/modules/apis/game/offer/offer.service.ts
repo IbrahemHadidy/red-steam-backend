@@ -68,13 +68,14 @@ export class OfferService {
       | 'discountEndDate',
     order: 'ASC' | 'DESC',
     searchQuery: { name?: string },
+    admin: boolean,
   ): Promise<{ items: Game[]; total: number; totalPages: number }> {
     this.logger.log(
       `Retrieving offers, page: ${page}, limit: ${limit}, order by: ${orderBy}, order: ${order}, search query: ${JSON.stringify(searchQuery)}`,
     );
 
     // Get features paginated and return them if they exist
-    return await this.game.getGamesPaginated(page, limit, orderBy, order, true, searchQuery);
+    return await this.game.getGamesPaginated(page, limit, orderBy, order, true, searchQuery, admin);
   }
 
   /**

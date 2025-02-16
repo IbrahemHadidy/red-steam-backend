@@ -98,7 +98,7 @@ export class OfferController {
     @Query('searchQuery', new ParseJsonPipe(OfferQueryDto, { optional: true, validate: true }))
     searchQuery: OfferQueryDto = {},
   ) {
-    const result = await this.offerService.getOffersPaginated(page, limit, orderBy, order, searchQuery);
+    const result = await this.offerService.getOffersPaginated(page, limit, orderBy, order, searchQuery, true);
 
     // Send the response
     return result;

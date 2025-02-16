@@ -157,12 +157,23 @@ export class GamesService {
     order: 'ASC' | 'DESC',
     discount: boolean,
     searchQuery?: { name?: string },
+    admin?: boolean,
   ): Promise<{ items: Game[]; total: number; totalPages: number }> {
     this.logger.log(`Getting games paginated: page ${page}, limit ${limit}, order by ${orderBy} ${order}`);
 
     // Create a where clause based on the search query
     const where: FindOptionsWhere<Game> = {};
-    if (discount) where.pricing = { discount: true, discountEndDate: MoreThanOrEqual(new Date()), discountStartDate: LessThanOrEqual(new Date()) };
+    if (discount) {
+      if (admin) {
+        where.pricing = { discount: true, discountEndDate: MoreThanOrEqual(new Date()) };
+      } else {
+        where.pricing = {
+          discount: true,
+          discountEndDate: MoreThanOrEqual(new Date()),
+          discountStartDate: LessThanOrEqual(new Date()),
+        };
+      }
+    }
     if (searchQuery?.name) where.name = ILike(`%${searchQuery.name}%`);
 
     const orderOptions: FindOptionsOrder<Game> = {};
@@ -175,6 +186,9 @@ export class GamesService {
     if (orderBy === 'discountStartDate') orderOptions.pricing = { discountStartDate: order };
     if (orderBy === 'discountEndDate') orderOptions.pricing = { discountEndDate: order };
 
+    // Set skipCheckDiscount to true for admin
+    if (admin) GamePricing.skipDiscountCheck = true;
+
     // Get the paginated games
     const [items, total] = await this.gameRepository.findAndCount({
       where,
@@ -183,6 +197,9 @@ export class GamesService {
       skip: Math.max((page - 1) * limit, 0),
       take: limit,
     });
+
+    // Reset after fetching to avoid affecting other queries
+    if (admin) GamePricing.skipDiscountCheck = false;
 
     // Calculate the total number of pages
     const totalPages = Math.ceil(total / limit);
