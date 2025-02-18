@@ -11,8 +11,10 @@ import { fastifyMultipart } from '@fastify/multipart';
 // import fastifyRedis from '@fastify/redis';
 
 // Cache Manager
+// import { createKeyv } from '@keyv/redis';
 // import { CacheModule } from '@nestjs/cache-manager';
-// import { redisStore } from 'cache-manager-redis-yet';
+// import { CacheableMemory } from 'cacheable';
+// import { Keyv } from 'keyv';
 
 // Global interceptors
 import { ExceptionInterceptor } from '@interceptors/exception.interceptor';
@@ -42,12 +44,12 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify';
     //   imports: [ConfigModule],
     //   inject: [ConfigService],
     //   useFactory: (configService: ConfigService) => ({
-    //     store: redisStore,
-    //     host: configService.get<string>('REDIS_HOST'),
-    //     port: configService.get<number>('REDIS_PORT'),
-    //     password: configService.get<string>('REDIS_PASSWORD'),
-    //     ttl: configService.get<number>('CACHE_TTL') || 600,
-    //     max: configService.get<number>('CACHE_MAX_ITEMS') || 100,
+    //     stores: [
+    //       new Keyv({
+    //         store: new CacheableMemory({ ttl: configService.get<number>('CACHE_TTL') || 600, lruSize: 5000 }),
+    //       }),
+    //       createKeyv(configService.get<string>('REDIS_HOST')),
+    //     ],
     //   }),
     // }),
     RepositoriesModule,
