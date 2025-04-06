@@ -14,12 +14,12 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false,
+    "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
       "@test/*": ["test/*"],

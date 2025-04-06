@@ -1,3 +1,5 @@
+import path from 'path';
+
 // NestJS
 import { Logger, MiddlewareConsumer, Module, NestModule, ValidationPipe } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -5,6 +7,7 @@ import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
 // Fastify plugins
 import fastifyCookie from '@fastify/cookie';
+import fastifyStatic from '@fastify/static';
 // import fastifyCsrf from '@fastify/csrf-protection';
 import helmet from '@fastify/helmet';
 import { fastifyMultipart } from '@fastify/multipart';
@@ -86,6 +89,12 @@ export class AppModule implements NestModule {
     //   port: configService.get<number>('REDIS_PORT'),
     //   password: configService.get<string>('REDIS_PASSWORD'),
     // });
+
+    // Register fastify-static (to serve static files)
+    app.register(fastifyStatic, {
+      root: path.join(__dirname, 'public'),
+      prefix: '/public/',
+    });
 
     // Register helmet (to set security headers)
     await app.register(helmet);

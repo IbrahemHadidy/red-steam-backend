@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json.schemastore.org/swcrc",
+  "$schema": "https://swc.rs/schema.json",
   "sourceMaps": true,
   "jsc": {
     "target": "esnext",
@@ -11,6 +11,27 @@
     "transform": {
       "legacyDecorator": true,
       "decoratorMetadata": true
+    },
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+      "@test/*": ["test/*"],
+      "@modules/*": ["src/modules/*"],
+      "@apis/*": ["src/modules/apis/*"],
+      "@database/*": ["src/modules/apis/database/*"],
+      "@repositories/*": ["src/modules/repositories/*"],
+      "@services/*": ["src/modules/services/*"],
+      "@configs/*": ["src/common/configs/*"],
+      "@utils/*": ["src/common/utils/*"],
+      "@interceptors/*": ["src/common/interceptors/*"],
+      "@filters/*": ["src/common/filters/*"],
+      "@decorators/*": ["src/common/decorators/*"],
+      "@middlewares/*": ["src/common/middlewares/*"],
+      "@guards/*": ["src/common/guards/*"],
+      "@exceptions/*": ["src/common/exceptions/*"],
+      "@pipes/*": ["src/common/pipes/*"],
+      "@models/*": ["src/models/*"],
+      "@credentials/*": ["src/credentials/*"]
     }
   },
   "module": {

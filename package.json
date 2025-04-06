@@ -38,6 +38,7 @@
     "@nestjs/core": "^11.0.10",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/platform-express": "^11.0.10",
+    "@nestjs/serve-static": "^5.0.3",
     "@nestjs/swagger": "^11.0.3",
     "@nestjs/typeorm": "^11.0.0",
     "@nestlab/google-recaptcha": "^3.9.0",

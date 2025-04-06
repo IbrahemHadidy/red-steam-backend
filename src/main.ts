@@ -8,14 +8,15 @@ import { AppModule } from '@modules/app.module';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 
 // Swagger
-import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
 
 // Types
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
+import type { SwaggerCustomOptions } from '@nestjs/swagger';
 
 // Declare 'module' variable for hot module replacement (HMR) support
-declare const module: NodeModule;
+declare const module: NodeJS.Module;
 
 class AppBootstrapper {
   private readonly port: number;
@@ -27,9 +28,6 @@ class AppBootstrapper {
   public async bootstrap() {
     // Create Nest application instance (Fastify adapter)
     const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { snapshot: true });
-
-    // Register configurations and middleware to the application instance
-    await AppModule.register(app);
 
     // Configure Swagger documentation
     const config = new DocumentBuilder()
@@ -52,6 +50,8 @@ class AppBootstrapper {
     const theme = new SwaggerTheme();
     const options: SwaggerCustomOptions = {
       customCss: theme.getBuffer(SwaggerThemeNameEnum.DARK),
+      jsonDocumentUrl: 'json',
+      yamlDocumentUrl: 'yaml',
     };
 
     // Create Swagger document
@@ -59,6 +59,9 @@ class AppBootstrapper {
 
     // Setup Swagger UI endpoint
     SwaggerModule.setup('api', app, document, options);
+
+    // Register configurations and middleware to the application instance
+    await AppModule.register(app);
 
     // Start the Nest application on specified port
     await app.listen(this.port, '0.0.0.0');
