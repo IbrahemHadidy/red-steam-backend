@@ -30,12 +30,7 @@ let AppBootstrapper = class AppBootstrapper {
         // Configure custom Swagger theme
         const theme = new _swaggerthemes.SwaggerTheme();
         const options = {
-            customJs: [
-                '/public/swagger/swagger-ui-bundle.js',
-                '/public/swagger/swagger-ui-standalone-preset.js'
-            ],
-            customCss: '/public/swagger/swagger-ui.css',
-            customfavIcon: '/public/favicon.ico',
+            customCss: theme.getBuffer(_swaggerthemes.SwaggerThemeNameEnum.DARK),
             jsonDocumentUrl: 'json',
             yamlDocumentUrl: 'yaml'
         };
